@@ -1,5 +1,8 @@
 # Lumo Android App
 
+Lumo is the privacy-first AI assistant created by Proton, the team behind encrypted email, VPN, password manager, and cloud storage trusted by over 100 million people.
+Lumo helps you stay productive, curious, and informed — without ever compromising your privacy.
+
 This is the native Android application wrapper for the Lumo web application ([lumo.proton.me](https://lumo.proton.me)) with addition features e.g. voice entry.
 
 ## 🏗️ Architecture Overview
