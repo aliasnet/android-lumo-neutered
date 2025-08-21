@@ -227,11 +227,36 @@ The app supports multiple build variants to accommodate different use cases:
 1. Clone the repository
 2. Open the project in Android Studio
 3. Ensure you have the required Android SDK versions installed
-4. For release builds, configure signing keys in `local.properties`
+4. For release builds, configure signing by setting environment variables:
+   ```bash
+   # Option 1: Set environment variables directly
+   export LUMO_KEY_ALIAS="your_key_alias"
+   export LUMO_KEY_PASSWORD="your_key_password"
+   export LUMO_KEYSTORE_PATH="/path/to/your/keystore.jks"
+   export LUMO_STORE_PASSWORD="your_store_password"
+   
+   # Option 2: Use the .env file (recommended)
+   cp .env.example .env
+   # Edit .env with your actual values
+   source .env
+   ```
 5. Build using Gradle:
    ```bash
+   # Debug builds (no signing required)
    ./gradlew clean assembleProductionStandardDebug
+   
+   # Release builds (requires environment variables above)
+   ./gradlew clean assembleProductionStandardRelease
    ```
+
+### 🔧 **Environment Variables for CI/CD**
+For automated builds and CI/CD pipelines, you can also use these environment variables:
+- **`LUMO_KEY_ALIAS`**: Key alias in the keystore (defaults to "lumo")
+- **`LUMO_KEY_PASSWORD`**: Password for the signing key
+- **`LUMO_KEYSTORE_PATH`**: Full path to the keystore file
+- **`LUMO_STORE_PASSWORD`**: Password for the keystore
+
+**Note**: Never commit these values to version control. Use your CI/CD platform's secret management system.
 
 ## 🔐 Permissions
 

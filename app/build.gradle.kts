@@ -2,8 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    // alias(libs.plugins.hilt.android)
-    // alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,12 +23,11 @@ android {
     }
 
     signingConfigs {
-
         create("release") {
-            keyAlias = "lumo"
-            keyPassword = "PASS"
-            storeFile = file("/Users/eamonnmaguire/AndroidStudioProjects/lumo-app-signing/lumo")
-            storePassword = "PASS"
+            keyAlias = System.getenv("LUMO_KEY_ALIAS") ?: "lumo"
+            keyPassword = System.getenv("LUMO_KEY_PASSWORD")
+            storeFile = System.getenv("LUMO_KEYSTORE_PATH")?.let { file(it) }
+            storePassword = System.getenv("LUMO_STORE_PASSWORD")
         }
     }
 
