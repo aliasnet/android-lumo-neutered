@@ -5,6 +5,11 @@ Lumo helps you stay productive, curious, and informed — without ever compromis
 
 This is the native Android application wrapper for the Lumo web application ([lumo.proton.me](https://lumo.proton.me)) with addition features e.g. voice entry.
 
+
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+    alt="Get it on Google Play"
+    height="80">](https://play.google.com/store/apps/details?id=me.proton.android.lumo)
+
 ## 🏗️ Architecture Overview
 
 The Lumo Android app follows a clean, modular architecture with clear separation of concerns:
