@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Lumo\'ya Geri Dön</string>
+  <string name="loading">Lumo yükleniyor</string>
+  <string name="error_generic">Bir sorun çıktı</string>
+  <string name="error_url">İlk URL belirlenirken hata oluştu.</string>
+  <string name="unable_to_connect">Bağlantı kurulamadı</string>
+  <string name="please_check_your_internet_connection_and_try_again">Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+  <string name="retry_button">Yeniden dene</string>
+  <string name="retry_connection">Bağlantıyı Tekrar Dene</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Dikkat... ve işlem gücü gerektiriyor...</string>
+  <string name="loading_message_2">Yükleme çubuklarına pati atıyor...</string>
+  <string name="loading_message_3">Veri simsarlarını kovalıyor…</string>
+  <string name="loading_message_4">Dijital fareleri kovalıyor...</string>
+  <string name="loading_message_5">Görünmez raflardan bir şeyler deviriyor...</string>
+  <string name="loading_message_6">Miyav-yükleniyor... lütfen bekleyin...</string>
+  <string name="loading_message_7">Güneş ışığında kestiriyor... neredeyse hazır...</string>
+  <string name="loading_message_8">Dünya hakimiyeti planlıyor... ve uygulamanızın başlatılmasını...</string>
+  <string name="loading_message_9">Motorları mırıldayarak çalıştırıyor...</string>
+  <string name="loading_message_10">Klavyenizde pençelerini biliyor...</string>
+  <string name="loading_message_11">Büyük atlayıştan önce esniyor...</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Tanıma Google tarafından işlendi</string>
+  <string name="speech_status_on_device">Aygıtta • Özel</string>
+  <string name="permission_mic_rationale">Konuşma girişi için mikrofon izni gerekli</string>
+  <string name="speech_not_available">Konuşma tanıma kullanılamıyor</string>
+  <string name="speech_error_format">Konuşma Hatası: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">İstem web görünümüne eklenemedi</string>
+  <string name="start_listener_error_format">Dinleyici başlatılırken hata: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">İstemi seslendirin</string>
+  <string name="speech_intent_prompt">İsteminizi seslendirin</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Konuşma Girişini İptal Et</string>
+  <string name="speech_sheet_submit_desc">İstemi Gönder</string>
+  <string name="speech_sheet_listening">Dinleniyor…</string>
+  <string name="speech_sheet_waiting">Göndermek için dokunun veya konuşun</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Ses kaydı hatası</string>
+  <string name="speech_error_client">İstemci tarafı hatası</string>
+  <string name="speech_error_insufficient_permissions">Yetersiz izinler</string>
+  <string name="speech_error_network">Ağ sorunu</string>
+  <string name="speech_error_network_timeout">Ağ zaman aşımı</string>
+  <string name="speech_error_no_match">Konuşma eşleşmesi yok</string>
+  <string name="speech_error_recognizer_busy">Tanıyıcı meşgul</string>
+  <string name="speech_error_server">Sunucu sorunu</string>
+  <string name="speech_error_speech_timeout">Konuşma girişi yok</string>
+  <string name="speech_error_unknown">Bilinmeyen konuşma tanıma hatası</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Yapay zeka deneyiminizi geliştirin</string>
+  <string name="payment_subtitle">Lumo Plus ile ayrıcalıklı hizmetin ve premium özelliklerin keyfini çıkarın.</string>
+  <string name="payment_checking">Abonelik durumu kontrol ediliyor...</string>
+  <string name="payment_loading_plans">Abonelik planları yükleniyor...</string>
+  <string name="payment_no_plans_available">Şu anda abonelik planı mevcut değil</string>
+  <string name="subscription_renewal">Seçilen tarife iptal edilene kadar otomatik olarak yenilenecektir</string>
+  <string name="subscription_buy_lumo">Lumo Plus Satın Alın</string>
+  <string name="subscription_manage">Abonelik yönetimi</string>
+  <string name="subscription_manage_info">Bu abonelik, web arayüzü üzerinden yönetilmelidir.</string>
+  <string name="for_price">İçin</string>
+  <string name="month">Ay</string>
+  <string name="months">Ay</string>
+  <string name="cancelled">İptal edildi</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Aboneliğiniz %1$s tarihinde otomatik olarak yenilenecektir</string>
+  <string name="subscription_expires">Aboneliğiniz %1$s tarihinde sona erecektir</string>
+</resources>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Terug naar Lumo</string>
+  <string name="loading">Lumo laden</string>
+  <string name="error_generic">Er is iets fout gegaan</string>
+  <string name="error_url">Fout bij het bepalen van de initiële URL.</string>
+  <string name="unable_to_connect">Kan geen verbinding maken</string>
+  <string name="please_check_your_internet_connection_and_try_again">Controleer uw internetverbinding en probeer het opnieuw.</string>
+  <string name="retry_button">Opnieuw proberen</string>
+  <string name="retry_connection">Verbinding opnieuw proberen</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Vraagt aandacht... en verwerkingskracht...</string>
+  <string name="loading_message_2">Laadbalken worden geladen...</string>
+  <string name="loading_message_3">Wegjagen van datamakelaars…</string>
+  <string name="loading_message_4">Digitale muizen achterna zitten...</string>
+  <string name="loading_message_5">Dingen van onzichtbare planken stoten...</string>
+  <string name="loading_message_6">Miauwladen... een ogenblik geduld...</string>
+  <string name="loading_message_7">Dutje in de zon... bijna klaar...</string>
+  <string name="loading_message_8">Wereldheerschappij plannen... en de lancering van uw app...</string>
+  <string name="loading_message_9">De motoren worden gestart...</string>
+  <string name="loading_message_10">Klauwen scherpen op uw toetsenbord...</string>
+  <string name="loading_message_11">Rekken voor de grote sprong...</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Herkenning verwerkt door Google</string>
+  <string name="speech_status_on_device">Op apparaat • Privé</string>
+  <string name="permission_mic_rationale">Microfoontoestemming nodig voor spraakinvoer</string>
+  <string name="speech_not_available">Spraakherkenning niet beschikbaar</string>
+  <string name="speech_error_format">Spraakfout: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Het invoegen van de prompt in de webview is mislukt</string>
+  <string name="start_listener_error_format">Fout bij starten listener: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Prompt inspreken</string>
+  <string name="speech_intent_prompt">Spreek uw prompt in</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Spraakinvoer annuleren</string>
+  <string name="speech_sheet_submit_desc">Prompt verzenden</string>
+  <string name="speech_sheet_listening">Luisteren…</string>
+  <string name="speech_sheet_waiting">Tik op verzenden of spreek</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Fout bij audio-opname</string>
+  <string name="speech_error_client">Fout client-side</string>
+  <string name="speech_error_insufficient_permissions">Onvoldoende rechten</string>
+  <string name="speech_error_network">Netwerkfout</string>
+  <string name="speech_error_network_timeout">Netwerktimeout</string>
+  <string name="speech_error_no_match">Geen spraakovereenkomst</string>
+  <string name="speech_error_recognizer_busy">Herkenner bezet</string>
+  <string name="speech_error_server">Serverfout</string>
+  <string name="speech_error_speech_timeout">Geen spraakinvoer</string>
+  <string name="speech_error_unknown">Onbekende spraakherkenningsfout</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Til uw AI-ervaring naar een hoger niveau</string>
+  <string name="payment_subtitle">Geniet van voorkeursbehandeling en premiumfuncties met Lumo Plus.</string>
+  <string name="payment_checking">Abonnementsstatus controleren...</string>
+  <string name="payment_loading_plans">Abonnementsplannen laden...</string>
+  <string name="payment_no_plans_available">Er zijn momenteel geen abonnementsplannen beschikbaar</string>
+  <string name="subscription_renewal">Het geselecteerde abonnement wordt automatisch verlengd totdat het wordt geannuleerd</string>
+  <string name="subscription_buy_lumo">Koop Lumo Plus</string>
+  <string name="subscription_manage">Abonnement beheren</string>
+  <string name="subscription_manage_info">Dit abonnement moet via de webinterface worden beheerd.</string>
+  <string name="for_price">Voor</string>
+  <string name="month">Maand</string>
+  <string name="months">Maand</string>
+  <string name="cancelled">Geannuleerd</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Uw abonnement wordt automatisch verlengd op %1$s</string>
+  <string name="subscription_expires">Uw abonnement verloopt op %1$s</string>
+</resources>

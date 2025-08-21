@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Torna a Lumo</string>
+  <string name="loading">Caricamento di Lumo</string>
+  <string name="error_generic">Si è verificato un errore</string>
+  <string name="error_url">Errore nella determinazione dell\'URL iniziale.</string>
+  <string name="unable_to_connect">Connessione impossibile</string>
+  <string name="please_check_your_internet_connection_and_try_again">Controlla la tua connessione internet e riprova</string>
+  <string name="retry_button">Riprova</string>
+  <string name="retry_connection">Riprova connessione</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Richiedo attenzione… e potenza di elaborazione…</string>
+  <string name="loading_message_2">Prendo a zampate le barre di caricamento...</string>
+  <string name="loading_message_3">Scaccio i broker di dati…</string>
+  <string name="loading_message_4">Inseguo topi digitali…</string>
+  <string name="loading_message_5">Faccio cadere oggetti da scaffali invisibili…</string>
+  <string name="loading_message_6">Miaocaricamento… attendi…</string>
+  <string name="loading_message_7">Faccio un pisolino al sole… ci siamo quasi…</string>
+  <string name="loading_message_8">Pianifico il dominio del mondo… e l\'avvio della tua app…</string>
+  <string name="loading_message_9">Faccio le fusa per avviare i motori…</string>
+  <string name="loading_message_10">Affilo gli artigli sulla tua tastiera…</string>
+  <string name="loading_message_11">Mi stiro prima del grande salto...</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Riconoscimento elaborato da Google</string>
+  <string name="speech_status_on_device">Sul dispositivo • Privato</string>
+  <string name="permission_mic_rationale">Autorizzazione del microfono necessaria per l\'input vocale</string>
+  <string name="speech_not_available">Riconoscimento vocale non disponibile</string>
+  <string name="speech_error_format">Errore vocale: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Impossibile inserire il prompt nella webview</string>
+  <string name="start_listener_error_format">Errore durante l\'avvio dell\'ascolto: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Pronuncia il prompt</string>
+  <string name="speech_intent_prompt">Pronuncia il tuo prompt</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Annulla input vocale</string>
+  <string name="speech_sheet_submit_desc">Invia prompt</string>
+  <string name="speech_sheet_listening">In ascolto…</string>
+  <string name="speech_sheet_waiting">Tocca Invia o parla</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Errore di registrazione audio</string>
+  <string name="speech_error_client">Errore del client</string>
+  <string name="speech_error_insufficient_permissions">Autorizzazioni insufficienti</string>
+  <string name="speech_error_network">Errore di rete</string>
+  <string name="speech_error_network_timeout">Timeout di rete</string>
+  <string name="speech_error_no_match">Nessuna corrispondenza vocale</string>
+  <string name="speech_error_recognizer_busy">Sistema di riconoscimento occupato</string>
+  <string name="speech_error_server">Errore del server</string>
+  <string name="speech_error_speech_timeout">Nessun input vocale</string>
+  <string name="speech_error_unknown">Errore di riconoscimento vocale sconosciuto</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Migliora la tua esperienza IA</string>
+  <string name="payment_subtitle">Goditi un trattamento preferenziale e funzionalità premium con Lumo Plus.</string>
+  <string name="payment_checking">Controllo stato abbonamento…</string>
+  <string name="payment_loading_plans">Caricamento piani di abbonamento…</string>
+  <string name="payment_no_plans_available">Nessun piano di abbonamento è attualmente disponibile</string>
+  <string name="subscription_renewal">Il piano selezionato si rinnoverà automaticamente finché non verrà annullato</string>
+  <string name="subscription_buy_lumo">Acquista Lumo Plus</string>
+  <string name="subscription_manage">Gestisci abbonamento</string>
+  <string name="subscription_manage_info">Questo abbonamento deve essere gestito tramite l\'interfaccia web.</string>
+  <string name="for_price">Per</string>
+  <string name="month">Mese</string>
+  <string name="months">Mese</string>
+  <string name="cancelled">Annullato</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Il tuo abbonamento si rinnoverà automaticamente il %1$s</string>
+  <string name="subscription_expires">Il tuo abbonamento scade il %1$s</string>
+</resources>

@@ -1,0 +1,74 @@
+package me.proton.android.lumo.ui.components
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import me.proton.android.lumo.models.PlanFeature
+import me.proton.android.lumo.ui.theme.DarkText
+import me.proton.android.lumo.ui.theme.GrayText
+import me.proton.android.lumo.ui.theme.Purple
+
+/**
+ * Displays a feature comparison row between free and paid plans
+ */
+@Composable
+fun FeatureComparisonItem(feature: PlanFeature) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Load icon from URL
+        val iconUrl = "https://lumo-api.proton.me/payments/v5/resources/icons/${feature.iconName}"
+
+        // Icon - using AsyncImage with fallback
+        Box(modifier = Modifier.size(24.dp)) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(iconUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Feature name
+        Text(
+            text = feature.name,
+            style = MaterialTheme.typography.bodyMedium,
+            color = DarkText,
+            modifier = Modifier.weight(1f)
+        )
+
+        // Free tier text
+        Text(
+            text = feature.freeText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = GrayText,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(0.8f)
+        )
+
+        // Plus tier text
+        Text(
+            text = feature.paidText,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Purple,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(0.8f)
+        )
+    }
+} 

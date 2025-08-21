@@ -1,0 +1,122 @@
+package me.proton.android.lumo.utils
+
+import android.annotation.SuppressLint
+import android.util.Log
+import com.android.billingclient.api.ProductDetails
+import me.proton.android.lumo.models.JsPlanInfo
+
+private const val TAG = "PlanPricingHelper"
+
+/**
+ * Helper class for updating plan pricing information by matching with Google Play ProductDetails
+ */
+object PlanPricingHelper {
+    
+    /**
+     * Updates plan pricing information using Google Play product details
+     *
+     * @param plans List of plans to update with pricing information
+     * @param googleProducts List of Google Play product details
+     * @return Updated list of plans with pricing information
+     */
+    @SuppressLint("DefaultLocale")
+    fun updatePlanPricing(
+        plans: List<JsPlanInfo>,
+        googleProducts: List<ProductDetails>
+    ): List<JsPlanInfo> {
+        // Create a copy to avoid modifying the original list
+        val updatedPlans = plans.toMutableList()
+
+        updatedPlans.forEach { plan ->
+            // Find matching Google product by productId
+            val matchingProduct = googleProducts.find { it.productId == plan.productId }
+
+            if (matchingProduct != null && matchingProduct.subscriptionOfferDetails != null) {
+                // Try to find an offer matching the cycle/duration
+                val cycleMapping = when (plan.cycle) {
+                    1 -> "P1M" // Monthly billing period
+                    12 -> "P1Y" // Yearly billing period
+                    else -> null
+                }
+
+                // Find the best matching offer
+                val matchingOffer = if (cycleMapping != null) {
+                    matchingProduct.subscriptionOfferDetails!!.find { offer ->
+                        offer.pricingPhases.pricingPhaseList.any { phase ->
+                            phase.billingPeriod == cycleMapping
+                        }
+                    }
+                } else null
+
+                // Use the first offer if no matching one found
+                val bestOffer =
+                    matchingOffer ?: matchingProduct.subscriptionOfferDetails!!.firstOrNull()
+
+                if (bestOffer != null) {
+                    val pricingPhase = bestOffer.pricingPhases.pricingPhaseList.firstOrNull()
+
+                    if (pricingPhase != null) {
+                        // Set total price
+                        plan.totalPrice = pricingPhase.formattedPrice
+
+                        // Calculate price per month for yearly plans
+                        if (plan.cycle > 1 && pricingPhase.priceAmountMicros > 0) {
+                            val monthlyPrice =
+                                pricingPhase.priceAmountMicros / (plan.cycle * 1_000_000.0)
+                            plan.pricePerMonth = String.format("$%.2f", monthlyPrice)
+
+                            // Calculate savings compared to monthly plan if we have both plans
+                            if (plan.cycle == 12) {
+                                // Try to find the monthly plan
+                                val monthlyPlan =
+                                    plans.find { it.productId.contains("_1_") && it.cycle == 1 }
+                                if (monthlyPlan != null) {
+                                    val monthlyProduct =
+                                        googleProducts.find { it.productId == monthlyPlan.productId }
+                                    if (monthlyProduct != null && monthlyProduct.subscriptionOfferDetails != null) {
+                                        val monthlyOffer =
+                                            monthlyProduct.subscriptionOfferDetails!!.firstOrNull()
+                                        val monthlyPhase =
+                                            monthlyOffer?.pricingPhases?.pricingPhaseList?.firstOrNull()
+
+                                        if (monthlyPhase != null && monthlyPhase.priceAmountMicros > 0) {
+                                            // Calculate annual cost if paying monthly
+                                            val annualMonthlyTotal =
+                                                (monthlyPhase.priceAmountMicros * 12) / 1_000_000.0
+                                            val annualCost =
+                                                pricingPhase.priceAmountMicros / 1_000_000.0
+
+                                            if (annualCost < annualMonthlyTotal) {
+                                                val savingsPercent =
+                                                    ((annualMonthlyTotal - annualCost) / annualMonthlyTotal * 100).toInt()
+                                                if (savingsPercent > 0) {
+                                                    plan.savings = "Save ${savingsPercent}%"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            plan.pricePerMonth = pricingPhase.formattedPrice
+                        }
+
+                        // Set offerToken
+                        plan.offerToken = bestOffer.offerToken
+
+                        Log.d(
+                            TAG, "Updated plan ${plan.name} (${plan.duration}): " +
+                                    "customerID=${plan.customerId} " +
+                                    "price=${plan.totalPrice}, monthly=${plan.pricePerMonth}, " +
+                                    "savings=${plan.savings}, offerToken=${plan.offerToken}"
+                        )
+                    }
+                }
+            } else {
+                Log.w(TAG, "No matching Google product found for: ${plan.productId}")
+            }
+        }
+
+        return updatedPlans
+    }
+} 

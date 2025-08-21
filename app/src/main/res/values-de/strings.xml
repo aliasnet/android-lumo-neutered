@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Zurück zu Lumo</string>
+  <string name="loading">Lade Lumo</string>
+  <string name="error_generic">Ein Fehler ist aufgetreten</string>
+  <string name="error_url">Fehler beim Ermitteln der anfänglichen URL.</string>
+  <string name="unable_to_connect">Verbinden fehlgeschlagen</string>
+  <string name="please_check_your_internet_connection_and_try_again">Bitte überprüfe deine Internetverbindung und versuche es erneut</string>
+  <string name="retry_button">Erneut versuchen</string>
+  <string name="retry_connection">Verbindung erneut versuchen</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Fordert Aufmerksamkeit … und Rechenleistung …</string>
+  <string name="loading_message_2">Spielt mit Ladebalken …</string>
+  <string name="loading_message_3">Verjagt Datenhändler …</string>
+  <string name="loading_message_4">Jagt digitale Mäuse …</string>
+  <string name="loading_message_5">Stößt Dinge von unsichtbaren Regalen …</string>
+  <string name="loading_message_6">Miaulädt … bitte warten …</string>
+  <string name="loading_message_7">Macht ein Nickerchen in der Sonne … fast fertig …</string>
+  <string name="loading_message_8">Plant die Weltherrschaft … und den Start deiner App …</string>
+  <string name="loading_message_9">Schnurrt die Motoren zum Leben an …</string>
+  <string name="loading_message_10">Wetzt die Krallen an deiner Tastatur …</string>
+  <string name="loading_message_11">Dehnt sich vor dem großen Sprung …</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Erkennung verarbeitet durch Google</string>
+  <string name="speech_status_on_device">Auf dem Gerät • Privat</string>
+  <string name="permission_mic_rationale">Mikrofonberechtigung für Spracheingabe benötigt</string>
+  <string name="speech_not_available">Spracherkennung nicht verfügbar</string>
+  <string name="speech_error_format">Sprachfehler: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Einfügen der Eingabeaufforderung in die Webansicht fehlgeschlagen</string>
+  <string name="start_listener_error_format">Fehler beim Starten des Listeners: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Sprich die Eingabeaufforderung</string>
+  <string name="speech_intent_prompt">Sprich deine Eingabeaufforderung</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Spracheingabe abbrechen</string>
+  <string name="speech_sheet_submit_desc">Eingabeaufforderung senden</string>
+  <string name="speech_sheet_listening">Hört zu …</string>
+  <string name="speech_sheet_waiting">Tippe auf Senden oder sprich</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Fehler bei der Audioaufnahme</string>
+  <string name="speech_error_client">Clientseitiger Fehler</string>
+  <string name="speech_error_insufficient_permissions">Unzureichende Berechtigungen</string>
+  <string name="speech_error_network">Netzwerkfehler</string>
+  <string name="speech_error_network_timeout">Netzwerk-Zeitüberschreitung</string>
+  <string name="speech_error_no_match">Keine Sprachübereinstimmung</string>
+  <string name="speech_error_recognizer_busy">Erkenner beschäftigt</string>
+  <string name="speech_error_server">Serverfehler</string>
+  <string name="speech_error_speech_timeout">Keine Spracheingabe</string>
+  <string name="speech_error_unknown">Unbekannter Spracherkennungsfehler</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Steigere dein KI-Erlebnis</string>
+  <string name="payment_subtitle">Genieße bevorzugte Behandlung und Premium-Funktionen mit Lumo Plus.</string>
+  <string name="payment_checking">Abonnementstatus wird überprüft …</string>
+  <string name="payment_loading_plans">Abonnementpläne werden geladen …</string>
+  <string name="payment_no_plans_available">Es sind derzeit keine Abonnementpläne verfügbar</string>
+  <string name="subscription_renewal">Das ausgewählte Abonnement verlängert sich automatisch, bis es gekündigt wird</string>
+  <string name="subscription_buy_lumo">Lumo Plus kaufen</string>
+  <string name="subscription_manage">Abonnement verwalten</string>
+  <string name="subscription_manage_info">Dieses Abonnement muss über die Weboberfläche verwaltet werden.</string>
+  <string name="for_price">Für</string>
+  <string name="month">Monat</string>
+  <string name="months">Monat</string>
+  <string name="cancelled">Gekündigt</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Dein Abonnement verlängert sich automatisch am %1$s</string>
+  <string name="subscription_expires">Dein Abonnement läuft am %1$s ab</string>
+</resources>

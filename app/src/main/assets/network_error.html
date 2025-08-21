@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Error</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #EEEBFD;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-icon {
+            width: 100px; /* Adjust size as needed */
+            height: auto;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #F68C08;
+            margin-bottom: 10px;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        /* Add a button style later if needed for retry */
+        
+        button.retry-button {
+            padding: 10px 25px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #6D4AFF;
+            color: white;
+            transition: background-color 0.2s ease;
+        }
+        button.retry-button:hover {
+            background-color: #583acc; /* Darker shade on hover */
+        }
+        
+    </style>
+</head>
+<body>
+    <img src="alert.svg" alt="Error Icon" class="error-icon">
+    <h1>Connection Error</h1>
+    <p>Could not load the page. Please check your internet connection and try again.</p>
+     
+    
+    <button class="retry-button" onclick="Android.retryLoad()">Retry</button> 
+    
+</body>
+</html> 

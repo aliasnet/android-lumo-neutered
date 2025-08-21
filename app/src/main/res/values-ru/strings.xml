@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Вернуться к Lumo</string>
+  <string name="loading">Загрузка Lumo</string>
+  <string name="error_generic">Произошла ошибка</string>
+  <string name="error_url">Ошибка определения начального URL.</string>
+  <string name="unable_to_connect">Не удается подключиться</string>
+  <string name="please_check_your_internet_connection_and_try_again">Проверьте подключение к Интернету и повторите попытку</string>
+  <string name="retry_button">Повторить</string>
+  <string name="retry_connection">Повторить подключение</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Требует внимания... и вычислительной мощности...</string>
+  <string name="loading_message_2">Играет с индикаторами загрузки...</string>
+  <string name="loading_message_3">Отгоняет дата-брокеров…</string>
+  <string name="loading_message_4">Гоняется за цифровыми мышами...</string>
+  <string name="loading_message_5">Сбрасывает вещи с невидимых полок...</string>
+  <string name="loading_message_6">Мяу-загрузка... подождите...</string>
+  <string name="loading_message_7">Дремлет на солнечном луче... почти готово...</string>
+  <string name="loading_message_8">Замышляет мировое господство... и запуск вашего приложения...</string>
+  <string name="loading_message_9">Мурлычет, запуская двигатели...</string>
+  <string name="loading_message_10">Точит когти о вашу клавиатуру...</string>
+  <string name="loading_message_11">Растягивается перед большим прыжком...</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Распознавание обработано Google</string>
+  <string name="speech_status_on_device">На устройстве • Конфиденциально</string>
+  <string name="permission_mic_rationale">Для голосового ввода требуется разрешение на доступ к микрофону</string>
+  <string name="speech_not_available">Распознавание речи недоступно</string>
+  <string name="speech_error_format">Ошибка речи: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Не удалось вставить запрос в веб-представление</string>
+  <string name="start_listener_error_format">Ошибка запуска прослушивателя: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Произнесите запрос</string>
+  <string name="speech_intent_prompt">Произнесите запрос</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Отменить голосовой ввод</string>
+  <string name="speech_sheet_submit_desc">Отправить запрос</string>
+  <string name="speech_sheet_listening">Прослушивание…</string>
+  <string name="speech_sheet_waiting">Нажмите «Отправить» или произнесите</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Ошибка записи аудио</string>
+  <string name="speech_error_client">Ошибка на стороне клиента</string>
+  <string name="speech_error_insufficient_permissions">Недостаточно разрешений</string>
+  <string name="speech_error_network">Ошибка сети</string>
+  <string name="speech_error_network_timeout">Тайм-аут сети</string>
+  <string name="speech_error_no_match">Речь не распознана</string>
+  <string name="speech_error_recognizer_busy">Распознаватель занят</string>
+  <string name="speech_error_server">Ошибка сервера</string>
+  <string name="speech_error_speech_timeout">Нет голосового ввода</string>
+  <string name="speech_error_unknown">Неизвестная ошибка распознавания речи</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Повысьте качество вашего взаимодействия с ИИ</string>
+  <string name="payment_subtitle">Наслаждайтесь привилегированным обслуживанием и премиум-функциями с Lumo Plus.</string>
+  <string name="payment_checking">Проверка статуса подписки...</string>
+  <string name="payment_loading_plans">Загрузка тарифных планов...</string>
+  <string name="payment_no_plans_available">Тарифные планы подписки в настоящее время недоступны</string>
+  <string name="subscription_renewal">Выбранный тариф будет автоматически продлеваться до отмены</string>
+  <string name="subscription_buy_lumo">Купить Lumo Plus</string>
+  <string name="subscription_manage">Управление подпиской</string>
+  <string name="subscription_manage_info">Этой подпиской необходимо управлять через веб-интерфейс.</string>
+  <string name="for_price">Для</string>
+  <string name="month">Месяц</string>
+  <string name="months">Месяц</string>
+  <string name="cancelled">Отменено</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Ваша подписка автоматически продлевается %1$s</string>
+  <string name="subscription_expires">Срок действия вашей подписки истекает %1$s</string>
+</resources>

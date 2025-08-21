@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Zpět k Lumo</string>
+  <string name="loading">Načítání Lumo</string>
+  <string name="error_generic">Došlo k chybě</string>
+  <string name="error_url">Chyba při určování počáteční URL.</string>
+  <string name="unable_to_connect">Nelze se připojit</string>
+  <string name="please_check_your_internet_connection_and_try_again">Zkontrolujte prosím své internetové připojení a zkuste to znovu.</string>
+  <string name="retry_button">Opakovat</string>
+  <string name="retry_connection">Zkusit připojení znovu</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">Vyžaduje pozornost… a výpočetní výkon…</string>
+  <string name="loading_message_2">Hraje si s načítacími pruhy…</string>
+  <string name="loading_message_3">Odhání obchodníky s daty…</string>
+  <string name="loading_message_4">Honí digitální myši…</string>
+  <string name="loading_message_5">Shazuje věci z neviditelných polic…</string>
+  <string name="loading_message_6">Mňouknačítání… prosím čekejte…</string>
+  <string name="loading_message_7">Podřimuje na slunci… téměř připraveno…</string>
+  <string name="loading_message_8">Plánuje ovládnutí světa… a spuštění vaší aplikace…</string>
+  <string name="loading_message_9">Přede a spouští systémy...</string>
+  <string name="loading_message_10">Brousí si drápky o vaši klávesnici…</string>
+  <string name="loading_message_11">Protahuje se před velkým skokem…</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Rozpoznávání zpracováno společností Google</string>
+  <string name="speech_status_on_device">Na zařízení • Soukromé</string>
+  <string name="permission_mic_rationale">Pro hlasový vstup je vyžadováno oprávnění k mikrofonu</string>
+  <string name="speech_not_available">Rozpoznávání řeči není k dispozici</string>
+  <string name="speech_error_format">Chyba řeči: %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Nepodařilo se vložit zadání do webového zobrazení</string>
+  <string name="start_listener_error_format">Chyba při spouštění naslouchače: %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Namluvte zadání</string>
+  <string name="speech_intent_prompt">Namluvte své zadání</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Zrušit hlasový vstup</string>
+  <string name="speech_sheet_submit_desc">Odeslat zadání</string>
+  <string name="speech_sheet_listening">Naslouchám…</string>
+  <string name="speech_sheet_waiting">Klepněte na odeslat nebo mluvte</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Chyba nahrávání zvuku</string>
+  <string name="speech_error_client">Chyba na straně klienta</string>
+  <string name="speech_error_insufficient_permissions">Nedostatečná oprávnění</string>
+  <string name="speech_error_network">Chyba sítě</string>
+  <string name="speech_error_network_timeout">Časový limit sítě vypršel</string>
+  <string name="speech_error_no_match">Nebyla nalezena žádná shoda řeči</string>
+  <string name="speech_error_recognizer_busy">Rozpoznávač je zaneprázdněn</string>
+  <string name="speech_error_server">Chyba serveru</string>
+  <string name="speech_error_speech_timeout">Žádný hlasový vstup</string>
+  <string name="speech_error_unknown">Neznámá chyba rozpoznávání řeči</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Zlepšete svůj zážitek s AI</string>
+  <string name="payment_subtitle">Užijte si preferované zacházení a prémiové funkce s Lumo Plus.</string>
+  <string name="payment_checking">Kontroluji stav předplatného…</string>
+  <string name="payment_loading_plans">Načítám tarify předplatného…</string>
+  <string name="payment_no_plans_available">Momentálně nejsou k dispozici žádné tarify předplatného</string>
+  <string name="subscription_renewal">Vybraný tarif se bude automaticky obnovovat, dokud nebude zrušen</string>
+  <string name="subscription_buy_lumo">Koupit Lumo Plus</string>
+  <string name="subscription_manage">Správa předplatného</string>
+  <string name="subscription_manage_info">Toto předplatné musí být spravováno prostřednictvím webového rozhraní.</string>
+  <string name="for_price">Za</string>
+  <string name="month">Měsíc</string>
+  <string name="months">Měsíc</string>
+  <string name="cancelled">Zrušeno</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Vaše předplatné se automaticky obnoví dne %1$s</string>
+  <string name="subscription_expires">Vaše předplatné vyprší dne %1$s</string>
+</resources>

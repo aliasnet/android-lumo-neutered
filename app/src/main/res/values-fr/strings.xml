@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Lumo</string>
+  <string name="back_to_lumo">Retour à Lumo</string>
+  <string name="loading">Chargement de Lumo</string>
+  <string name="error_generic">Une erreur s\'est produite</string>
+  <string name="error_url">Erreur lors de la détermination de l\'URL initiale.</string>
+  <string name="unable_to_connect">Connexion impossible</string>
+  <string name="please_check_your_internet_connection_and_try_again">Veuillez vérifier votre connexion internet puis réessayer.</string>
+  <string name="retry_button">Réessayer</string>
+  <string name="retry_connection">Réessayer la connexion</string>
+  <!-- Loading Messages -->
+  <string name="loading_message_1">J\'ai besoin d\'attention... et de puissance de traitement...</string>
+  <string name="loading_message_2">Le chat joue avec les barres de chargement...</string>
+  <string name="loading_message_3">Fait miauler de peur les courtiers de données…</string>
+  <string name="loading_message_4">Chasse des souris numériques...</string>
+  <string name="loading_message_5">Renversement d\'objets sur des étagères invisibles...</string>
+  <string name="loading_message_6">Miaou en chargement... Veuillez patienter...</string>
+  <string name="loading_message_7">Je me détends au soleil... prêt à bondir d’un instant à l’autre...</string>
+  <string name="loading_message_8">Je peaufine mon plan pour dominer le monde... et lance votre application...</string>
+  <string name="loading_message_9">Je fais ronronner les moteurs...</string>
+  <string name="loading_message_10">Aiguisage des griffes sur votre clavier...</string>
+  <string name="loading_message_11">Un petit étirement avant le grand saut...</string>
+  <!-- MainActivity Status/Errors -->
+  <string name="speech_status_network">Reconnaissance traitée par Google</string>
+  <string name="speech_status_on_device">Sur l\'appareil • Privé</string>
+  <string name="permission_mic_rationale">Autorisation du microphone nécessaire pour la saisie vocale</string>
+  <string name="speech_not_available">La reconnaissance vocale n\'est pas disponible.</string>
+  <string name="speech_error_format">Erreur de saisie vocale : %1$s</string>
+  <!-- Placeholder for error message -->
+  <string name="submit_prompt_failed">Erreur lors de l\'insertion de l\'invite dans l\'affichage web intégré</string>
+  <string name="start_listener_error_format">Erreur lors du démarrage de l’écoute : %1$s</string>
+  <!-- Placeholder for exception message -->
+  <string name="fab_speak_prompt_desc">Invite vocale</string>
+  <string name="speech_intent_prompt">Invite vocale</string>
+  <!-- Speech Input Sheet -->
+  <string name="speech_sheet_cancel_desc">Annuler la saisie vocale</string>
+  <string name="speech_sheet_submit_desc">Soumettre l\'invite</string>
+  <string name="speech_sheet_listening">Écoute…</string>
+  <string name="speech_sheet_waiting">Veuillez appuyer sur Envoyer ou parler</string>
+  <!-- Speech Recognizer Errors -->
+  <string name="speech_error_audio">Erreur d\'enregistrement audio</string>
+  <string name="speech_error_client">Erreur client</string>
+  <string name="speech_error_insufficient_permissions">Autorisations insuffisantes</string>
+  <string name="speech_error_network">Erreur réseau</string>
+  <string name="speech_error_network_timeout">Délai d\'expiration du réseau</string>
+  <string name="speech_error_no_match">Aucune correspondance vocale</string>
+  <string name="speech_error_recognizer_busy">Système de reconnaissance vocale occupé</string>
+  <string name="speech_error_server">Erreur de serveur</string>
+  <string name="speech_error_speech_timeout">Aucune saisie vocale</string>
+  <string name="speech_error_unknown">Erreur de reconnaissance vocale inconnue</string>
+  <!-- SUbscription Strings -->
+  <string name="payment_title">Améliorez votre expérience IA</string>
+  <string name="payment_subtitle">Profitez d\'un traitement privilégié et de fonctionnalités premium avec Lumo Plus.</string>
+  <string name="payment_checking">Vérification du statut de l\'abonnement...</string>
+  <string name="payment_loading_plans">Chargement des abonnements...</string>
+  <string name="payment_no_plans_available">Aucun abonnement n\'est actuellement disponible.</string>
+  <string name="subscription_renewal">L\'abonnement sélectionné sera automatiquement renouvelé jusqu\'à sa résiliation.</string>
+  <string name="subscription_buy_lumo">Achetez Lumo Plus</string>
+  <string name="subscription_manage">Gérer l\'abonnement</string>
+  <string name="subscription_manage_info">Cet abonnement doit être géré via l\'interface web.</string>
+  <string name="for_price">Pour</string>
+  <string name="month">Mois</string>
+  <string name="months">Mois</string>
+  <string name="cancelled">Annulé</string>
+  <!-- Subscription Status -->
+  <string name="subscription_renews">Votre abonnement sera automatiquement renouvelé le %1$s</string>
+  <string name="subscription_expires">Votre abonnement expire le %1$s</string>
+</resources>

@@ -1,0 +1,54 @@
+default:
+  image: ${PROTON_CI_REGISTRY}/android-shared/docker-android/oci:v2.1.14
+  interruptible: true
+  tags:
+    - shared-small
+
+stages:
+  - i18n
+  - publish
+
+include:
+  - project: 'translations/generator'
+    ref: master
+    file: '/jobs/sync-crowdin.gitlab-ci.yml'
+
+  - project: 'translations/generator'
+    ref: master
+    file: '/jobs/commit-locales.gitlab-ci.yml'
+  
+  - local: ci/github-sync.yml
+
+release-publish-github:
+  stage: publish
+  extends: .release-publish-github-shared
+  variables:
+    OAUTH_URL: "https://oauth2:${GITHUB_PAT}@github.com/ProtonLumo/ios-android.git"
+    RELEASE_SYNC_TO_BRANCH: "main"
+    RELEASE_SYNC_FROM_BRANCH: "main"
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+
+
+##
+## ---- Translations
+##
+
+# Send translations from your main branch -> won't run inside schedule
+i18n-sync-crowdin:
+  stage: i18n
+  variables:
+      I18N_SYNC_CROWDIN_PROJECT: 'android-lumo'
+      I18N_SYNC_BRANCH: main
+  extends: .i18n-sync-crowdin-common-rules
+
+# Will generate a MR via a schedule pipeline
+i18n-commit-locales:
+  stage: i18n
+  variables:
+      I18N_COMMIT_CROWDIN_PROJECT: 'android-lumo'
+      I18N_COMMIT_BRANCH_PUSH: main
+      I18N_COMMIT_BRANCH_ALLOWED: main
+  extends: .i18n-commit-locales-shared
+
+
