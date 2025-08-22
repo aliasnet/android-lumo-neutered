@@ -22,6 +22,7 @@ object PriceFormatter {
         return when (currency) {
             "USD" -> "$${String.format("%.2f", mainAmount)}"
             "EUR" -> "€${String.format("%.2f", mainAmount)}"
+            "GBP" -> "£${String.format("%.2f", mainAmount)}"
             else -> "${String.format("%.2f", mainAmount)} $currency"
         }
     }

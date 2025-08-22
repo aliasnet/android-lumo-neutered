@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.util.Log
 import com.android.billingclient.api.ProductDetails
 import me.proton.android.lumo.models.JsPlanInfo
+import java.text.NumberFormat
+import java.util.*
 
 private const val TAG = "PlanPricingHelper"
 
@@ -63,7 +65,9 @@ object PlanPricingHelper {
                         if (plan.cycle > 1 && pricingPhase.priceAmountMicros > 0) {
                             val monthlyPrice =
                                 pricingPhase.priceAmountMicros / (plan.cycle * 1_000_000.0)
-                            plan.pricePerMonth = String.format("$%.2f", monthlyPrice)
+                            // Use the same currency as the total price to ensure consistency
+                            val currencyCode = pricingPhase.priceCurrencyCode
+                            plan.pricePerMonth = formatPriceWithCurrency(monthlyPrice, currencyCode)
 
                             // Calculate savings compared to monthly plan if we have both plans
                             if (plan.cycle == 12) {
@@ -114,9 +118,34 @@ object PlanPricingHelper {
                 }
             } else {
                 Log.w(TAG, "No matching Google product found for: ${plan.productId}")
+                Log.w(TAG, "  - Available Google product IDs: ${googleProducts.map { it.productId }}")
             }
         }
 
         return updatedPlans
+    }
+    
+    /**
+     * Format a price amount with the correct currency symbol
+     * @param amount The price amount as a double
+     * @param currencyCode The currency code (e.g., "USD", "GBP", "EUR")
+     * @return Formatted price string with correct currency symbol
+     */
+    private fun formatPriceWithCurrency(amount: Double, currencyCode: String): String {
+        return try {
+            val locale = when (currencyCode) {
+                "GBP" -> Locale.UK
+                "EUR" -> Locale.GERMANY
+                "USD" -> Locale.US
+                else -> Locale.US // Default to US for unknown currencies
+            }
+            val formatter = NumberFormat.getCurrencyInstance(locale)
+            formatter.currency = Currency.getInstance(currencyCode)
+            formatter.format(amount)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to format currency $currencyCode, falling back to simple format", e)
+            // Fallback to simple format if currency formatting fails
+            String.format("%.2f %s", amount, currencyCode)
+        }
     }
 } 

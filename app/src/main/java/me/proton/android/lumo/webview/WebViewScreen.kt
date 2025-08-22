@@ -170,10 +170,16 @@ fun WebViewScreen(
                     setSupportZoom(false)
                     builtInZoomControls = false
                     displayZoomControls = false
+                    
+                    // Enable caching for faster subsequent loads
+                    cacheMode = WebSettings.LOAD_DEFAULT
                     val customUserAgent = generateCustomUserAgent()
                     userAgentString = customUserAgent
                     Log.d(TAG, "Custom User Agent set: $customUserAgent")
                 }
+                
+                // Set WebView background to white to match loading screen and prevent flashing
+                setBackgroundColor(android.graphics.Color.WHITE)
 
                 // WebView debugging configuration based on build variant
                 // GrapheneOS blocks native code debugging which causes SIGSEGV crashes in production
@@ -353,7 +359,7 @@ fun WebViewScreen(
                                             Log.d(TAG, "State updated via ViewModel")
                                         }
                                     }
-                                }, 3000) // Reduced to 3 seconds for faster response
+                                }, 2000) // Reduced to 2 seconds for faster response
                             }
 
                         } catch (e: Exception) {

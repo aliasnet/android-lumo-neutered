@@ -16,7 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.R
@@ -45,16 +44,16 @@ open class BillingManager(protected val activity: MainActivity?) {
         private const val TEST_PRODUCT_ID =
             "android.test.purchased" // One-time purchase that succeeds
 
-        // Production subscription product IDs
+        // Production subscription product IDs (must match Google Play Console exactly)
         internal val SUBSCRIPTION_PLANS = listOf(
             SubscriptionPlan(
-                productId = "lumo2025_1_renewing",
+                productId = "giaplumo_lumo2025_1_renewing",
                 planName = "1 Month",
                 durationMonths = 1,
                 description = "Monthly subscription" // Note: This is a constant, localized descriptions are handled in UI
             ),
             SubscriptionPlan(
-                productId = "lumo2025_12_renewing",
+                productId = "giaplumo_lumo2025_12_renewing",
                 planName = "12 Months",
                 durationMonths = 12,
                 description = "Annual subscription (save 20%)" // Note: This is a constant, localized descriptions are handled in UI

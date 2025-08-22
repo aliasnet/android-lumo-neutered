@@ -51,7 +51,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     private val speechRecognitionManager = SpeechRecognitionManager(application)
 
     // State for initial URL after network check
-    private val _initialUrl = MutableStateFlow<String?>(null) // Start null
+    private val _initialUrl = MutableStateFlow<String?>(LumoConfig.LUMO_URL) // Start with default URL
     val initialUrl: StateFlow<String?> = _initialUrl.asStateFlow()
     private var checkCompleted = false // Prevent re-checking on config change
 
@@ -79,7 +79,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             kotlinx.coroutines.delay(3000) // 5 second timeout
             if (_uiState.value.isLoading) {
                 Log.d(TAG, "Network check taking too long, forcing loading state off")
-                // Set a fallback URL if we still don't have one
+                // Ensure we have a valid URL (should already be set to default)
                 if (_initialUrl.value == null) {
                     _initialUrl.value = LumoConfig.LUMO_URL
                     Log.d(TAG, "Setting fallback URL: ${_initialUrl.value}")

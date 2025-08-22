@@ -176,12 +176,14 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         // Add a global safety timer to ensure loading screen doesn't get stuck
         Handler(Looper.getMainLooper()).postDelayed({
             Log.d(TAG, "Global safety timeout reached for loading screen")
-            if (isLoading.value) {
+            val currentState = viewModel.uiState.value
+            if (currentState.isLoading) {
                 Log.d(TAG, "Forcing loading screen to hide from global timer")
-                isLoading.value = false
-                hasSeenLumoContainer.value = true
+                viewModel._uiState.update { 
+                    it.copy(isLoading = false, hasSeenLumoContainer = true) 
+                }
             }
-        }, 8000) // 8 second global timeout
+        }, 5000) // Reduced to 5 seconds for faster fallback
 
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -285,34 +287,25 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                                 initialUrl = initialUrl!!, // Pass the determined URL
                                 onWebViewCreated = { createdWebView ->
                                     webViewManager.setWebView(createdWebView)
-                                    Log.d(
-                                        TAG,
-                                        "WebView created and stored in WebViewManager."
-                                    )
-                                    Handler(Looper.getMainLooper()).postDelayed({
-                                        if (uiState.isLoading) {
-                                            Log.d(
-                                                TAG,
-                                                "WebView created but still loading, forcing state update"
-                                            )
-                                            viewModel.viewModelScope.launch {
-                                                viewModel._uiState.update {
-                                                    it.copy(
-                                                        isLoading = false,
-                                                        hasSeenLumoContainer = true
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }, 3000)
+                                    Log.d(TAG, "WebView created and stored in WebViewManager.")
+                                    // Let the WebView client handle loading state transitions
+                                    // Remove redundant timeout that causes race conditions
                                 }
                             )
                         }
                         // Overlay LoadingScreen if loading (use only ViewModel state)
-                        if (uiState.isLoading && !uiState.hasSeenLumoContainer && uiState.isLumoPage) {
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = uiState.isLoading && !uiState.hasSeenLumoContainer && uiState.isLumoPage,
+                            enter = androidx.compose.animation.fadeIn(
+                                animationSpec = androidx.compose.animation.core.tween(150)
+                            ),
+                            exit = androidx.compose.animation.fadeOut(
+                                animationSpec = androidx.compose.animation.core.tween(200)
+                            )
+                        ) {
                             Log.d(
                                 TAG,
-                                "Overlaying loading screen - isLoading: ${uiState.isLoading}, hasSeenLumoContainer: ${uiState.hasSeenLumoContainer}, isLumoPage: ${uiState.isLumoPage}"
+                                "Showing loading screen with fade transition - isLoading: ${uiState.isLoading}, hasSeenLumoContainer: ${uiState.hasSeenLumoContainer}, isLumoPage: ${uiState.isLumoPage}"
                             )
                             LoadingScreen(lottieComposition.collectAsStateWithLifecycle().value)
                         }
