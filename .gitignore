@@ -12,7 +12,6 @@ app/debug/
 app/production/
 .kotlin/
 .idea/
-gradle
 
 # Environment variables (contains sensitive data)
 .env
