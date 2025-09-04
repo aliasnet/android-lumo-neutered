@@ -68,11 +68,13 @@ fun SubscriptionComponent(
     // Check if plan is cancelled
     val isCancelled = if (isMobilePlan && googlePlayRenewalStatus != null) {
         // For mobile plans, use Google Play status
+        // A subscription is considered "cancelled" if the user has disabled auto-renewal,
+        // even if it's still active until the end of the current billing period
         val (isActive, isAutoRenewing, _) = googlePlayRenewalStatus
-        val cancelled = !isActive || !isAutoRenewing
+        val cancelled = !isAutoRenewing
         Log.d(
             "SubscriptionComponent",
-            "Mobile plan cancellation check: isCancelled=$cancelled (!isActive=${!isActive} || !isAutoRenewing=${!isAutoRenewing})"
+            "Mobile plan cancellation check: isCancelled=$cancelled (!isAutoRenewing=${!isAutoRenewing}), isActive=$isActive"
         )
         cancelled
     } else {
@@ -522,7 +524,7 @@ fun SubscriptionComponentPreview() {
     // Add mock Google Play subscription status
     val mockGooglePlayStatus = Triple(
         true, // isActive
-        false, // isAutoRenewing (simulating a canceled subscription)
+        false, // isAutoRenewing (auto-renewal disabled but subscription still active)
         System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000 // expiryTimeMillis (30 days from now)
     )
 
