@@ -22,7 +22,7 @@ import java.security.cert.CertificateException
  * This replaces unreliable string matching with proper type-based classification.
  */
 object ErrorClassifier {
-    
+
     /**
      * Sealed class representing different types of errors
      */
@@ -35,7 +35,7 @@ object ErrorClassifier {
         object Client : ErrorType()
         object Unknown : ErrorType()
     }
-    
+
     /**
      * Data class containing detailed error information
      */
@@ -52,7 +52,7 @@ object ErrorClassifier {
             return context.getString(userMessageResId)
         }
     }
-    
+
     /**
      * Classifies throwables into proper error categories
      */
@@ -65,28 +65,28 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_network_dns,
                 technicalDetails = "DNS resolution failed: ${throwable.message}"
             )
-            
+
             is ConnectException -> ErrorInfo(
                 type = ErrorType.Network,
                 isRetryable = true,
                 userMessageResId = R.string.error_network_connection,
                 technicalDetails = "Connection refused: ${throwable.message}"
             )
-            
+
             is NoRouteToHostException -> ErrorInfo(
                 type = ErrorType.Network,
                 isRetryable = true,
                 userMessageResId = R.string.error_network_no_route,
                 technicalDetails = "No route to host: ${throwable.message}"
             )
-            
+
             is PortUnreachableException -> ErrorInfo(
                 type = ErrorType.Network,
                 isRetryable = false,
                 userMessageResId = R.string.error_network_port_unreachable,
                 technicalDetails = "Port unreachable: ${throwable.message}"
             )
-            
+
             // Timeout errors
             is SocketTimeoutException -> ErrorInfo(
                 type = ErrorType.Timeout,
@@ -94,7 +94,7 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_timeout_socket,
                 technicalDetails = "Socket timeout: ${throwable.message}"
             )
-            
+
             // SSL/TLS errors
             is SSLHandshakeException -> ErrorInfo(
                 type = ErrorType.SSL,
@@ -102,35 +102,35 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_ssl_handshake,
                 technicalDetails = "SSL handshake failed: ${throwable.message}"
             )
-            
+
             is SSLPeerUnverifiedException -> ErrorInfo(
                 type = ErrorType.SSL,
                 isRetryable = false,
                 userMessageResId = R.string.error_ssl_peer_unverified,
                 technicalDetails = "SSL peer unverified: ${throwable.message}"
             )
-            
+
             is SSLProtocolException -> ErrorInfo(
                 type = ErrorType.SSL,
                 isRetryable = false,
                 userMessageResId = R.string.error_ssl_protocol,
                 technicalDetails = "SSL protocol error: ${throwable.message}"
             )
-            
+
             is SSLException -> ErrorInfo(
                 type = ErrorType.SSL,
                 isRetryable = false,
                 userMessageResId = R.string.error_ssl_general,
                 technicalDetails = "SSL error: ${throwable.message}"
             )
-            
+
             is CertificateException -> ErrorInfo(
                 type = ErrorType.SSL,
                 isRetryable = false,
                 userMessageResId = R.string.error_certificate,
                 technicalDetails = "Certificate error: ${throwable.message}"
             )
-            
+
             // Protocol errors
             is ProtocolException -> ErrorInfo(
                 type = ErrorType.Client,
@@ -138,14 +138,14 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_client_protocol,
                 technicalDetails = "Protocol error: ${throwable.message}"
             )
-            
+
             is UnknownServiceException -> ErrorInfo(
                 type = ErrorType.Client,
                 isRetryable = false,
                 userMessageResId = R.string.error_client_service_unknown,
                 technicalDetails = "Unknown service: ${throwable.message}"
             )
-            
+
             // Socket errors (general network issues)
             is SocketException -> ErrorInfo(
                 type = ErrorType.Network,
@@ -153,7 +153,7 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_network_socket,
                 technicalDetails = "Socket error: ${throwable.message}"
             )
-            
+
             // General IO errors
             is IOException -> ErrorInfo(
                 type = ErrorType.Network,
@@ -161,18 +161,18 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_network_io,
                 technicalDetails = "IO error: ${throwable.message}"
             )
-            
+
             // HTTP-specific errors (if using OkHttp or similar)
             else -> classifyHttpError(throwable)
         }
     }
-    
+
     /**
      * Classifies HTTP-specific errors (extend this based on your HTTP client)
      */
     private fun classifyHttpError(throwable: Throwable): ErrorInfo {
         val message = throwable.message?.lowercase() ?: ""
-        
+
         return when {
             // Check for common HTTP error patterns as fallback
             message.contains("401") || message.contains("unauthorized") -> ErrorInfo(
@@ -181,42 +181,42 @@ object ErrorClassifier {
                 userMessageResId = R.string.error_auth_unauthorized,
                 technicalDetails = throwable.message
             )
-            
+
             message.contains("403") || message.contains("forbidden") -> ErrorInfo(
                 type = ErrorType.Authentication,
                 isRetryable = false,
                 userMessageResId = R.string.error_auth_forbidden,
                 technicalDetails = throwable.message
             )
-            
+
             message.contains("404") || message.contains("not found") -> ErrorInfo(
                 type = ErrorType.Client,
                 isRetryable = false,
                 userMessageResId = R.string.error_client_not_found,
                 technicalDetails = throwable.message
             )
-            
+
             message.contains("500") || message.contains("internal server") -> ErrorInfo(
                 type = ErrorType.Server,
                 isRetryable = true,
                 userMessageResId = R.string.error_server_internal,
                 technicalDetails = throwable.message
             )
-            
+
             message.contains("502") || message.contains("bad gateway") -> ErrorInfo(
                 type = ErrorType.Server,
                 isRetryable = true,
                 userMessageResId = R.string.error_server_bad_gateway,
                 technicalDetails = throwable.message
             )
-            
+
             message.contains("503") || message.contains("service unavailable") -> ErrorInfo(
                 type = ErrorType.Server,
                 isRetryable = true,
                 userMessageResId = R.string.error_server_unavailable,
                 technicalDetails = throwable.message
             )
-            
+
             else -> ErrorInfo(
                 type = ErrorType.Unknown,
                 isRetryable = false,
@@ -225,7 +225,7 @@ object ErrorClassifier {
             )
         }
     }
-    
+
     /**
      * Convenience method to check if error is network-related
      */
@@ -237,14 +237,14 @@ object ErrorClassifier {
             ErrorType.SSL
         )
     }
-    
+
     /**
      * Convenience method to check if error is retryable
      */
     fun isRetryable(throwable: Throwable): Boolean {
         return classify(throwable).isRetryable
     }
-    
+
     /**
      * Get user-friendly error message
      */

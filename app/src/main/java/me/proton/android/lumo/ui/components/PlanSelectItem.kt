@@ -28,9 +28,7 @@ import me.proton.android.lumo.ui.theme.BorderGray
  */
 @Composable
 fun PlanSelectItem(
-    plan: JsPlanInfo,
-    isSelected: Boolean,
-    onSelected: () -> Unit
+    plan: JsPlanInfo, isSelected: Boolean, onSelected: () -> Unit
 ) {
     val borderColor = if (isSelected) Purple else BorderGray
     val backgroundColor = if (isSelected) LightPurple else Color.White
@@ -43,18 +41,14 @@ fun PlanSelectItem(
             .background(backgroundColor, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
             .selectable(
-                selected = isSelected,
-                onClick = onSelected
+                selected = isSelected, onClick = onSelected
             )
             .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = isSelected,
-            onClick = onSelected,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = Purple,
-                unselectedColor = BorderGray
+            selected = isSelected, onClick = onSelected, colors = RadioButtonDefaults.colors(
+                selectedColor = Purple, unselectedColor = BorderGray
             )
         )
         Spacer(modifier = Modifier.width(12.dp))
@@ -65,9 +59,7 @@ fun PlanSelectItem(
                     "12 year" -> "12 " + stringResource(id = R.string.months)
                     "12 months" -> "12 " + stringResource(id = R.string.months)
                     else -> plan.duration
-                },
-                style = MaterialTheme.typography.labelLarge,
-                color = DarkText
+                }, style = MaterialTheme.typography.labelLarge, color = DarkText
             )
             if (plan.pricePerMonth.isNotEmpty() && plan.cycle > 1) {
                 Text(
@@ -92,9 +84,7 @@ fun PlanSelectItem(
 
             plan.savings?.let {
                 Text(
-                    it,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Green
+                    it, style = MaterialTheme.typography.bodySmall, color = Green
                 )
             }
         }

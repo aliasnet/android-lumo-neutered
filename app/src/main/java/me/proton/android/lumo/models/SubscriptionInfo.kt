@@ -4,10 +4,7 @@ package me.proton.android.lumo.models
  * Represents a subscription entitlement feature description
  */
 data class SubscriptionEntitlement(
-    val type: String,
-    val text: String,
-    val iconName: String,
-    val hint: String? = null
+    val type: String, val text: String, val iconName: String, val hint: String? = null
 )
 
 data class SubscriptionItemResponse(

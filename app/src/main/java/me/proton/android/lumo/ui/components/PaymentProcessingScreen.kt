@@ -44,14 +44,10 @@ sealed class PaymentProcessingState {
  */
 @Composable
 fun PaymentProcessingScreen(
-    state: PaymentProcessingState,
-    onRetry: () -> Unit,
-    onClose: () -> Unit
+    state: PaymentProcessingState, onRetry: () -> Unit, onClose: () -> Unit
 ) {
     Surface(
-        modifier = Modifier
-            .fillMaxWidth(),
-        color = Color.White
+        modifier = Modifier.fillMaxWidth(), color = Color.White
     ) {
         Column(
             modifier = Modifier
@@ -83,17 +79,13 @@ fun PaymentProcessingScreen(
 
                 is PaymentProcessingState.Error -> {
                     PaymentErrorContent(
-                        message = state.message,
-                        onRetry = onRetry,
-                        onClose = onClose
+                        message = state.message, onRetry = onRetry, onClose = onClose
                     )
                 }
 
                 is PaymentProcessingState.NetworkError -> {
                     PaymentNetworkErrorContent(
-                        message = state.message,
-                        onRetry = onRetry,
-                        onClose = onClose
+                        message = state.message, onRetry = onRetry, onClose = onClose
                     )
                 }
 
@@ -103,9 +95,7 @@ fun PaymentProcessingScreen(
 
                 is PaymentProcessingState.SubscriptionRecovery -> {
                     SubscriptionRecoveryContent(
-                        message = state.message,
-                        onRetry = onRetry,
-                        onClose = onClose
+                        message = state.message, onRetry = onRetry, onClose = onClose
                     )
                 }
             }
@@ -131,9 +121,7 @@ private fun PaymentLoadingContent() {
     }
 
     Text(
-        text = "Payment Processing",
-        style = MaterialTheme.typography.titleMedium,
-        color = DarkText
+        text = "Payment Processing", style = MaterialTheme.typography.titleMedium, color = DarkText
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -148,9 +136,7 @@ private fun PaymentLoadingContent() {
     Spacer(modifier = Modifier.height(32.dp))
 
     CircularProgressIndicator(
-        modifier = Modifier.size(48.dp),
-        color = Purple,
-        strokeWidth = 4.dp
+        modifier = Modifier.size(48.dp), color = Purple, strokeWidth = 4.dp
     )
 
     Spacer(modifier = Modifier.height(32.dp))
@@ -183,9 +169,7 @@ private fun PaymentVerifyingContent() {
     Spacer(modifier = Modifier.height(32.dp))
 
     CircularProgressIndicator(
-        modifier = Modifier.size(48.dp),
-        color = Purple,
-        strokeWidth = 4.dp
+        modifier = Modifier.size(48.dp), color = Purple, strokeWidth = 4.dp
     )
 
     Spacer(modifier = Modifier.height(32.dp))
@@ -200,9 +184,7 @@ private fun PaymentVerifyingContent() {
 
 @Composable
 private fun PaymentErrorContent(
-    message: String,
-    onRetry: () -> Unit,
-    onClose: () -> Unit
+    message: String, onRetry: () -> Unit, onClose: () -> Unit
 ) {
     var isRetrying by remember { mutableStateOf(false) }
 
@@ -221,9 +203,7 @@ private fun PaymentErrorContent(
     Spacer(modifier = Modifier.height(16.dp))
 
     Text(
-        text = "Payment Error",
-        style = MaterialTheme.typography.titleMedium,
-        color = DarkText
+        text = "Payment Error", style = MaterialTheme.typography.titleMedium, color = DarkText
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -250,26 +230,19 @@ private fun PaymentErrorContent(
         onClick = {
             isRetrying = true
             onRetry()
-        },
-        modifier = Modifier
+        }, modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(
+            .height(48.dp), colors = ButtonDefaults.buttonColors(
             containerColor = Purple
-        ),
-        shape = RoundedCornerShape(24.dp),
-        enabled = !isRetrying
+        ), shape = RoundedCornerShape(24.dp), enabled = !isRetrying
     ) {
         if (isRetrying) {
             CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                color = Color.White,
-                strokeWidth = 2.dp
+                modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp
             )
         } else {
             Text(
-                text = "Retry",
-                style = MaterialTheme.typography.labelLarge
+                text = "Retry", style = MaterialTheme.typography.labelLarge
             )
         }
     }
@@ -288,16 +261,14 @@ private fun PaymentErrorContent(
         shape = RoundedCornerShape(24.dp)
     ) {
         Text(
-            text = "Close",
-            style = MaterialTheme.typography.labelLarge
+            text = "Close", style = MaterialTheme.typography.labelLarge
         )
     }
 
     Spacer(modifier = Modifier.height(16.dp))
 
     Text(
-        text = "Your payment was processed but we couldn't verify it with our servers. " +
-                "Don't worry, we'll try again.",
+        text = "Your payment was processed but we couldn't verify it with our servers. " + "Don't worry, we'll try again.",
         style = MaterialTheme.typography.bodyMedium,
         color = GrayText,
         textAlign = TextAlign.Center
@@ -306,9 +277,7 @@ private fun PaymentErrorContent(
 
 @Composable
 private fun PaymentNetworkErrorContent(
-    message: String,
-    onRetry: () -> Unit,
-    onClose: () -> Unit
+    message: String, onRetry: () -> Unit, onClose: () -> Unit
 ) {
     var isRetrying by remember { mutableStateOf(false) }
 
@@ -327,9 +296,7 @@ private fun PaymentNetworkErrorContent(
     Spacer(modifier = Modifier.height(16.dp))
 
     Text(
-        text = "Connection Error",
-        style = MaterialTheme.typography.titleMedium,
-        color = DarkText
+        text = "Connection Error", style = MaterialTheme.typography.titleMedium, color = DarkText
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -356,21 +323,15 @@ private fun PaymentNetworkErrorContent(
         onClick = {
             isRetrying = true
             onRetry()
-        },
-        modifier = Modifier
+        }, modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(
+            .height(48.dp), colors = ButtonDefaults.buttonColors(
             containerColor = Purple
-        ),
-        shape = RoundedCornerShape(24.dp),
-        enabled = !isRetrying
+        ), shape = RoundedCornerShape(24.dp), enabled = !isRetrying
     ) {
         if (isRetrying) {
             CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                color = Color.White,
-                strokeWidth = 2.dp
+                modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp
             )
         } else {
             Text(
@@ -394,8 +355,7 @@ private fun PaymentNetworkErrorContent(
         shape = RoundedCornerShape(24.dp)
     ) {
         Text(
-            text = "Close",
-            style = MaterialTheme.typography.labelLarge
+            text = "Close", style = MaterialTheme.typography.labelLarge
         )
     }
 
@@ -411,9 +371,7 @@ private fun PaymentNetworkErrorContent(
 
 @Composable
 private fun SubscriptionRecoveryContent(
-    message: String,
-    onRetry: () -> Unit,
-    onClose: () -> Unit
+    message: String, onRetry: () -> Unit, onClose: () -> Unit
 ) {
     var isRetrying by remember { mutableStateOf(false) }
 
@@ -452,26 +410,19 @@ private fun SubscriptionRecoveryContent(
         onClick = {
             isRetrying = true
             onRetry()
-        },
-        modifier = Modifier
+        }, modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp),
-        colors = ButtonDefaults.buttonColors(
+            .height(48.dp), colors = ButtonDefaults.buttonColors(
             containerColor = Purple
-        ),
-        shape = RoundedCornerShape(24.dp),
-        enabled = !isRetrying
+        ), shape = RoundedCornerShape(24.dp), enabled = !isRetrying
     ) {
         if (isRetrying) {
             CircularProgressIndicator(
-                modifier = Modifier.size(20.dp),
-                color = Color.White,
-                strokeWidth = 2.dp
+                modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp
             )
         } else {
             Text(
-                text = "Recover Subscription",
-                style = MaterialTheme.typography.labelLarge
+                text = "Recover Subscription", style = MaterialTheme.typography.labelLarge
             )
         }
     }
@@ -490,16 +441,14 @@ private fun SubscriptionRecoveryContent(
         shape = RoundedCornerShape(24.dp)
     ) {
         Text(
-            text = "Close",
-            style = MaterialTheme.typography.labelLarge
+            text = "Close", style = MaterialTheme.typography.labelLarge
         )
     }
 
     Spacer(modifier = Modifier.height(16.dp))
 
     Text(
-        text = "Click 'Recover Subscription' to sync your Google Play subscription with our servers. " +
-                "This will restore your subscription access.",
+        text = "Click 'Recover Subscription' to sync your Google Play subscription with our servers. " + "This will restore your subscription access.",
         style = MaterialTheme.typography.bodyMedium,
         color = GrayText,
         textAlign = TextAlign.Center
@@ -511,9 +460,7 @@ private fun PaymentSuccessContent(
     onClose: () -> Unit
 ) {
     Text(
-        text = "Payment Successful!",
-        style = MaterialTheme.typography.titleMedium,
-        color = DarkText
+        text = "Payment Successful!", style = MaterialTheme.typography.titleMedium, color = DarkText
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -538,8 +485,7 @@ private fun PaymentSuccessContent(
         shape = RoundedCornerShape(24.dp)
     ) {
         Text(
-            text = "Continue",
-            style = MaterialTheme.typography.labelLarge
+            text = "Continue", style = MaterialTheme.typography.labelLarge
         )
     }
 } 

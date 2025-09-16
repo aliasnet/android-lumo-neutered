@@ -33,14 +33,23 @@ fun SubscriptionOverviewSection(
 ) {
     // Get Google Play subscription information
     val (isActive, isAutoRenewing, expiryTimeMillis) = billingManager.getSubscriptionStatus()
-    
+
     // Get Google Play product details for pricing
-    val googlePlayProductDetails = billingManager.productDetailsList.collectAsStateWithLifecycle().value
-    
+    val googlePlayProductDetails =
+        billingManager.productDetailsList.collectAsStateWithLifecycle().value
+
     // Log Google Play status
-    Log.d("SubscriptionOverview", "Google Play Status: isActive=$isActive, isAutoRenewing=$isAutoRenewing, expiryTime=${Date(expiryTimeMillis)}")
-    Log.d("SubscriptionOverview", "Google Play Products: ${googlePlayProductDetails.size} available")
-    
+    Log.d(
+        "SubscriptionOverview",
+        "Google Play Status: isActive=$isActive, isAutoRenewing=$isAutoRenewing, expiryTime=${
+            Date(expiryTimeMillis)
+        }"
+    )
+    Log.d(
+        "SubscriptionOverview",
+        "Google Play Products: ${googlePlayProductDetails.size} available"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,21 +91,31 @@ fun SubscriptionOverviewSection(
         // Use the SubscriptionComponent for each subscription
         for (subscription in subscriptions) {
             // Debug log the subscription info
-            Log.d("SubscriptionOverview", "Subscription: Name=${subscription.Name}, External=${subscription.External}, Renew=${subscription.Renew}")
-            
+            Log.d(
+                "SubscriptionOverview",
+                "Subscription: Name=${subscription.Name}, External=${subscription.External}, Renew=${subscription.Renew}"
+            )
+
             // For mobile plans (External==2), always pass the Google Play status
             // This ensures we show the correct cancellation status from Google Play
             val isGooglePlayPlan = subscription.Name?.contains("lumo", ignoreCase = true) == true &&
-                                  subscription.External == 2
-            
+                    subscription.External == 2
+
             if (isGooglePlayPlan) {
-                Log.d("SubscriptionOverview", "This is a Google Play Lumo plan - using Google Play status and product details")
+                Log.d(
+                    "SubscriptionOverview",
+                    "This is a Google Play Lumo plan - using Google Play status and product details"
+                )
             }
-            
+
             SubscriptionComponent(
                 subscription = subscription,
                 // Always pass Google Play status for Lumo plans with External==2
-                googlePlayRenewalStatus = if (isGooglePlayPlan) Triple(isActive, isAutoRenewing, expiryTimeMillis) else null,
+                googlePlayRenewalStatus = if (isGooglePlayPlan) Triple(
+                    isActive,
+                    isAutoRenewing,
+                    expiryTimeMillis
+                ) else null,
                 // Pass Google Play product details for mobile plans to get accurate pricing
                 googlePlayProductDetails = if (isGooglePlayPlan) googlePlayProductDetails else null,
                 onManageSubscription = {

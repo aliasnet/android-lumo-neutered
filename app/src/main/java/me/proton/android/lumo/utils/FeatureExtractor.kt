@@ -10,7 +10,7 @@ private const val TAG = "FeatureExtractor"
  * Helper for extracting feature information from the API response
  */
 object FeatureExtractor {
-    
+
     /**
      * Extracts plan features from the API response
      *
@@ -19,10 +19,10 @@ object FeatureExtractor {
      */
     fun extractPlanFeatures(planObject: JsonObject): List<PlanFeature> {
         val features = mutableListOf<PlanFeature>()
-        
+
         if (planObject.has("Entitlements") && planObject.get("Entitlements").isJsonArray) {
             val entitlementsArray = planObject.getAsJsonArray("Entitlements")
-            
+
             for (i in 0 until entitlementsArray.size()) {
                 try {
                     val entitlement = entitlementsArray[i].asJsonObject
@@ -44,7 +44,7 @@ object FeatureExtractor {
                 }
             }
         }
-        
+
         return features
     }
 } 

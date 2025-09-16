@@ -23,7 +23,11 @@ suspend inline fun <T> safeApiCall(
         throw cancellation
     } catch (throwable: Throwable) {
         val errorInfo = ErrorClassifier.classify(throwable)
-        Log.e(tag, "$operation failed: ${errorInfo.technicalDetails ?: throwable.message}", throwable)
+        Log.e(
+            tag,
+            "$operation failed: ${errorInfo.technicalDetails ?: throwable.message}",
+            throwable
+        )
         Result.failure(throwable)
     }
 }
@@ -42,7 +46,10 @@ inline fun <T> Result<T>.handleError(
         onSuccess = onSuccess,
         onFailure = { throwable ->
             val errorInfo = ErrorClassifier.classify(throwable)
-            Log.w(tag, "$operation error: ${errorInfo.getUserMessage(context)} (${errorInfo.technicalDetails})")
+            Log.w(
+                tag,
+                "$operation error: ${errorInfo.getUserMessage(context)} (${errorInfo.technicalDetails})"
+            )
             onError(errorInfo)
         }
     )

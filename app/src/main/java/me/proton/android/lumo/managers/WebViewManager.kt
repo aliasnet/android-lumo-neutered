@@ -15,19 +15,19 @@ private const val TAG = "WebViewManager"
  * Separates WebView concerns from MainActivity.
  */
 class WebViewManager(private val activity: Activity) {
-    
+
     // File chooser callback
     var filePathCallback: ValueCallback<Array<Uri>>? = null
-    
+
     // Reference to the current WebView
     private var _webView: WebView? = null
     val webView: WebView? get() = _webView
-    
+
     /**
      * Handle file chooser result from activity result launcher
      */
     fun handleFileChooserResult(
-        resultCode: Int, 
+        resultCode: Int,
         data: Intent?
     ) {
         val results = if (data == null || resultCode != Activity.RESULT_OK) {
@@ -44,13 +44,13 @@ class WebViewManager(private val activity: Activity) {
                 }
             }
         }
-        
+
         filePathCallback?.onReceiveValue(results ?: arrayOf())
         filePathCallback = null
-        
+
         Log.d(TAG, "File chooser result handled. Results: ${results?.size ?: 0} files")
     }
-    
+
     /**
      * Set the WebView instance
      */
@@ -58,7 +58,7 @@ class WebViewManager(private val activity: Activity) {
         this._webView = webView
         Log.d(TAG, "WebView instance set")
     }
-    
+
     /**
      * Execute JavaScript in the WebView
      */
@@ -66,7 +66,7 @@ class WebViewManager(private val activity: Activity) {
         _webView?.evaluateJavascript(script, callback)
         Log.d(TAG, "JavaScript executed: ${script.take(100)}...")
     }
-    
+
     /**
      * Load a URL in the WebView
      */
@@ -74,21 +74,21 @@ class WebViewManager(private val activity: Activity) {
         _webView?.loadUrl(url)
         Log.d(TAG, "Loading URL: $url")
     }
-    
+
     /**
      * Get the current URL from WebView
      */
     fun getCurrentUrl(): String? {
         return _webView?.url
     }
-    
+
     /**
      * Check if WebView can go back
      */
     fun canGoBack(): Boolean {
         return _webView?.canGoBack() ?: false
     }
-    
+
     /**
      * Navigate back in WebView
      */
@@ -96,7 +96,7 @@ class WebViewManager(private val activity: Activity) {
         _webView?.goBack()
         Log.d(TAG, "WebView navigated back")
     }
-    
+
     /**
      * Reload the current page
      */
@@ -104,7 +104,7 @@ class WebViewManager(private val activity: Activity) {
         _webView?.reload()
         Log.d(TAG, "WebView reloaded")
     }
-    
+
     /**
      * Clear WebView cache
      */
@@ -112,7 +112,7 @@ class WebViewManager(private val activity: Activity) {
         _webView?.clearCache(includeDiskFiles)
         Log.d(TAG, "WebView cache cleared")
     }
-    
+
     /**
      * Destroy the WebView
      */

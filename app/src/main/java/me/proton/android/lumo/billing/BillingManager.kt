@@ -62,7 +62,8 @@ open class BillingManager(protected val activity: MainActivity?) {
 
         // Cache invalidation constants
         private const val CACHE_INVALIDATION_INTERVAL_MS = 60_000L // 1 minute
-        private const val PURCHASE_REFRESH_INTERVAL_MS = 30_000L // 30 seconds for active subscriptions
+        private const val PURCHASE_REFRESH_INTERVAL_MS =
+            30_000L // 30 seconds for active subscriptions
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
@@ -71,14 +72,14 @@ open class BillingManager(protected val activity: MainActivity?) {
     private val _isConnected = MutableStateFlow(false)
     private val _isSubscriptionRenewing = MutableStateFlow(false)
     protected var subscriptionExpiryTimeMillis: Long = 0L
-    
+
     // Customer ID from selected plan
     protected var currentCustomerID: String? = null
-    
+
     // New state for payment processing
     private val _paymentProcessingState = MutableStateFlow<PaymentProcessingState?>(null)
     val paymentProcessingState = _paymentProcessingState.asStateFlow()
-    
+
     // State to track if purchase refresh is in progress
     private val _isRefreshingPurchases = MutableStateFlow(false)
     val isRefreshingPurchases = _isRefreshingPurchases.asStateFlow()
@@ -118,7 +119,11 @@ open class BillingManager(protected val activity: MainActivity?) {
                     .enablePendingPurchases()
                     .build()
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to create BillingClient - likely due to old Google Play Billing API", e)
+                Log.e(
+                    TAG,
+                    "Failed to create BillingClient - likely due to old Google Play Billing API",
+                    e
+                )
                 // Return null so the app can continue without billing
                 null
             }
@@ -126,7 +131,7 @@ open class BillingManager(protected val activity: MainActivity?) {
     }
 
     private var isConnected = false
-    
+
     /**
      * Check if billing is available (i.e., BillingClient was created successfully)
      */
@@ -144,28 +149,46 @@ open class BillingManager(protected val activity: MainActivity?) {
         when {
             activity == null -> {
                 Log.e(TAG, "Activity is null - cannot initialize billing")
-                _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_application_context_unavailable) ?: "Application context unavailable")
+                _purchaseState.value = PurchaseState.Error(
+                    activity?.getString(R.string.billing_application_context_unavailable)
+                        ?: "Application context unavailable"
+                )
             }
+
             else -> {
                 try {
                     // Check if Google Play is installed before proceeding
                     val pInfo = activity.packageManager.getPackageInfo("com.android.vending", 0)
                     Log.d(TAG, "Google Play Store is installed - version: ${pInfo.versionName}")
-                    
+
                     // Initialize billing with additional safety
                     initializeBilling()
-                    
+
                 } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
                     Log.e(TAG, "Google Play Store is not installed", e)
-                    _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_google_play_required) ?: "Google Play Store is required for purchases")
+                    _purchaseState.value = PurchaseState.Error(
+                        activity?.getString(R.string.billing_google_play_required)
+                            ?: "Google Play Store is required for purchases"
+                    )
                 } catch (e: SecurityException) {
                     Log.e(TAG, "Permission denied accessing Google Play Store", e)
-                    _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_cannot_access_google_play) ?: "Cannot access Google Play Store")
+                    _purchaseState.value = PurchaseState.Error(
+                        activity?.getString(R.string.billing_cannot_access_google_play)
+                            ?: "Cannot access Google Play Store"
+                    )
                 } catch (e: Exception) {
                     Log.e(TAG, "Critical error during billing initialization", e)
-                    _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_services_unavailable, e.message ?: "Unknown error") ?: "Billing services unavailable: ${e.message}")
+                    _purchaseState.value = PurchaseState.Error(
+                        activity?.getString(
+                            R.string.billing_services_unavailable,
+                            e.message ?: "Unknown error"
+                        ) ?: "Billing services unavailable: ${e.message}"
+                    )
                     // Don't let billing errors crash the app - just disable billing
-                    Log.w(TAG, "Billing initialization failed - app will continue without billing features")
+                    Log.w(
+                        TAG,
+                        "Billing initialization failed - app will continue without billing features"
+                    )
                 }
             }
         }
@@ -173,22 +196,34 @@ open class BillingManager(protected val activity: MainActivity?) {
 
     private fun initializeBilling() {
         Log.d(TAG, "Initializing billing client")
-        
+
         try {
             when {
                 billingClient == null -> {
-                    Log.w(TAG, "Billing client is null - billing unavailable (likely old Google Play API)")
-                    _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_api_not_available) ?: "Google Play Billing API not available")
+                    Log.w(
+                        TAG,
+                        "Billing client is null - billing unavailable (likely old Google Play API)"
+                    )
+                    _purchaseState.value = PurchaseState.Error(
+                        activity?.getString(R.string.billing_api_not_available)
+                            ?: "Google Play Billing API not available"
+                    )
                     // Don't proceed with connection - app should continue without billing
                     return
                 }
+
                 else -> {
                     establishConnection()
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Exception during billing client initialization", e)
-            _purchaseState.value = PurchaseState.Error(activity?.getString(R.string.billing_initialization_failed, e.message ?: "Unknown error") ?: "Billing initialization failed: ${e.message}")
+            _purchaseState.value = PurchaseState.Error(
+                activity?.getString(
+                    R.string.billing_initialization_failed,
+                    e.message ?: "Unknown error"
+                ) ?: "Billing initialization failed: ${e.message}"
+            )
             // Don't let this crash the app
         }
     }
@@ -224,7 +259,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                     // Query both product details and existing purchases
                     querySubscriptions()
                     queryExistingPurchases()
-                    
+
                     // Start periodic refresh for subscription monitoring
                     startPeriodicRefresh()
                 } else if (billingResult.responseCode == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
@@ -233,20 +268,25 @@ open class BillingManager(protected val activity: MainActivity?) {
                     Log.e(TAG, "Billing unavailable: $debugMessage")
 
                     _isConnected.value = false
-                    
+
                     // Provide specific error messages based on the debug message
                     val userMessage = when {
                         debugMessage.contains("API version is less than 3", ignoreCase = true) -> {
-                            activity?.getString(R.string.billing_unavailable_old_api) ?: "This device's Google Play Billing version is too old. Please update Google Play Store or use the web version of Lumo."
+                            activity?.getString(R.string.billing_unavailable_old_api)
+                                ?: "This device's Google Play Billing version is too old. Please update Google Play Store or use the web version of Lumo."
                         }
+
                         debugMessage.contains("not supported", ignoreCase = true) -> {
-                            activity?.getString(R.string.billing_unavailable_not_supported) ?: "In-app purchases are not supported on this device. Please use the web version of Lumo for subscriptions."
+                            activity?.getString(R.string.billing_unavailable_not_supported)
+                                ?: "In-app purchases are not supported on this device. Please use the web version of Lumo for subscriptions."
                         }
+
                         else -> {
-                            activity?.getString(R.string.billing_unavailable_generic) ?: "Billing unavailable: Please ensure Google Play Store is installed, updated and you are logged in"
+                            activity?.getString(R.string.billing_unavailable_generic)
+                                ?: "Billing unavailable: Please ensure Google Play Store is installed, updated and you are logged in"
                         }
                     }
-                    
+
                     _purchaseState.value = PurchaseState.Error(userMessage)
 
                     // Check if Google Play Store is installed and updated
@@ -265,7 +305,13 @@ open class BillingManager(protected val activity: MainActivity?) {
                     )
                     _isConnected.value = false
                     _purchaseState.value =
-                        PurchaseState.Error(activity?.getString(R.string.billing_connection_failed, billingResult.debugMessage ?: "Unknown error") ?: "Failed to connect to billing service: ${billingResult.debugMessage}")
+                        PurchaseState.Error(
+                            activity?.getString(
+                                R.string.billing_connection_failed,
+                                billingResult.debugMessage ?: "Unknown error"
+                            )
+                                ?: "Failed to connect to billing service: ${billingResult.debugMessage}"
+                        )
                 }
             }
 
@@ -282,7 +328,7 @@ open class BillingManager(protected val activity: MainActivity?) {
     }
 
     private fun queryExistingPurchases(
-        onComplete: ((List<Purchase>) -> Unit)? = null, 
+        onComplete: ((List<Purchase>) -> Unit)? = null,
         forceRefresh: Boolean = false
     ) {
         if (!_isConnected.value) {
@@ -290,7 +336,8 @@ open class BillingManager(protected val activity: MainActivity?) {
             // If we're in a payment processing state, show error
             if (_paymentProcessingState.value != null) {
                 _paymentProcessingState.value = PaymentProcessingState.Error(
-                    activity?.getString(R.string.billing_service_not_connected) ?: "Billing service not connected. Please try again."
+                    activity?.getString(R.string.billing_service_not_connected)
+                        ?: "Billing service not connected. Please try again."
                 )
             }
             onComplete?.invoke(emptyList())
@@ -299,10 +346,13 @@ open class BillingManager(protected val activity: MainActivity?) {
 
         val currentTime = System.currentTimeMillis()
         val cacheAge = currentTime - lastPurchaseQueryTime
-        
+
         // Check if we should skip query due to recent cache
         if (!forceRefresh && cacheAge < CACHE_INVALIDATION_INTERVAL_MS && lastPurchaseQueryTime > 0) {
-            Log.d(TAG, "Using cached purchase data (age: ${cacheAge}ms, ${cachedPurchases.size} purchases)")
+            Log.d(
+                TAG,
+                "Using cached purchase data (age: ${cacheAge}ms, ${cachedPurchases.size} purchases)"
+            )
             onComplete?.invoke(cachedPurchases) // Return cached purchases
             return
         }
@@ -325,7 +375,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                         // Update cache timestamp and store purchases on successful query
                         lastPurchaseQueryTime = currentTime
                         cachedPurchases = purchases
-                        
+
                         if (purchases.isNotEmpty()) {
                             // Reset subscription status before processing new data
                             _isSubscriptionRenewing.value = false
@@ -342,18 +392,30 @@ open class BillingManager(protected val activity: MainActivity?) {
                                 // Extract expiry time from subscription
                                 try {
                                     // Get expiry date from purchase token (if available)
-                                    val subscriptionInfo = Gson().fromJson(purchase.originalJson, JsonObject::class.java)
+                                    val subscriptionInfo = Gson().fromJson(
+                                        purchase.originalJson,
+                                        JsonObject::class.java
+                                    )
                                     Log.d(TAG, "Subscription info: $subscriptionInfo")
-                                    val expiryTimeMillis = subscriptionInfo.get("expiryTimeMillis")?.asLong ?: 0
+                                    val expiryTimeMillis =
+                                        subscriptionInfo.get("expiryTimeMillis")?.asLong ?: 0
 
                                     if (expiryTimeMillis > 0) {
                                         subscriptionExpiryTimeMillis = expiryTimeMillis
-                                        Log.d(TAG, "Subscription expires at: ${Date(expiryTimeMillis)}")
-                                        
+                                        Log.d(
+                                            TAG,
+                                            "Subscription expires at: ${Date(expiryTimeMillis)}"
+                                        )
+
                                         // Check if subscription is actually expired
                                         val currentTimeMillis = System.currentTimeMillis()
                                         if (expiryTimeMillis <= currentTimeMillis) {
-                                            Log.w(TAG, "Subscription appears to be EXPIRED (expiry: ${Date(expiryTimeMillis)}, current: ${Date(currentTimeMillis)})")
+                                            Log.w(
+                                                TAG,
+                                                "Subscription appears to be EXPIRED (expiry: ${
+                                                    Date(expiryTimeMillis)
+                                                }, current: ${Date(currentTimeMillis)})"
+                                            )
                                             // Consider this as no active subscription
                                             _purchaseState.value = PurchaseState.NotPurchased
                                             _isSubscriptionRenewing.value = false
@@ -364,11 +426,14 @@ open class BillingManager(protected val activity: MainActivity?) {
                                     Log.e(TAG, "Error parsing subscription expiry time", e)
                                 }
                             }
-                            
+
                             // Only set to Purchased if we have valid, non-expired purchases
                             if (_purchaseState.value != PurchaseState.NotPurchased) {
                                 _purchaseState.value = PurchaseState.Purchased
-                                Log.d(TAG, "Purchase state set to Purchased - found ${purchases.size} active subscription(s)")
+                                Log.d(
+                                    TAG,
+                                    "Purchase state set to Purchased - found ${purchases.size} active subscription(s)"
+                                )
                             }
                         } else {
                             Log.d(TAG, "No existing purchases found")
@@ -377,7 +442,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                             subscriptionExpiryTimeMillis = 0
                             _purchaseState.value = PurchaseState.NotPurchased
                         }
-                        
+
                         // Call completion callback with successful result
                         onComplete?.invoke(purchases)
                     } else {
@@ -385,18 +450,18 @@ open class BillingManager(protected val activity: MainActivity?) {
                             TAG,
                             "Failed to query purchases: ${billingResult.responseCode} ${billingResult.debugMessage}"
                         )
-                        
+
                         // If we're in a payment processing state during retry, show error
                         if (_paymentProcessingState.value is PaymentProcessingState.Loading) {
                             _paymentProcessingState.value = PaymentProcessingState.Error(
                                 "Failed to query purchases: ${billingResult.debugMessage ?: "Unknown error"}"
                             )
                         }
-                        
+
                         // Call completion callback with empty list to indicate failure
                         onComplete?.invoke(emptyList())
                     }
-                    
+
                     // Mark refresh as complete
                     _isRefreshingPurchases.value = false
                     Log.d(TAG, "Purchase refresh completed")
@@ -505,7 +570,10 @@ open class BillingManager(protected val activity: MainActivity?) {
 
                             if (!isTestMode && product.subscriptionOfferDetails != null) {
                                 product.subscriptionOfferDetails?.forEach { offer ->
-                                    Log.d(TAG, "Offer: ${offer.basePlanId}, token: ${offer.offerToken}")
+                                    Log.d(
+                                        TAG,
+                                        "Offer: ${offer.basePlanId}, token: ${offer.offerToken}"
+                                    )
                                 }
                             }
                         }
@@ -624,7 +692,10 @@ open class BillingManager(protected val activity: MainActivity?) {
             )
             return true
         } else {
-            Log.e(TAG, "No product details found for plan index $index with product ID $planProductId")
+            Log.e(
+                TAG,
+                "No product details found for plan index $index with product ID $planProductId"
+            )
             Log.d(TAG, "Available products: ${productDetailsList.map { it.productId }}")
             return false
         }
@@ -643,16 +714,20 @@ open class BillingManager(protected val activity: MainActivity?) {
                 val productDetails = this.productDetails
                 if (activity != null && productDetails != null) {
                     // Extract amount and currency from ProductDetails
-                    val priceAmountMicros = productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros
-                        ?: productDetails.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.priceAmountMicros
-                        ?: 0L
+                    val priceAmountMicros =
+                        productDetails.oneTimePurchaseOfferDetails?.priceAmountMicros
+                            ?: productDetails.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.priceAmountMicros
+                            ?: 0L
                     val amountInCents = (priceAmountMicros / 10_000).toInt() // $9.99 -> 999
                     val currencyCode = productDetails.oneTimePurchaseOfferDetails?.priceCurrencyCode
                         ?: productDetails.subscriptionOfferDetails?.firstOrNull()?.pricingPhases?.pricingPhaseList?.firstOrNull()?.priceCurrencyCode
                         ?: "USD"
-                    
-                    Log.d(TAG, "Using Google Play pricing for payment: ${amountInCents / 100.0} $currencyCode (from priceAmountMicros: $priceAmountMicros)")
-                    
+
+                    Log.d(
+                        TAG,
+                        "Using Google Play pricing for payment: ${amountInCents / 100.0} $currencyCode (from priceAmountMicros: $priceAmountMicros)"
+                    )
+
                     val inAppGooglePayload = InAppGooglePayload(
                         purchaseToken = purchase.purchaseToken,
                         customerID = currentCustomerID ?: "",
@@ -660,7 +735,10 @@ open class BillingManager(protected val activity: MainActivity?) {
                         productID = purchase.products.firstOrNull() ?: "",
                         orderID = purchase.orderId.toString()
                     )
-                    Log.d(TAG, "Created InAppGooglePayload with customerID: ${currentCustomerID ?: "not set"}")
+                    Log.d(
+                        TAG,
+                        "Created InAppGooglePayload with customerID: ${currentCustomerID ?: "not set"}"
+                    )
                     val payment = Payment(Type = "google", Details = inAppGooglePayload)
                     val paymentTokenPayload = PaymentTokenPayload(
                         Amount = amountInCents,
@@ -672,8 +750,11 @@ open class BillingManager(protected val activity: MainActivity?) {
                     activity.webView?.let { webView ->
                         // Update state to show we're processing with server
                         _paymentProcessingState.value = PaymentProcessingState.Verifying
-                        
-                        activity.sendPaymentTokenToWebView(webView, paymentTokenPayload) { result: Result<PaymentJsResponse>  ->
+
+                        activity.sendPaymentTokenToWebView(
+                            webView,
+                            paymentTokenPayload
+                        ) { result: Result<PaymentJsResponse> ->
                             // Now within the call back we can do whatever else we need to do...
                             result.onSuccess { paymentJsResponse ->
                                 // Now we can access the data from the successful PaymentJsResponse
@@ -681,9 +762,13 @@ open class BillingManager(protected val activity: MainActivity?) {
 
                                 // Check for error status in response
                                 if (paymentJsResponse.status == "error") {
-                                    Log.e(TAG, "Error in payment token response: ${paymentJsResponse.message}")
+                                    Log.e(
+                                        TAG,
+                                        "Error in payment token response: ${paymentJsResponse.message}"
+                                    )
                                     _paymentProcessingState.value = PaymentProcessingState.Error(
-                                        paymentJsResponse.message ?: "Unknown error creating payment token"
+                                        paymentJsResponse.message
+                                            ?: "Unknown error creating payment token"
                                     )
                                     return@sendPaymentTokenToWebView
                                 }
@@ -716,18 +801,26 @@ open class BillingManager(protected val activity: MainActivity?) {
                                         CouponCode = null,
                                         BillingAddress = null
                                     )
-                                    
+
                                     // Final step - send subscription to activate
-                                    activity.sendSubscriptionEventToWebView(webView, subscriptionPayload) { subscriptionResult ->
+                                    activity.sendSubscriptionEventToWebView(
+                                        webView,
+                                        subscriptionPayload
+                                    ) { subscriptionResult ->
                                         subscriptionResult.onSuccess { response ->
                                             // Success! Payment is fully processed
-                                            Log.d(TAG, "Subscription activated successfully: ${response}")
-                                            _paymentProcessingState.value = PaymentProcessingState.Success
+                                            Log.d(
+                                                TAG,
+                                                "Subscription activated successfully: ${response}"
+                                            )
+                                            _paymentProcessingState.value =
+                                                PaymentProcessingState.Success
                                         }.onFailure { error ->
                                             Log.e(TAG, "Subscription request failed", error)
-                                            _paymentProcessingState.value = PaymentProcessingState.Error(
-                                                "Could not activate subscription: ${error.message}"
-                                            )
+                                            _paymentProcessingState.value =
+                                                PaymentProcessingState.Error(
+                                                    "Could not activate subscription: ${error.message}"
+                                                )
                                         }
                                     }
                                 } else {
@@ -747,6 +840,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                                     ErrorClassifier.ErrorType.SSL -> PaymentProcessingState.NetworkError(
                                         errorInfo.getUserMessage(context)
                                     )
+
                                     else -> PaymentProcessingState.Error(
                                         errorInfo.getUserMessage(context)
                                     )
@@ -866,7 +960,10 @@ open class BillingManager(protected val activity: MainActivity?) {
                         else -> pricingPhase.billingPeriod
                     }
 
-                    Log.d(TAG, "Updated plan ${matchingPlan.planName} with price: ${matchingPlan.formattedPrice} per ${matchingPlan.periodText}")
+                    Log.d(
+                        TAG,
+                        "Updated plan ${matchingPlan.planName} with price: ${matchingPlan.formattedPrice} per ${matchingPlan.periodText}"
+                    )
                 }
             }
         }
@@ -961,11 +1058,11 @@ open class BillingManager(protected val activity: MainActivity?) {
     private fun startPeriodicRefresh() {
         // Cancel existing job
         periodicRefreshJob?.cancel()
-        
+
         periodicRefreshJob = coroutineScope.launch {
             while (true) {
                 delay(PURCHASE_REFRESH_INTERVAL_MS)
-                
+
                 // Only refresh if we have an active subscription
                 if (hasActiveSubscription()) {
                     Log.d(TAG, "Periodic refresh - checking subscription status")
@@ -1003,7 +1100,11 @@ open class BillingManager(protected val activity: MainActivity?) {
      * @param offerToken The specific offer token for the subscription plan (can be null for base plans).
      * @param customerID The customer ID to associate with the purchase (can be null if not applicable).
      */
-    fun launchBillingFlowForProduct(productId: String, offerToken: String?, customerID: String? = null) {
+    fun launchBillingFlowForProduct(
+        productId: String,
+        offerToken: String?,
+        customerID: String? = null
+    ) {
         if (!_isConnected.value) {
             Log.e(TAG, "Cannot launch billing flow - billing client not connected.")
             _purchaseState.value = PurchaseState.Error("Billing service not connected.")
@@ -1011,14 +1112,17 @@ open class BillingManager(protected val activity: MainActivity?) {
         }
         if (activity == null) {
             Log.e(TAG, "Cannot launch billing flow - activity is null.")
-             _purchaseState.value = PurchaseState.Error("Application context error.")
+            _purchaseState.value = PurchaseState.Error("Application context error.")
             return
         }
 
         // Store customerID for use during purchase processing
         this.currentCustomerID = customerID
-        
-        Log.d(TAG, "Attempting to launch purchase flow for Product ID: $productId, Offer Token: $offerToken, Customer ID: $customerID")
+
+        Log.d(
+            TAG,
+            "Attempting to launch purchase flow for Product ID: $productId, Offer Token: $offerToken, Customer ID: $customerID"
+        )
 
         val productDetails = _productDetailsList.value.find { it.productId == productId }
 
@@ -1034,7 +1138,8 @@ open class BillingManager(protected val activity: MainActivity?) {
 
         // Find and set the offer token if provided and valid
         if (offerToken != null && productDetails.subscriptionOfferDetails != null) {
-            val selectedOffer = productDetails.subscriptionOfferDetails?.find { it.offerToken == offerToken }
+            val selectedOffer =
+                productDetails.subscriptionOfferDetails?.find { it.offerToken == offerToken }
             if (selectedOffer != null) {
                 Log.d(TAG, "Found matching offer token: $offerToken")
                 productDetailsParamsBuilder.setOfferToken(selectedOffer.offerToken)
@@ -1043,16 +1148,23 @@ open class BillingManager(protected val activity: MainActivity?) {
                 // This might happen if eligibility changed or plans updated.
                 // Fallback: Try purchasing the base plan if offerToken is invalid/not found?
                 // Or show an error.
-                Log.w(TAG, "Provided offer token '$offerToken' not found for product $productId. Check plan configuration or user eligibility.")
+                Log.w(
+                    TAG,
+                    "Provided offer token '$offerToken' not found for product $productId. Check plan configuration or user eligibility."
+                )
                 // Optionally, default to the base plan if no offer token is needed/found
                 // If *only* specific offers should be purchasable, then this should be an error:
-                 _purchaseState.value = PurchaseState.Error("Selected plan offer is not available. Please try again or select a different plan.")
-                 // return // Uncomment this line if purchase should fail when offer token is invalid
+                _purchaseState.value =
+                    PurchaseState.Error("Selected plan offer is not available. Please try again or select a different plan.")
+                // return // Uncomment this line if purchase should fail when offer token is invalid
             }
         } else if (offerToken != null && productDetails.subscriptionOfferDetails == null) {
-             Log.w(TAG, "Offer token '$offerToken' provided, but product $productId has no subscription offer details.")
-             _purchaseState.value = PurchaseState.Error("Plan configuration error.")
-             return
+            Log.w(
+                TAG,
+                "Offer token '$offerToken' provided, but product $productId has no subscription offer details."
+            )
+            _purchaseState.value = PurchaseState.Error("Plan configuration error.")
+            return
         } else {
             Log.d(TAG, "No specific offer token provided or needed for product $productId.")
             // If offerToken is null, we don't call setOfferToken, which usually defaults to the base plan
@@ -1068,8 +1180,12 @@ open class BillingManager(protected val activity: MainActivity?) {
         val billingResult = billingClient?.launchBillingFlow(activity, billingFlowParams)
 
         if (billingResult?.responseCode != BillingClient.BillingResponseCode.OK) {
-            Log.e(TAG, "Failed to launch billing flow: ${billingResult?.responseCode} ${billingResult?.debugMessage}")
-            _purchaseState.value = PurchaseState.Error("Failed to initiate purchase: ${billingResult?.debugMessage}")
+            Log.e(
+                TAG,
+                "Failed to launch billing flow: ${billingResult?.responseCode} ${billingResult?.debugMessage}"
+            )
+            _purchaseState.value =
+                PurchaseState.Error("Failed to initiate purchase: ${billingResult?.debugMessage}")
         } else {
             Log.d(TAG, "Billing flow launched successfully.")
             // Purchase process continues in PurchasesUpdatedListener
@@ -1082,15 +1198,18 @@ open class BillingManager(protected val activity: MainActivity?) {
     fun retryPaymentVerification() {
         try {
             val currentState = _paymentProcessingState.value
-            
+
             if (currentState is PaymentProcessingState.SubscriptionRecovery) {
-                Log.d(TAG, "Retrying subscription recovery - processing existing Google Play purchase")
+                Log.d(
+                    TAG,
+                    "Retrying subscription recovery - processing existing Google Play purchase"
+                )
                 triggerSubscriptionRecovery()
             } else {
                 Log.d(TAG, "Retrying payment verification")
                 // Set state back to loading
                 _paymentProcessingState.value = PaymentProcessingState.Loading
-                
+
                 // Query existing purchases to get the purchase token again - force refresh
                 queryExistingPurchases(
                     onComplete = { purchases ->
@@ -1098,10 +1217,13 @@ open class BillingManager(protected val activity: MainActivity?) {
                             // Found purchase - check if it's already acknowledged and processed
                             val purchase = purchases.first()
                             Log.d(TAG, "Found purchase to retry: ${purchase.products}")
-                            
+
                             // If we already have a purchased state, the purchase is valid
                             if (_purchaseState.value is PurchaseState.Purchased) {
-                                Log.d(TAG, "Purchase already processed successfully, setting state to Success")
+                                Log.d(
+                                    TAG,
+                                    "Purchase already processed successfully, setting state to Success"
+                                )
                                 _paymentProcessingState.value = PaymentProcessingState.Success
                             } else {
                                 // Process the purchase normally
@@ -1124,23 +1246,23 @@ open class BillingManager(protected val activity: MainActivity?) {
             )
         }
     }
-    
 
-    
+
     /**
      * Reset the payment processing state
      */
     fun resetPaymentState() {
         _paymentProcessingState.value = null
     }
-    
+
     /**
      * Trigger subscription recovery for API/Google Play mismatch
      */
     fun triggerSubscriptionRecovery() {
         if (!_isConnected.value) {
             Log.e(TAG, "Cannot process recovery - billing client not connected")
-            _paymentProcessingState.value = PaymentProcessingState.Error("Billing service not connected")
+            _paymentProcessingState.value =
+                PaymentProcessingState.Error("Billing service not connected")
             return
         }
 
@@ -1148,20 +1270,20 @@ open class BillingManager(protected val activity: MainActivity?) {
         _paymentProcessingState.value = PaymentProcessingState.SubscriptionRecovery(
             "We found your subscription in Google Play but it's not synced with our servers. Let's fix that!"
         )
-        
+
         // Process existing purchase directly - force refresh to get latest data
         queryExistingPurchases(
             onComplete = { purchases ->
                 if (purchases.isNotEmpty()) {
                     val purchase = purchases.first()
                     Log.d(TAG, "Processing recovery for purchase: ${purchase.products}")
-                    
+
                     // Extract and set customer ID from existing purchase
                     purchase.accountIdentifiers?.obfuscatedAccountId?.let { accountId ->
                         Log.d(TAG, "Using obfuscated account ID from purchase: $accountId")
                         currentCustomerID = accountId
                     } ?: Log.w(TAG, "No obfuscated account ID found in purchase")
-                    
+
                     // Set to loading and process through normal payment flow
                     _paymentProcessingState.value = PaymentProcessingState.Loading
                     handlePurchase(purchase)
@@ -1174,7 +1296,7 @@ open class BillingManager(protected val activity: MainActivity?) {
             forceRefresh = true // Always get fresh data for recovery
         )
     }
-    
+
     /**
      * Helper function to identify network errors using professional error classification
      */
@@ -1241,7 +1363,7 @@ class PreviewBillingManager : BillingManager(null) {
     companion object {
         fun createForPreview(): PreviewBillingManager {
             val manager = PreviewBillingManager()
-             manager.setSubscriptionState(false, false)  // Active, auto-renewing
+            manager.setSubscriptionState(false, false)  // Active, auto-renewing
             // manager.setSubscriptionState(true, false) // Active but cancelled
             // manager.setSubscriptionState(false, false) // No subscription
             return manager

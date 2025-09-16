@@ -51,7 +51,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     private val speechRecognitionManager = SpeechRecognitionManager(application)
 
     // State for initial URL after network check
-    private val _initialUrl = MutableStateFlow<String?>(LumoConfig.LUMO_URL) // Start with default URL
+    private val _initialUrl =
+        MutableStateFlow<String?>(LumoConfig.LUMO_URL) // Start with default URL
     val initialUrl: StateFlow<String?> = _initialUrl.asStateFlow()
     private var checkCompleted = false // Prevent re-checking on config change
 
@@ -73,7 +74,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             return
         }
         _uiState.update { it.copy(isLoading = true, initialLoadError = null) } // Show loading
-        
+
         // Add safety timeout to ensure loading state is cleared even if network check takes too long
         viewModelScope.launch {
             kotlinx.coroutines.delay(3000) // 5 second timeout
@@ -87,7 +88,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
-        
+
         viewModelScope.launch {
             val host = LumoConfig.LUMO_DOMAIN
             val port = 443
@@ -95,15 +96,15 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
             Log.d(TAG, "Performing initial network check for $host:$port...")
 
             val reachable = isHostReachable(host, port, timeout) // Call the suspend function
-            
+
             if (reachable) {
                 Log.d(TAG, "Initial network check: Host $host is reachable.")
                 _initialUrl.value = LumoConfig.LUMO_URL
-                 _uiState.update { it.copy(initialLoadError = null) }
+                _uiState.update { it.copy(initialLoadError = null) }
             } else {
-                 Log.w(TAG, "Initial network check: Host $host is NOT reachable within $timeout ms.")
+                Log.w(TAG, "Initial network check: Host $host is NOT reachable within $timeout ms.")
                 _initialUrl.value = "file:///android_asset/network_error.html"
-                 _uiState.update { it.copy(initialLoadError = "Host not reachable") } // Set error state
+                _uiState.update { it.copy(initialLoadError = "Host not reachable") } // Set error state
             }
             _uiState.update { it.copy(isLoading = false) } // Hide loading
             checkCompleted = true
@@ -117,7 +118,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     }
 
     private fun setupSpeechRecognition() {
-        speechRecognitionManager.setListener(object : SpeechRecognitionManager.SpeechRecognitionListener {
+        speechRecognitionManager.setListener(object :
+            SpeechRecognitionManager.SpeechRecognitionListener {
             override fun onReadyForSpeech() {
                 _uiState.update { it.copy(isListening = true) }
             }
@@ -175,8 +177,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         Log.d(TAG, "onStartVoiceEntryRequested")
         if (speechRecognitionManager.isPermissionGranted()) {
             if (!speechRecognitionManager.isSpeechRecognitionAvailable()) {
-                viewModelScope.launch { 
-                    _eventChannel.send(UiEvent.ShowToast(getApplication<Application>().getString(R.string.speech_not_available))) 
+                viewModelScope.launch {
+                    _eventChannel.send(UiEvent.ShowToast(getApplication<Application>().getString(R.string.speech_not_available)))
                 }
                 return
             }
@@ -191,7 +193,11 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun onCancelListening() {
         Log.d(TAG, "onCancelListening")
         speechRecognitionManager.cancelListening()
-        _uiState.value = _uiState.value.copy(isListening = false, showSpeechSheet = false, partialSpokenText = "")
+        _uiState.value = _uiState.value.copy(
+            isListening = false,
+            showSpeechSheet = false,
+            partialSpokenText = ""
+        )
     }
 
     fun onSubmitTranscription() {
@@ -227,9 +233,9 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 _eventChannel.send(UiEvent.EvaluateJavascript(script))
             }
         } else {
-             Log.w(TAG, "Skipping submission, empty transcript")
+            Log.w(TAG, "Skipping submission, empty transcript")
         }
-         // Clear partial text after attempting submission
+        // Clear partial text after attempting submission
         _uiState.value = _uiState.value.copy(partialSpokenText = "")
     }
 
@@ -237,8 +243,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         Log.d(TAG, "JavaScript execution result: $result")
         if (result == null || result == "null" || result.contains("Error")) {
             Log.e(TAG, "JavaScript execution failed or function not found. Result: $result")
-            viewModelScope.launch { 
-                _eventChannel.send(UiEvent.ShowToast(getApplication<Application>().getString(R.string.submit_prompt_failed))) 
+            viewModelScope.launch {
+                _eventChannel.send(UiEvent.ShowToast(getApplication<Application>().getString(R.string.submit_prompt_failed)))
             }
         } else {
             Log.d(TAG, "JavaScript insertPromptAndSubmit executed successfully.")
@@ -247,32 +253,44 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     // --- Navigation Event Handler ---
     fun onNavigation(url: String, type: String) {
-        Log.d(TAG, "Navigation: $url, type: $type, current stack size: ${_navigationStack.value.size}")
+        Log.d(
+            TAG,
+            "Navigation: $url, type: $type, current stack size: ${_navigationStack.value.size}"
+        )
         when (type) {
             "push" -> {
                 // Only push if not duplicate
                 if (_navigationStack.value.lastOrNull()?.url != url) {
                     _navigationStack.value += NavigationEntry(url)
-                    Log.d(TAG, "Added to navigation stack. New size: ${_navigationStack.value.size}")
+                    Log.d(
+                        TAG,
+                        "Added to navigation stack. New size: ${_navigationStack.value.size}"
+                    )
                 }
                 // Show loading if navigating away from Lumo
                 if (uiState.value.isLumoPage) {
                     _uiState.update { it.copy(isLoading = true, hasSeenLumoContainer = false) }
                 }
             }
+
             "replace" -> {
                 if (_navigationStack.value.isNotEmpty()) {
-                    _navigationStack.value = _navigationStack.value.dropLast(1) + NavigationEntry(url)
+                    _navigationStack.value =
+                        _navigationStack.value.dropLast(1) + NavigationEntry(url)
                     Log.d(TAG, "Replaced last entry in navigation stack")
                 } else {
                     _navigationStack.value = listOf(NavigationEntry(url))
                     Log.d(TAG, "Added to empty navigation stack")
                 }
             }
+
             "pop" -> {
                 if (_navigationStack.value.isNotEmpty()) {
                     _navigationStack.value = _navigationStack.value.dropLast(1)
-                    Log.d(TAG, "Removed from navigation stack. New size: ${_navigationStack.value.size}")
+                    Log.d(
+                        TAG,
+                        "Removed from navigation stack. New size: ${_navigationStack.value.size}"
+                    )
                 }
                 if (uiState.value.isLumoPage) {
                     _uiState.update { it.copy(isLoading = true, hasSeenLumoContainer = false) }
@@ -286,6 +304,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     fun setIsLumoPage(isLumo: Boolean) {
         _uiState.update { it.copy(isLumoPage = isLumo) }
     }
+
     fun setHasSeenLumoContainer(seen: Boolean) {
         _uiState.update { it.copy(hasSeenLumoContainer = seen) }
     }

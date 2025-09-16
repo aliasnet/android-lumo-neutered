@@ -13,7 +13,7 @@ private const val TAG = "PlanPricingHelper"
  * Helper class for updating plan pricing information by matching with Google Play ProductDetails
  */
 object PlanPricingHelper {
-    
+
     /**
      * Updates plan pricing information using Google Play product details
      *
@@ -118,13 +118,16 @@ object PlanPricingHelper {
                 }
             } else {
                 Log.w(TAG, "No matching Google product found for: ${plan.productId}")
-                Log.w(TAG, "  - Available Google product IDs: ${googleProducts.map { it.productId }}")
+                Log.w(
+                    TAG,
+                    "  - Available Google product IDs: ${googleProducts.map { it.productId }}"
+                )
             }
         }
 
         return updatedPlans
     }
-    
+
     /**
      * Format a price amount with the correct currency symbol
      * @param amount The price amount as a double

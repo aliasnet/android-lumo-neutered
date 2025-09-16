@@ -19,9 +19,9 @@ private const val TAG = "SpeechRecognitionManager"
  * Handles speech recognition functionality.
  */
 class SpeechRecognitionManager(private val context: Context) {
-    
+
     private var speechRecognizer: SpeechRecognizer? = null
-    
+
     // Listener to communicate with the UI layer
     interface SpeechRecognitionListener {
         fun onReadyForSpeech()
@@ -32,35 +32,35 @@ class SpeechRecognitionManager(private val context: Context) {
         fun onPartialResults(text: String)
         fun onResults(text: String)
     }
-    
+
     private var listener: SpeechRecognitionListener? = null
-    
+
     init {
         initializeSpeechRecognizer()
     }
-    
+
     fun setListener(listener: SpeechRecognitionListener) {
         this.listener = listener
     }
-    
+
     fun removeListener() {
         this.listener = null
     }
-    
+
     fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.RECORD_AUDIO
         ) == PackageManager.PERMISSION_GRANTED
     }
-    
+
     /**
      * Checks if speech recognition is available on the device
      */
     fun isSpeechRecognitionAvailable(): Boolean {
         return SpeechRecognizer.isRecognitionAvailable(context)
     }
-    
+
     /**
      * Checks if on-device speech recognition is available
      */
@@ -71,7 +71,7 @@ class SpeechRecognitionManager(private val context: Context) {
             false
         }
     }
-    
+
     /**
      * Initializes the speech recognizer
      */
@@ -84,7 +84,7 @@ class SpeechRecognitionManager(private val context: Context) {
             Log.e(TAG, "SpeechRecognizer not available on this device.")
         }
     }
-    
+
     /**
      * Sets up the speech recognizer listener
      */
@@ -131,7 +131,8 @@ class SpeechRecognitionManager(private val context: Context) {
             }
 
             override fun onPartialResults(partialResults: Bundle?) {
-                val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                val matches =
+                    partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 val text = matches?.getOrNull(0)
                 if (text != null) {
                     listener?.onPartialResults(text)
@@ -144,7 +145,7 @@ class SpeechRecognitionManager(private val context: Context) {
             }
         })
     }
-    
+
     /**
      * Starts speech recognition
      */
@@ -154,21 +155,24 @@ class SpeechRecognitionManager(private val context: Context) {
             listener?.onError(context.getString(R.string.speech_not_available))
             return
         }
-        
+
         Log.d(TAG, "Explicitly calling speechRecognizer.cancel() before starting")
         speechRecognizer?.cancel() // Explicitly cancel any previous recognition
 
         Log.d(TAG, "Starting speech recognition listener")
 
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             val locale = java.util.Locale.getDefault()
             Log.d(TAG, "Requesting speech recognition for locale: $locale")
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale)
             // Don't set prefer offline, rely on system default based on availability check
         }
-        
+
         try {
             Log.d(TAG, "Calling speechRecognizer.startListening...")
             speechRecognizer?.startListening(intent)
@@ -178,7 +182,7 @@ class SpeechRecognitionManager(private val context: Context) {
             listener?.onError(e.message ?: context.getString(R.string.speech_error_client))
         }
     }
-    
+
     /**
      * Cancels speech recognition
      */
@@ -186,7 +190,7 @@ class SpeechRecognitionManager(private val context: Context) {
         Log.d(TAG, "Cancelling speech recognition")
         speechRecognizer?.cancel()
     }
-    
+
     /**
      * Destroys the speech recognizer
      */
@@ -195,7 +199,7 @@ class SpeechRecognitionManager(private val context: Context) {
         speechRecognizer?.destroy()
         speechRecognizer = null
     }
-    
+
     /**
      * Gets the error message from the error code
      */

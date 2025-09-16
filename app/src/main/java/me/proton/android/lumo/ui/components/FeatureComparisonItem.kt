@@ -33,9 +33,7 @@ fun FeatureComparisonItem(feature: PlanFeature) {
         // Icon - using AsyncImage with fallback
         Box(modifier = Modifier.size(24.dp)) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(iconUrl)
-                    .crossfade(true)
+                model = ImageRequest.Builder(LocalContext.current).data(iconUrl).crossfade(true)
                     .build(),
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
