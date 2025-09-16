@@ -1,5 +1,6 @@
 package me.proton.android.lumo.viewmodels
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import me.proton.android.lumo.R
 import me.proton.android.lumo.data.repository.SubscriptionRepository
 import me.proton.android.lumo.models.JsPlanInfo
 import me.proton.android.lumo.models.PlanFeature
@@ -21,6 +23,7 @@ private const val TAG = "SubscriptionViewModel"
  * ViewModel that manages subscription data
  */
 class SubscriptionViewModel constructor(
+    private val application: Application,
     private val repository: SubscriptionRepository,
     private val billingManagerWrapper: BillingManagerWrapper
 ) : ViewModel() {
@@ -97,7 +100,7 @@ class SubscriptionViewModel constructor(
                     }
                 }.onFailure { error ->
                     Log.e(TAG, "Failed to load subscriptions: ${error.message}", error)
-                    _errorMessage.value = "Failed to load subscriptions: ${error.message}"
+                    _errorMessage.value = application.getString(R.string.error_failed_to_load_subscriptions, error.message ?: "Unknown error")
                     _subscriptions.value = emptyList()
                     _hasValidSubscription.value = false
                 }
@@ -108,7 +111,7 @@ class SubscriptionViewModel constructor(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading subscriptions", e)
-                _errorMessage.value = "Error loading subscriptions: ${e.message}"
+                _errorMessage.value = application.getString(R.string.error_loading_subscriptions, e.message ?: "Unknown error")
                 _subscriptions.value = emptyList()
                 _hasValidSubscription.value = false
                 
@@ -152,19 +155,19 @@ class SubscriptionViewModel constructor(
                             Log.d(TAG, "Loaded ${updatedPlans.size} plans with pricing")
                         } else {
                             Log.e(TAG, "No plans with pricing information available")
-                            _errorMessage.value = "No plans with pricing information available"
+                            _errorMessage.value = application.getString(R.string.error_no_plans_with_pricing)
                         }
                     } else {
                         Log.e(TAG, "No valid plans found")
-                        _errorMessage.value = "No subscription plans available"
+                        _errorMessage.value = application.getString(R.string.error_problem_loading_subscriptions)
                     }
                 }.onFailure { error ->
                     Log.e(TAG, "Failed to load plans: ${error.message}", error)
-                    _errorMessage.value = "Failed to load plans: ${error.message}"
+                    _errorMessage.value = application.getString(R.string.error_failed_to_load_plans, error.message ?: "Unknown error")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading plans", e)
-                _errorMessage.value = "Error loading plans: ${e.message}"
+                _errorMessage.value = application.getString(R.string.error_loading_plans, e.message ?: "Unknown error")
             } finally {
                 _isLoadingPlans.value = false
             }

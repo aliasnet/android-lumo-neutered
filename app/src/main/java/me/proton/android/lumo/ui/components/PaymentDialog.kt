@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -28,7 +30,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.R
 import me.proton.android.lumo.billing.BillingManager
-import me.proton.android.lumo.billing.PreviewBillingManager
+import me.proton.android.lumo.models.JsPlanInfo
+import me.proton.android.lumo.models.PlanFeature
+import me.proton.android.lumo.models.SubscriptionItemResponse
 import me.proton.android.lumo.ui.theme.Purple
 import me.proton.android.lumo.ui.theme.DarkText
 import me.proton.android.lumo.ui.theme.GrayText
@@ -37,12 +41,209 @@ import me.proton.android.lumo.viewmodels.ViewModelFactory
 
 private const val TAG = "PaymentDialog"
 
-@Preview(showBackground = true)
-@Composable
-fun PaymentDialogPreview() {
-    val showDialog = remember { mutableStateOf(true) }
-    val previewBillingManager = remember { PreviewBillingManager.createForPreview() }
+// Preview Functions for Different Dialog States
 
+@Preview(name = "Loading Subscriptions", showBackground = true)
+@Composable
+fun PaymentDialogLoadingSubscriptionsPreview() {
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = true,
+        isLoadingPlans = false,
+        errorMessage = null,
+        planOptions = emptyList(),
+        planFeatures = emptyList()
+    )
+}
+
+@Preview(name = "Loading Plans", showBackground = true)
+@Composable
+fun PaymentDialogLoadingPlansPreview() {
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = false,
+        isLoadingPlans = true,
+        errorMessage = null,
+        planOptions = emptyList(),
+        planFeatures = emptyList()
+    )
+}
+
+@Preview(name = "Error State", showBackground = true)
+@Composable
+fun PaymentDialogErrorPreview() {
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = false,
+        isLoadingPlans = false,
+        errorMessage = "There was a problem loading subscriptions",
+        planOptions = emptyList(),
+        planFeatures = emptyList()
+    )
+}
+
+@Preview(name = "No Plans Available", showBackground = true)
+@Composable
+fun PaymentDialogNoPlansPreview() {
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = false,
+        isLoadingPlans = false,
+        errorMessage = null,
+        planOptions = emptyList(),
+        planFeatures = emptyList()
+    )
+}
+
+@Preview(name = "Plans Available", showBackground = true)
+@Composable
+fun PaymentDialogPlansAvailablePreview() {
+    val mockPlans = listOf(
+        JsPlanInfo(
+            id = "lumo-plus-monthly",
+            name = "Lumo Plus",
+            duration = "1 month",
+            cycle = 1,
+            description = "Monthly subscription",
+            productId = "lumo_plus_monthly",
+            customerId = "customer123",
+            pricePerMonth = "$9.99",
+            totalPrice = "$9.99",
+            savings = null,
+            offerToken = "token123"
+        ),
+        JsPlanInfo(
+            id = "lumo-plus-annual",
+            name = "Lumo Plus",
+            duration = "12 months",
+            cycle = 12,
+            description = "Annual subscription",
+            productId = "lumo_plus_annual",
+            customerId = "customer123",
+            pricePerMonth = "$7.99",
+            totalPrice = "$95.99",
+            savings = "Save 20%",
+            offerToken = "token456"
+        )
+    )
+    
+    val mockFeatures = listOf(
+        PlanFeature(
+            name = "AI Responses",
+            freeText = "Limited",
+            paidText = "Unlimited",
+            iconName = "ai-responses"
+        ),
+        PlanFeature(
+            name = "Priority Support",
+            freeText = "Standard",
+            paidText = "Priority",
+            iconName = "priority-support"
+        ),
+        PlanFeature(
+            name = "Advanced Features",
+            freeText = "Basic",
+            paidText = "Advanced",
+            iconName = "advanced-features"
+        )
+    )
+    
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = false,
+        isLoadingPlans = false,
+        errorMessage = null,
+        planOptions = mockPlans,
+        planFeatures = mockFeatures,
+        selectedPlan = mockPlans.first()
+    )
+}
+
+@Preview(name = "Plans with Error", showBackground = true)
+@Composable
+fun PaymentDialogPlansWithErrorPreview() {
+    val mockPlans = listOf(
+        JsPlanInfo(
+            id = "lumo-plus-monthly",
+            name = "Lumo Plus",
+            duration = "1 month",
+            cycle = 1,
+            description = "Monthly subscription",
+            productId = "lumo_plus_monthly",
+            customerId = "customer123",
+            pricePerMonth = "$9.99",
+            totalPrice = "$9.99",
+            savings = null,
+            offerToken = "token123"
+        )
+    )
+    
+    PaymentDialogContentPreview(
+        isLoadingSubscriptions = false,
+        isLoadingPlans = false,
+        errorMessage = "Failed to load plans: Network error",
+        planOptions = mockPlans,
+        planFeatures = emptyList(),
+        selectedPlan = mockPlans.first()
+    )
+}
+
+// Payment Processing State Previews
+
+@Preview(name = "Payment Processing - Loading", showBackground = true)
+@Composable
+fun PaymentProcessingLoadingPreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.Loading,
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ }
+    )
+}
+
+@Preview(name = "Payment Processing - Verifying", showBackground = true)
+@Composable
+fun PaymentProcessingVerifyingPreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.Verifying,
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ }
+    )
+}
+
+@Preview(name = "Payment Processing - Error", showBackground = true)
+@Composable
+fun PaymentProcessingErrorPreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.Error("Payment failed. Please check your payment method and try again."),
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ }
+    )
+}
+
+@Preview(name = "Payment Processing - Network Error", showBackground = true)
+@Composable
+fun PaymentProcessingNetworkErrorPreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.NetworkError("Network connection failed. Please check your internet connection."),
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ }
+    )
+}
+
+@Preview(name = "Payment Processing - Success", showBackground = true)
+@Composable
+fun PaymentProcessingSuccessPreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.Success,
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ }
+    )
+}
+
+@Composable
+private fun PaymentDialogContentPreview(
+    isLoadingSubscriptions: Boolean = false,
+    isLoadingPlans: Boolean = false,
+    errorMessage: String? = null,
+    planOptions: List<JsPlanInfo> = emptyList(),
+    planFeatures: List<PlanFeature> = emptyList(),
+    selectedPlan: JsPlanInfo? = null
+) {
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
             primary = Purple,
@@ -51,7 +252,169 @@ fun PaymentDialogPreview() {
             onSurfaceVariant = GrayText
         )
     ) {
-        PaymentDialog(showDialog, previewBillingManager)
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f) // Limit height to allow scrolling
+                .clip(RoundedCornerShape(16.dp)),
+            color = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Close Button
+                IconButton(
+                    onClick = { /* Preview - no action */ },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = GrayText
+                    )
+                }
+
+                Image(
+                    painter = painterResource(id = R.drawable.lumo_cat_on_laptop),
+                    contentDescription = "Lumo Plus",
+                    modifier = Modifier.height(75.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = stringResource(id = R.string.payment_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = DarkText,
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = stringResource(id = R.string.payment_subtitle),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = GrayText,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                )
+
+                // Dynamic Content based on loading/error/success
+                when {
+                    isLoadingSubscriptions -> {
+                        CircularProgressIndicator(color = Purple)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(id = R.string.payment_checking),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = GrayText
+                        )
+                    }
+
+                    isLoadingPlans -> {
+                        CircularProgressIndicator(color = Purple)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(id = R.string.payment_loading_plans),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = GrayText
+                        )
+                    }
+
+                    errorMessage != null -> {
+                        Text(
+                            text = errorMessage,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    planOptions.isNotEmpty() -> {
+                        // Features comparison table
+                        if (planFeatures.isNotEmpty()) {
+                            planFeatures.take(4).forEach { feature ->
+                                FeatureComparisonItem(feature)
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        // Plan Selection Section
+                        planOptions.forEach { plan ->
+                            if (plan.totalPrice.isNotEmpty()) {
+                                PlanSelectItem(
+                                    plan = plan,
+                                    isSelected = selectedPlan?.id == plan.id,
+                                    onSelected = { /* Preview - no action */ }
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                            }
+                        }
+
+                        // Display error message if any (when plans are loaded but there's still an error)
+                        errorMessage?.let { errorMsg ->
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                errorMsg,
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+
+                        Text(
+                            stringResource(id = R.string.subscription_renewal),
+                            fontSize = 12.sp,
+                            color = Color.DarkGray,
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        // Continue Button (Purchase)
+                        Button(
+                            onClick = { /* Preview - no action */ },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Purple,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(24.dp),
+                            enabled = selectedPlan != null && selectedPlan.totalPrice.isNotEmpty()
+                        ) {
+                            Text(stringResource(id = R.string.subscription_buy_lumo), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        }
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        TextButton(
+                            onClick = { /* Preview - no action */ },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = GrayText
+                            )
+                        ) {
+                            Text(
+                                "Not now",
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+
+                    else -> {
+                        Text(
+                            text = stringResource(id = R.string.payment_no_plans_available),
+                            color = GrayText,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -121,6 +484,7 @@ fun PaymentDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.9f) // Limit height to allow scrolling
                         .clip(RoundedCornerShape(16.dp)),
                     color = Color.White
                 ) {
@@ -147,6 +511,7 @@ fun PaymentDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.9f) // Limit height to allow scrolling
                         .clip(RoundedCornerShape(16.dp)),
                     color = Color.White
                 ) {
@@ -169,12 +534,14 @@ fun PaymentDialog(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
+                    .fillMaxHeight(0.9f) // Limit height to allow scrolling
                     .clip(RoundedCornerShape(16.dp)),
                 color = Color.White
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp, vertical = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

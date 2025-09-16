@@ -39,6 +39,7 @@ object DependencyProvider {
         billingManagerWrapper: BillingManagerWrapper
     ): SubscriptionRepository {
         return subscriptionRepository ?: SubscriptionRepositoryImpl(
+            context = mainActivity.applicationContext,
             mainActivity = mainActivity,
             billingManager = billingManagerWrapper.getBillingManager()
         ).also {

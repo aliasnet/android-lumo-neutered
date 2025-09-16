@@ -1,11 +1,13 @@
 package me.proton.android.lumo.data.repository
 
+import android.content.Context
 import android.util.Log
 import com.android.billingclient.api.ProductDetails
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.proton.android.lumo.MainActivity
+import me.proton.android.lumo.R
 import me.proton.android.lumo.billing.BillingManager
 import me.proton.android.lumo.models.JsPlanInfo
 import me.proton.android.lumo.models.PaymentJsResponse
@@ -23,10 +25,12 @@ private const val TAG = "SubscriptionRepository"
 /**
  * Implementation of the SubscriptionRepository interface
  * 
+ * @param context Application context for string resources
  * @param mainActivity Reference to MainActivity for WebView access
  * @param billingManager The BillingManager for Google Play integration
  */
 class SubscriptionRepositoryImpl(
+    private val context: Context,
     private val mainActivity: MainActivity,
     private val billingManager: BillingManager?
 ) : SubscriptionRepository {
@@ -36,7 +40,7 @@ class SubscriptionRepositoryImpl(
         
         val webView = mainActivity.webView
         if (webView == null) {
-            continuation.resume(Result.failure(Exception("WebView not available")))
+            continuation.resume(Result.failure(Exception(context.getString(R.string.error_webview_not_available))))
             return@suspendCancellableCoroutine
         }
         
@@ -50,7 +54,7 @@ class SubscriptionRepositoryImpl(
         
         val webView = mainActivity.webView
         if (webView == null) {
-            continuation.resume(Result.failure(Exception("WebView not available")))
+            continuation.resume(Result.failure(Exception(context.getString(R.string.error_webview_not_available))))
             return@suspendCancellableCoroutine
         }
         
@@ -88,6 +92,7 @@ class SubscriptionRepositoryImpl(
     }
 
     override fun hasValidSubscription(subscriptions: List<SubscriptionItemResponse>): Boolean {
+        Log.e(TAG, "${subscriptions}")
         return subscriptions.any { subscription ->
             // Check for Lumo or Visionary plans
             subscription.Name?.contains("lumo", ignoreCase = true) == true || 

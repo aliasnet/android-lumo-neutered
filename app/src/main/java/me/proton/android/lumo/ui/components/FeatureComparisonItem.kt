@@ -49,16 +49,8 @@ fun FeatureComparisonItem(feature: PlanFeature) {
             text = feature.name,
             style = MaterialTheme.typography.bodyMedium,
             color = DarkText,
+            textAlign = TextAlign.Left,
             modifier = Modifier.weight(1f)
-        )
-
-        // Free tier text
-        Text(
-            text = feature.freeText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = GrayText,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(0.8f)
         )
 
         // Plus tier text
@@ -67,7 +59,7 @@ fun FeatureComparisonItem(feature: PlanFeature) {
             style = MaterialTheme.typography.bodyMedium,
             color = Purple,
             fontWeight = FontWeight.Medium,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Right,
             modifier = Modifier.weight(0.8f)
         )
     }
