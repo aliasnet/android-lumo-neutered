@@ -46,14 +46,14 @@ private fun generateCustomUserAgent(): String {
     val androidVersion = android.os.Build.VERSION.RELEASE
     val deviceManufacturer = android.os.Build.MANUFACTURER
     val deviceModel = android.os.Build.MODEL
-    
+
     // Clean up device name - combine manufacturer and model, but avoid duplication
     val deviceName = if (deviceModel.startsWith(deviceManufacturer, ignoreCase = true)) {
         deviceModel
     } else {
         "$deviceManufacturer $deviceModel"
     }
-    
+
     return "ProtonLumo/$appVersion (Android $androidVersion; $deviceName)"
 }
 
@@ -71,9 +71,10 @@ private fun injectSafeAreaInsets(
         // Convert pixels to density-independent pixels for CSS
         val topDp = (systemBarsInsets.top / density)
         val rightDp = (systemBarsInsets.right / density)
-        val bottomDp = maxOf(systemBarsInsets.bottom, imeHeight) / density // Use larger of nav bar or keyboard
+        val bottomDp =
+            maxOf(systemBarsInsets.bottom, imeHeight) / density // Use larger of nav bar or keyboard
         val leftDp = (systemBarsInsets.left / density)
-        
+
         // Inject CSS variables for safe area insets
         val safeAreaJs = """
             document.documentElement.style.setProperty('--safe-area-inset-top', '${topDp}px');
@@ -91,10 +92,13 @@ private fun injectSafeAreaInsets(
             
             console.log('Safe area insets injected:', {top: ${topDp}, right: ${rightDp}, bottom: ${bottomDp}, left: ${leftDp}});
         """.trimIndent()
-        
+
         webView.evaluateJavascript(safeAreaJs, null)
-        Log.d(TAG, "Safe area insets injected: top=${topDp}dp, right=${rightDp}dp, bottom=${bottomDp}dp, left=${leftDp}dp")
-        
+        Log.d(
+            TAG,
+            "Safe area insets injected: top=${topDp}dp, right=${rightDp}dp, bottom=${bottomDp}dp, left=${leftDp}dp"
+        )
+
     } catch (e: Exception) {
         Log.e(TAG, "Error injecting safe area insets", e)
     }
@@ -108,14 +112,14 @@ private fun addJavaScriptInterfaceSafely(webView: WebView, activity: MainActivit
     try {
         // Remove any existing interface first to prevent duplicates
         webView.removeJavascriptInterface("Android")
-        
+
         // Add the interface
         webView.addJavascriptInterface(
             WebAppInterface(activity),
             "Android"
         )
         Log.d(TAG, "JavaScript interface 'Android' added successfully")
-        
+
         // Inject a simple test to verify interface is working
         webView.evaluateJavascript(
             "console.log('Android interface available:', typeof window.Android !== 'undefined');",
@@ -170,14 +174,14 @@ fun WebViewScreen(
                     setSupportZoom(false)
                     builtInZoomControls = false
                     displayZoomControls = false
-                    
+
                     // Enable caching for faster subsequent loads
                     cacheMode = WebSettings.LOAD_DEFAULT
                     val customUserAgent = generateCustomUserAgent()
                     userAgentString = customUserAgent
                     Log.d(TAG, "Custom User Agent set: $customUserAgent")
                 }
-                
+
                 // Set WebView background to white to match loading screen and prevent flashing
                 setBackgroundColor(android.graphics.Color.WHITE)
 
@@ -201,49 +205,57 @@ fun WebViewScreen(
 
                 // Simplified keyboard detection leveraging enableEdgeToEdge() reliability
                 var wasKeyboardVisible = false
-                
+
                 // Create simplified keyboard listener - much cleaner with enableEdgeToEdge!
-                val simplifiedKeyboardListener = android.view.ViewTreeObserver.OnGlobalLayoutListener {
-                    val insets = ViewCompat.getRootWindowInsets(this)
-                    if (insets == null) {
-                        Log.w(TAG, "WindowInsets is null - cannot detect keyboard")
-                        return@OnGlobalLayoutListener
-                    }
-                    
-                    // With enableEdgeToEdge(), WindowInsetsCompat provides reliable keyboard detection
-                    val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
-                    val keyboardHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-                    val navigationBarHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-                    
-                    // Get screen density for CSS pixel conversion
-                    val density = resources.displayMetrics.density
-                    
-                    // Subtract navigation bar height from keyboard height for accurate positioning
-                    val adjustedKeyboardHeight = maxOf(0, keyboardHeight - navigationBarHeight)
-                    val keyboardHeightCss = (adjustedKeyboardHeight / density).toInt()
-                    
-                    Log.d(TAG, "🎯 Keyboard detection: visible=$isKeyboardVisible")
-                    Log.d(TAG, "  - Raw keyboard height: ${keyboardHeight}px physical")
-                    Log.d(TAG, "  - Navigation bar height: ${navigationBarHeight}px physical") 
-                    Log.d(TAG, "  - Adjusted keyboard height: ${adjustedKeyboardHeight}px physical")
-                    Log.d(TAG, "  - Final CSS height: ${keyboardHeightCss}px CSS")
-                    
-                    // Only notify if keyboard state actually changed
-                    if (isKeyboardVisible != wasKeyboardVisible) {
-                        wasKeyboardVisible = isKeyboardVisible
-                        Log.d(TAG, ">>> KEYBOARD STATE CHANGED - Notifying JavaScript <<<")
-                        
-                        try {
-                            val webAppInterface = WebAppInterface(activity)
-                            webAppInterface.onKeyboardVisibilityChanged(isKeyboardVisible, keyboardHeightCss)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Error notifying keyboard visibility change", e)
+                val simplifiedKeyboardListener =
+                    android.view.ViewTreeObserver.OnGlobalLayoutListener {
+                        val insets = ViewCompat.getRootWindowInsets(this)
+                        if (insets == null) {
+                            Log.w(TAG, "WindowInsets is null - cannot detect keyboard")
+                            return@OnGlobalLayoutListener
+                        }
+
+                        // With enableEdgeToEdge(), WindowInsetsCompat provides reliable keyboard detection
+                        val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+                        val keyboardHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                        val navigationBarHeight =
+                            insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
+                        // Get screen density for CSS pixel conversion
+                        val density = resources.displayMetrics.density
+
+                        // Subtract navigation bar height from keyboard height for accurate positioning
+                        val adjustedKeyboardHeight = maxOf(0, keyboardHeight - navigationBarHeight)
+                        val keyboardHeightCss = (adjustedKeyboardHeight / density).toInt()
+
+                        Log.d(TAG, "🎯 Keyboard detection: visible=$isKeyboardVisible")
+                        Log.d(TAG, "  - Raw keyboard height: ${keyboardHeight}px physical")
+                        Log.d(TAG, "  - Navigation bar height: ${navigationBarHeight}px physical")
+                        Log.d(
+                            TAG,
+                            "  - Adjusted keyboard height: ${adjustedKeyboardHeight}px physical"
+                        )
+                        Log.d(TAG, "  - Final CSS height: ${keyboardHeightCss}px CSS")
+
+                        // Only notify if keyboard state actually changed
+                        if (isKeyboardVisible != wasKeyboardVisible) {
+                            wasKeyboardVisible = isKeyboardVisible
+                            Log.d(TAG, ">>> KEYBOARD STATE CHANGED - Notifying JavaScript <<<")
+
+                            try {
+                                val webAppInterface = WebAppInterface(activity)
+                                webAppInterface.onKeyboardVisibilityChanged(
+                                    isKeyboardVisible,
+                                    keyboardHeightCss
+                                )
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Error notifying keyboard visibility change", e)
+                            }
                         }
                     }
-                }
-                
+
                 viewTreeObserver.addOnGlobalLayoutListener(simplifiedKeyboardListener)
-                
+
                 // Keep the window insets listener for edge-to-edge insets only
                 ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
                     // Handle system bar insets for edge-to-edge
@@ -251,44 +263,60 @@ fun WebViewScreen(
                         WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
                     )
                     val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-                    
+
                     // Normalize height for high-DPI displays
                     val density = view.resources.displayMetrics.density
-                    
+
                     // Inject safe area insets into the webpage for edge-to-edge design
                     injectSafeAreaInsets(this@apply, systemBarsInsets, imeHeight, density)
-                    
+
                     insets
                 }
 
                 webViewClient = object : WebViewClient() {
                     private val errorPageUrl = "file:///android_asset/network_error.html"
 
-                    override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                    override fun onPageStarted(
+                        view: WebView?,
+                        url: String?,
+                        favicon: android.graphics.Bitmap?
+                    ) {
                         super.onPageStarted(view, url, favicon)
 
                         Log.d(TAG, ">>> onPageStarted CALLED for URL: $url")
-                        
+
                         val isLumoDomain = isLumoDomain(url)
                         val isAccountDomain = isAccountDomain(url)
-                        
-                        Log.d(TAG, "URL analysis for '$url': isLumoDomain=$isLumoDomain, isAccountDomain=$isAccountDomain")
+
+                        Log.d(
+                            TAG,
+                            "URL analysis for '$url': isLumoDomain=$isLumoDomain, isAccountDomain=$isAccountDomain"
+                        )
 
                         if ((isLumoDomain || isAccountDomain) && view != null) {
-                            Log.d(TAG, "Calling injectSignupPlanParamFix from onPageStarted for URL: $url")
+                            Log.d(
+                                TAG,
+                                "Calling injectSignupPlanParamFix from onPageStarted for URL: $url"
+                            )
                             injectSignupPlanParamFix(view)
                             // Inject keyboard handler early to avoid race conditions
-                            Log.d(TAG, "🚀 INJECTING KEYBOARD HANDLER EARLY in onPageStarted for URL: $url")
+                            Log.d(
+                                TAG,
+                                "🚀 INJECTING KEYBOARD HANDLER EARLY in onPageStarted for URL: $url"
+                            )
                             injectKeyboardHandling(view)
                             Log.d(TAG, "✅ Keyboard handler injection completed in onPageStarted")
                         } else {
-                            Log.d(TAG, "❌ Skipping keyboard injection - isLumoDomain=$isLumoDomain, isAccountDomain=$isAccountDomain, view=$view")
+                            Log.d(
+                                TAG,
+                                "❌ Skipping keyboard injection - isLumoDomain=$isLumoDomain, isAccountDomain=$isAccountDomain, view=$view"
+                            )
                         }
 
                         // Only show loading screen when navigating to Lumo pages
                         if (isLumoDomain) {
-                            activity.viewModel._uiState.update { 
-                                it.copy(isLoading = true, hasSeenLumoContainer = false) 
+                            activity.viewModel._uiState.update {
+                                it.copy(isLoading = true, hasSeenLumoContainer = false)
                             }
                             Log.d(TAG, "Lumo page loading started - showing loading overlay")
                         } else {
@@ -303,7 +331,7 @@ fun WebViewScreen(
 
                         try {
                             // *** ALWAYS ADD THE INTERFACE, even for the error page ***
-                            view?.let { 
+                            view?.let {
                                 addJavaScriptInterfaceSafely(it, activity)
                                 // Add a small delay to ensure interface is registered before JS execution
                                 Handler(Looper.getMainLooper()).postDelayed({
@@ -325,16 +353,19 @@ fun WebViewScreen(
                                 injectLumoContainerCheck(view)
                                 injectPromotionButtonHandlers(view)
                                 injectUpgradeLinkHandlers(view)
-                                Log.d(TAG, "Calling injectSignupPlanParamFix from onPageFinished for URL: $url")
+                                Log.d(
+                                    TAG,
+                                    "Calling injectSignupPlanParamFix from onPageFinished for URL: $url"
+                                )
                                 injectSignupPlanParamFix(view)
 
-                                
+
                                 // Inject safe area insets for edge-to-edge support
                                 // Use a small delay to ensure the page is fully loaded
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     view.requestApplyInsets() // Trigger inset application
                                 }, 300)
-                                
+
                                 // Verify Android interface is working after a brief delay
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     view?.let { verifyAndroidInterface(it) }
@@ -349,12 +380,21 @@ fun WebViewScreen(
                                 // Add a safety timeout to ensure loading state is cleared
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     val currentState = activity.viewModel.uiState.value
-                                    Log.d(TAG, "Safety timeout reached, current loading state: ${currentState.isLoading}")
+                                    Log.d(
+                                        TAG,
+                                        "Safety timeout reached, current loading state: ${currentState.isLoading}"
+                                    )
                                     if (currentState.isLoading) {
-                                        Log.d(TAG, "Forcing loading state off and setting hasSeenLumoContainer to true")
+                                        Log.d(
+                                            TAG,
+                                            "Forcing loading state off and setting hasSeenLumoContainer to true"
+                                        )
                                         activity.runOnUiThread {
-                                            activity.viewModel._uiState.update { 
-                                                it.copy(isLoading = false, hasSeenLumoContainer = true) 
+                                            activity.viewModel._uiState.update {
+                                                it.copy(
+                                                    isLoading = false,
+                                                    hasSeenLumoContainer = true
+                                                )
                                             }
                                             Log.d(TAG, "State updated via ViewModel")
                                         }
@@ -407,7 +447,10 @@ fun WebViewScreen(
                         }
                     }
 
-                    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest?
+                    ): Boolean {
                         val url = request?.url?.toString() ?: return false
                         val host = request.url?.host ?: return false
 
@@ -417,7 +460,10 @@ fun WebViewScreen(
                         } else {
                             // Open all other domains externally
                             try {
-                                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, request.url)
+                                val intent = android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    request.url
+                                )
                                 view?.context?.startActivity(intent)
                             } catch (e: Exception) {
                                 Log.e(TAG, "Failed to open external link: $url", e)
@@ -434,7 +480,8 @@ fun WebViewScreen(
                         fileChooserParams: FileChooserParams?
                     ): Boolean {
                         activity.filePathCallback = filePathCallback
-                        val intent = android.content.Intent(android.content.Intent.ACTION_GET_CONTENT)
+                        val intent =
+                            android.content.Intent(android.content.Intent.ACTION_GET_CONTENT)
                         intent.type = "*/*"
                         intent.putExtra(android.content.Intent.EXTRA_ALLOW_MULTIPLE, true)
                         activity.fileChooserLauncher.launch(intent)

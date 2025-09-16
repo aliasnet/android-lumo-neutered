@@ -101,11 +101,9 @@ fun SpeechInputSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                Purple,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                Purple, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Top Status Label
         Box(

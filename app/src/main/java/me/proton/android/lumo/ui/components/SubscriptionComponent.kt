@@ -351,7 +351,7 @@ fun SubscriptionComponent(
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Text(
-                        text = stringResource(id  = R.string.subscription_manage),
+                        text = stringResource(id = R.string.subscription_manage),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -360,7 +360,7 @@ fun SubscriptionComponent(
             } else {
                 // Show message for web-based plans
                 Text(
-                    text = stringResource(id  = R.string.subscription_manage_info),
+                    text = stringResource(id = R.string.subscription_manage_info),
                     fontSize = 14.sp,
                     color = GrayText,
                     modifier = Modifier

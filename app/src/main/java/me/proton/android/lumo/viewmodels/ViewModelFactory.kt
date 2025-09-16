@@ -12,18 +12,19 @@ import me.proton.android.lumo.di.DependencyProvider
 class ViewModelFactory(
     private val mainActivity: MainActivity
 ) : ViewModelProvider.Factory {
-    
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(SubscriptionViewModel::class.java) -> {
                 // Get dependencies from the dependency provider
-                val billingManagerWrapper = DependencyProvider.getBillingManagerWrapper(mainActivity)
+                val billingManagerWrapper =
+                    DependencyProvider.getBillingManagerWrapper(mainActivity)
                 val repository = DependencyProvider.getSubscriptionRepository(
                     mainActivity = mainActivity,
                     billingManagerWrapper = billingManagerWrapper
                 )
-                
+
                 // Create ViewModel with injected dependencies
                 SubscriptionViewModel(
                     application = mainActivity.application,
@@ -31,6 +32,7 @@ class ViewModelFactory(
                     billingManagerWrapper = billingManagerWrapper
                 ) as T
             }
+
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

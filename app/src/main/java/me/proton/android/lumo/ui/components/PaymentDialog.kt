@@ -122,7 +122,7 @@ fun PaymentDialogPlansAvailablePreview() {
             offerToken = "token456"
         )
     )
-    
+
     val mockFeatures = listOf(
         PlanFeature(
             name = "AI Responses",
@@ -143,7 +143,7 @@ fun PaymentDialogPlansAvailablePreview() {
             iconName = "advanced-features"
         )
     )
-    
+
     PaymentDialogContentPreview(
         isLoadingSubscriptions = false,
         isLoadingPlans = false,
@@ -172,7 +172,7 @@ fun PaymentDialogPlansWithErrorPreview() {
             offerToken = "token123"
         )
     )
-    
+
     PaymentDialogContentPreview(
         isLoadingSubscriptions = false,
         isLoadingPlans = false,
@@ -386,7 +386,11 @@ private fun PaymentDialogContentPreview(
                             shape = RoundedCornerShape(24.dp),
                             enabled = selectedPlan != null && selectedPlan.totalPrice.isNotEmpty()
                         ) {
-                            Text(stringResource(id = R.string.subscription_buy_lumo), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                stringResource(id = R.string.subscription_buy_lumo),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(2.dp))
@@ -426,12 +430,12 @@ fun PaymentDialog(
 ) {
     val context = LocalContext.current
     val mainActivity = context as? MainActivity
-    
+
     // Create ViewModel using the modern factory approach
     val subscriptionViewModel: SubscriptionViewModel = viewModel(
         factory = ViewModelFactory(mainActivity ?: return)
     )
-    
+
     // Collect state from ViewModel
     val isLoadingSubscriptions by subscriptionViewModel.isLoadingSubscriptions.collectAsStateWithLifecycle()
     val isLoadingPlans by subscriptionViewModel.isLoadingPlans.collectAsStateWithLifecycle()
@@ -441,7 +445,7 @@ fun PaymentDialog(
     val selectedPlan by subscriptionViewModel.selectedPlan.collectAsStateWithLifecycle()
     val planFeatures by subscriptionViewModel.planFeatures.collectAsStateWithLifecycle()
     val errorMessage by subscriptionViewModel.errorMessage.collectAsStateWithLifecycle()
-    
+
     // Get payment processing state from BillingManager
     val paymentProcessingState by billingManager.paymentProcessingState.collectAsStateWithLifecycle()
     val isRefreshingPurchases by billingManager.isRefreshingPurchases.collectAsStateWithLifecycle()
@@ -453,11 +457,14 @@ fun PaymentDialog(
             subscriptionViewModel.refreshSubscriptionStatus()
         }
     }
-    
+
     // Check for subscription sync mismatch after BOTH loading operations are complete
     LaunchedEffect(isLoadingSubscriptions, isRefreshingPurchases, hasValidSubscription) {
         if (!isLoadingSubscriptions && !isRefreshingPurchases && !hasValidSubscription) {
-            Log.d(TAG, "Both loading operations complete, checking for subscription sync mismatch...")
+            Log.d(
+                TAG,
+                "Both loading operations complete, checking for subscription sync mismatch..."
+            )
             // Check if there's a mismatch that needs recovery
             if (subscriptionViewModel.checkSubscriptionSyncMismatch()) {
                 // Trigger the recovery flow
@@ -609,7 +616,7 @@ fun PaymentDialog(
                         errorMessage != null -> {
                             // Show error state
                             Text(
-                                text= errorMessage ?: stringResource(id = R.string.error_generic),
+                                text = errorMessage ?: stringResource(id = R.string.error_generic),
                                 color = MaterialTheme.colorScheme.error,
                                 textAlign = TextAlign.Center
                             )
@@ -722,7 +729,11 @@ fun PaymentDialog(
                                 shape = RoundedCornerShape(24.dp),
                                 enabled = selectedPlan != null && selectedPlan?.totalPrice?.isNotEmpty() == true
                             ) {
-                                Text(stringResource(id = R.string.subscription_buy_lumo), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                                Text(
+                                    stringResource(id = R.string.subscription_buy_lumo),
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(8.dp))

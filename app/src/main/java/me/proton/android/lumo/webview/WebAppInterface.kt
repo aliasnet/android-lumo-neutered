@@ -47,10 +47,13 @@ class WebAppInterface(private val activity: MainActivity) {
             val currentUrl = activity.webView?.url ?: ""
             val isAccountPage = LumoConfig.isAccountDomain(currentUrl)
             activity.showBackButton.value = isAccountPage
-            Log.d(TAG, "Back button visibility updated: ${activity.showBackButton.value} (isLumo: $isLumo, isAccountPage: $isAccountPage, url: $currentUrl)")
+            Log.d(
+                TAG,
+                "Back button visibility updated: ${activity.showBackButton.value} (isLumo: $isLumo, isAccountPage: $isAccountPage, url: $currentUrl)"
+            )
         }
     }
-    
+
     @JavascriptInterface
     fun onNavigation(url: String, type: String) {
         Log.d(TAG, "Navigation: $url, type: $type")
@@ -59,7 +62,10 @@ class WebAppInterface(private val activity: MainActivity) {
             // Simplified back button logic: only show on account pages
             val isAccountPage = LumoConfig.isAccountDomain(url)
             activity.showBackButton.value = isAccountPage
-            Log.d(TAG, "Back button visibility updated: ${activity.showBackButton.value} (isAccountPage: $isAccountPage)")
+            Log.d(
+                TAG,
+                "Back button visibility updated: ${activity.showBackButton.value} (isAccountPage: $isAccountPage)"
+            )
         }
     }
 
@@ -70,15 +76,22 @@ class WebAppInterface(private val activity: MainActivity) {
             Log.d(TAG, "Setting hasSeenLumoContainer to true and isLoading to false")
             activity.viewModel.setHasSeenLumoContainer(true)
             activity.viewModel._uiState.update { it.copy(isLoading = false) }
-            Log.d(TAG, "State updated - hasSeenLumoContainer: ${activity.viewModel.uiState.value.hasSeenLumoContainer}, isLoading: ${activity.viewModel.uiState.value.isLoading}")
+            Log.d(
+                TAG,
+                "State updated - hasSeenLumoContainer: ${activity.viewModel.uiState.value.hasSeenLumoContainer}, isLoading: ${activity.viewModel.uiState.value.isLoading}"
+            )
         }
     }
 
     @JavascriptInterface
     fun onKeyboardVisibilityChanged(isVisible: Boolean, keyboardHeight: Int) {
-        Log.d(TAG, "Keyboard visibility changed from native: visible=$isVisible, height=${keyboardHeight}px")
+        Log.d(
+            TAG,
+            "Keyboard visibility changed from native: visible=$isVisible, height=${keyboardHeight}px"
+        )
         activity.runOnUiThread {
-            val jsCall = "if (window.onNativeKeyboardChange) { window.onNativeKeyboardChange($isVisible, $keyboardHeight); } else { console.error('❌ window.onNativeKeyboardChange not found!'); }"
+            val jsCall =
+                "if (window.onNativeKeyboardChange) { window.onNativeKeyboardChange($isVisible, $keyboardHeight); } else { console.error('❌ window.onNativeKeyboardChange not found!'); }"
             Log.d(TAG, "Sending precise keyboard measurement to JavaScript")
             activity.webView?.evaluateJavascript(jsCall) { result ->
                 Log.d(TAG, "JavaScript execution result: $result")

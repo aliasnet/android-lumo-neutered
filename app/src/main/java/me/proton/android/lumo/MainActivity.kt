@@ -72,13 +72,13 @@ private const val TAG = "MainActivity"
 class MainActivity : ComponentActivity(), WebViewProvider {
     // Make viewModel accessible to WebAppInterface
     internal val viewModel: MainActivityViewModel by viewModels()
-    
+
     // Manager instances for separation of concerns
     private lateinit var billingManagerWrapper: BillingManagerWrapper
     private lateinit var webViewManager: WebViewManager
     private lateinit var permissionManager: PermissionManager
     private lateinit var uiManager: UIManager
-    
+
     // UI state
     private val showDialog = mutableStateOf(false)
     internal var showBackButton = mutableStateOf(false)
@@ -90,22 +90,26 @@ class MainActivity : ComponentActivity(), WebViewProvider {
 
     private val _lottieComposition = MutableStateFlow<LottieComposition?>(null)
     private val lottieComposition: StateFlow<LottieComposition?> = _lottieComposition.asStateFlow()
-    
+
     // Expose WebView for backward compatibility with existing code
     var webView: android.webkit.WebView?
         get() = webViewManager.webView
-        set(value) { if (value != null) webViewManager.setWebView(value) }
-    
+        set(value) {
+            if (value != null) webViewManager.setWebView(value)
+        }
+
     // Expose file path callback for backward compatibility
     var filePathCallback: android.webkit.ValueCallback<Array<android.net.Uri>>?
         get() = webViewManager.filePathCallback
-        set(value) { webViewManager.filePathCallback = value }
+        set(value) {
+            webViewManager.filePathCallback = value
+        }
 
     // JavaScript result callback handler
     @JavascriptInterface
     fun postResult(transactionId: String, resultJson: String) {
         Log.d(TAG, "MainActivity.postResult received for ID $transactionId: $resultJson")
-        
+
         // Delegate to billing manager wrapper
         runOnUiThread {
             billingManagerWrapper.handleJavaScriptResult(transactionId, resultJson)
@@ -119,7 +123,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Initialize managers
         initializeManagers()
 
@@ -179,8 +183,8 @@ class MainActivity : ComponentActivity(), WebViewProvider {
             val currentState = viewModel.uiState.value
             if (currentState.isLoading) {
                 Log.d(TAG, "Forcing loading screen to hide from global timer")
-                viewModel._uiState.update { 
-                    it.copy(isLoading = false, hasSeenLumoContainer = true) 
+                viewModel._uiState.update {
+                    it.copy(isLoading = false, hasSeenLumoContainer = true)
                 }
             }
         }, 5000) // Reduced to 5 seconds for faster fallback
@@ -355,7 +359,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
             billingManagerWrapper.showBillingUnavailableDialog(webView)
         }
     }
-    
+
     // Getter for BillingManager
     fun getBillingManager() = billingManagerWrapper.getBillingManager()
 
@@ -389,26 +393,26 @@ class MainActivity : ComponentActivity(), WebViewProvider {
     ) {
         billingManagerWrapper.getSubscriptionsFromWebView(webView, callback)
     }
-    
+
     // WebViewProvider interface implementation
     override fun getCurrentWebView(): android.webkit.WebView? = webView
-    
+
     override fun getPlansFromWebView(callback: (Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit) {
         webView?.let { webView ->
             getPlansFromWebView(webView, callback)
         } ?: callback(Result.failure(Exception("WebView not available")))
     }
-    
+
     override fun getSubscriptionsFromWebView(callback: (Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit) {
         webView?.let { webView ->
             getSubscriptionsFromWebView(webView, callback)
         } ?: callback(Result.failure(Exception("WebView not available")))
     }
 
-     override fun onConfigurationChanged(newConfig: Configuration) {
-         super.onConfigurationChanged(newConfig)
-         uiManager.onConfigurationChanged(newConfig)
-     }
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        uiManager.onConfigurationChanged(newConfig)
+    }
 
     /**
      * Initialize all manager instances
@@ -417,25 +421,25 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         // Initialize UI manager first to set up edge-to-edge and status bar
         uiManager = UIManager(this)
         uiManager.initializeUI()
-        
+
         // Initialize WebView manager first
         webViewManager = WebViewManager(this)
-        
+
         // Initialize permission manager with callback for permission results and WebView manager
         permissionManager = PermissionManager(this, { permission, isGranted ->
             handlePermissionResult(permission, isGranted)
         }, webViewManager)
-        
+
         // Initialize dependency provider
         DependencyProvider.initialize(this)
-        
+
         // Get BillingManagerWrapper from dependency provider
         billingManagerWrapper = DependencyProvider.getBillingManagerWrapper(this)
         billingManagerWrapper.initializeBilling()
-        
+
         Log.d(TAG, "All managers initialized successfully")
     }
-    
+
     /**
      * Handle permission results from PermissionManager
      */
@@ -444,7 +448,10 @@ class MainActivity : ComponentActivity(), WebViewProvider {
             Manifest.permission.RECORD_AUDIO -> {
                 viewModel.updatePermissionStatus() // Update ViewModel's knowledge regardless
                 if (isGranted) {
-                    Log.d(TAG, "RECORD_AUDIO permission granted by user, re-triggering voice entry request")
+                    Log.d(
+                        TAG,
+                        "RECORD_AUDIO permission granted by user, re-triggering voice entry request"
+                    )
                     viewModel.onStartVoiceEntryRequested()
                 } else {
                     Log.w(TAG, "RECORD_AUDIO permission denied by user")

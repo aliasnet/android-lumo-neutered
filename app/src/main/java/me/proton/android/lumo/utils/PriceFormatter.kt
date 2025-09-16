@@ -6,7 +6,7 @@ import android.annotation.SuppressLint
  * Utility class for formatting prices and storage sizes
  */
 object PriceFormatter {
-    
+
     /**
      * Format a price amount with the given currency
      *

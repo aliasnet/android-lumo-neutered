@@ -47,10 +47,10 @@ fun LoadingScreen(
         R.string.loading_message_10,
         R.string.loading_message_11
     )
-    
+
     // State to track current message index
     var currentMessageIndex by remember { mutableIntStateOf((loadingMessages.indices).random()) }
-    
+
     // Effect to rotate messages every 4 seconds
     LaunchedEffect(Unit) {
         while (true) {
@@ -101,16 +101,16 @@ fun LoadingScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             // Main "Loading Lumo" text
             Text(
                 text = stringResource(id = R.string.loading),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
-            
+
             Spacer(modifier = Modifier.height(8.dp))
-            
+
             // Rotating loading message
             Text(
                 text = stringResource(id = loadingMessages[currentMessageIndex]),

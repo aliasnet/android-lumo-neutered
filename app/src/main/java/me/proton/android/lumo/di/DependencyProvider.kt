@@ -11,17 +11,17 @@ import me.proton.android.lumo.managers.BillingManagerWrapper
  * This provides a clean way to manage dependencies without the complexity of full DI frameworks
  */
 object DependencyProvider {
-    
+
     private var billingManagerWrapper: BillingManagerWrapper? = null
     private var subscriptionRepository: SubscriptionRepository? = null
-    
+
     /**
      * Initialize the dependency provider with the application context
      */
     fun initialize(context: Context) {
         billingManagerWrapper = BillingManagerWrapper(context)
     }
-    
+
     /**
      * Get or create the BillingManagerWrapper instance
      */
@@ -30,7 +30,7 @@ object DependencyProvider {
             billingManagerWrapper = it
         }
     }
-    
+
     /**
      * Get or create the SubscriptionRepository instance
      */

@@ -30,7 +30,7 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.sp
     ),
-    
+
     // Body styles
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
@@ -53,7 +53,7 @@ val Typography = Typography(
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
-    
+
     // Label styles
     labelLarge = TextStyle(
         fontFamily = FontFamily.Default,

@@ -11,12 +11,12 @@ interface WebViewProvider {
      * Get the current WebView instance
      */
     fun getCurrentWebView(): WebView?
-    
+
     /**
      * Get plans from WebView
      */
     fun getPlansFromWebView(callback: (Result<PaymentJsResponse>) -> Unit)
-    
+
     /**
      * Get subscriptions from WebView
      */
