@@ -26,6 +26,7 @@ class ViewModelFactory(
                 
                 // Create ViewModel with injected dependencies
                 SubscriptionViewModel(
+                    application = mainActivity.application,
                     repository = repository,
                     billingManagerWrapper = billingManagerWrapper
                 ) as T

@@ -46,7 +46,7 @@ fun PlanSelectItem(
                 selected = isSelected,
                 onClick = onSelected
             )
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
