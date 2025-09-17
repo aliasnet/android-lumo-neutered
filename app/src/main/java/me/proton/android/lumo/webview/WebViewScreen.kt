@@ -1,13 +1,10 @@
 package me.proton.android.lumo.webview
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -18,18 +15,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import me.proton.android.lumo.MainActivity
-import me.proton.android.lumo.models.NavigationEntry
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsAnimationCompat
 import kotlinx.coroutines.flow.update
-import me.proton.android.lumo.config.LumoConfig
 import me.proton.android.lumo.BuildConfig
-import kotlin.math.roundToInt
+import me.proton.android.lumo.MainActivity
+import me.proton.android.lumo.config.LumoConfig
 
 private const val TAG = "WebViewScreen"
 
@@ -137,14 +130,6 @@ fun WebViewScreen(
     initialUrl: String,
     onWebViewCreated: (WebView) -> Unit
 ) {
-    // Add initial URL to navigation stack only once
-    LaunchedEffect(Unit) {
-        if (activity.viewModel.navigationStack.value.isEmpty()) {
-            activity.viewModel.onNavigation(initialUrl, "push")
-            Log.d(TAG, "Added initial URL to navigation stack: $initialUrl")
-        }
-    }
-
     AndroidView(
         factory = { context ->
             WebView(context).apply {

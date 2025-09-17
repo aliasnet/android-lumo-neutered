@@ -1,69 +1,81 @@
 package me.proton.android.lumo
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.webkit.JavascriptInterface
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
-import androidx.compose.material3.Scaffold
-import android.Manifest
-import android.annotation.SuppressLint
 import android.webkit.ServiceWorkerClient
 import android.webkit.ServiceWorkerController
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
-import me.proton.android.lumo.ui.components.PaymentDialog
-import me.proton.android.lumo.ui.theme.LumoTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.rememberCoroutineScope
-import me.proton.android.lumo.ui.components.SpeechInputSheetContent
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.Box
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ripple
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.collectLatest
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import me.proton.android.lumo.ui.components.LoadingScreen
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Icon
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.LottieCompositionFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
-import me.proton.android.lumo.models.Feature
-import me.proton.android.lumo.speech.SpeechRecognitionManager
-import me.proton.android.lumo.webview.WebViewScreen
-import me.proton.android.lumo.ui.theme.Purple
+import kotlinx.coroutines.launch
 import me.proton.android.lumo.config.LumoConfig
+import me.proton.android.lumo.di.DependencyProvider
+import me.proton.android.lumo.interfaces.WebViewProvider
 import me.proton.android.lumo.managers.BillingManagerWrapper
-import me.proton.android.lumo.managers.WebViewManager
 import me.proton.android.lumo.managers.PermissionManager
 import me.proton.android.lumo.managers.UIManager
-import me.proton.android.lumo.interfaces.WebViewProvider
-import android.widget.Toast
-import me.proton.android.lumo.di.DependencyProvider
+import me.proton.android.lumo.managers.WebViewManager
+import me.proton.android.lumo.models.Feature
+import me.proton.android.lumo.speech.SpeechRecognitionManager
+import me.proton.android.lumo.ui.components.LoadingScreen
+import me.proton.android.lumo.ui.components.PaymentDialog
+import me.proton.android.lumo.ui.components.SpeechInputSheetContent
+import me.proton.android.lumo.ui.theme.LumoTheme
+import me.proton.android.lumo.ui.theme.Purple
+import me.proton.android.lumo.webview.WebViewScreen
 
 private const val TAG = "MainActivity"
 
@@ -126,6 +138,27 @@ class MainActivity : ComponentActivity(), WebViewProvider {
 
         // Initialize managers
         initializeManagers()
+
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (webViewManager.canGoBack()) {
+                    webViewManager.goBack()
+                } else if (LumoConfig.isAccountDomain(webView?.url ?: "")) {
+                    // Handles the case after the user logged out. In this case the log in page
+                    // is displayed but the history was cleared, meaning that pressing back will
+                    // close the app. However we do have the up navigation that will take the user
+                    // to the Lumo screen. To keep thing consistent pressing back will also take the user
+                    // to the Lumo screen.
+                    webViewManager.loadUrl(LumoConfig.LUMO_URL)
+                    webViewManager.clearHistory()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
 
         Log.d(TAG, "onCreate called")
         Log.d(TAG, LumoConfig.getConfigInfo())
@@ -197,6 +230,12 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                 val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                 val scope = rememberCoroutineScope()
 
+                LaunchedEffect(uiState.hasSeenLumoContainer) {
+                    if (uiState.hasSeenLumoContainer) {
+                        webViewManager.clearHistory()
+                    }
+                }
+
                 LaunchedEffect(uiState.showSpeechSheet) {
                     Log.d(
                         TAG,
@@ -256,18 +295,42 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                     topBar = {
                         if (showBackButton.value) {
                             TopAppBar(
-                                title = { Text(stringResource(id = R.string.back_to_lumo)) },
+                                title = {},
                                 navigationIcon = {
-                                    IconButton(onClick = {
-                                        // Simplified back logic: always go to Lumo URL
-                                        Log.d(TAG, "Back button clicked, navigating to Lumo")
-                                        webView?.loadUrl(LumoConfig.LUMO_URL)
-                                    }) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(24.dp)) // clip ripple to rounded shape
+                                            .clickable(
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = ripple(
+                                                    // ripple params
+                                                    bounded = true,
+                                                )
+                                            ) {
+                                                Log.d(
+                                                    TAG,
+                                                    "Back button clicked, navigating to Lumo"
+                                                )
+                                                if (webViewManager.canGoBack()) {
+                                                    webViewManager.goBack()
+                                                } else {
+                                                    webViewManager.loadUrl(LumoConfig.LUMO_URL)
+                                                    webViewManager.clearHistory()
+                                                }
+                                            }
+                                            .padding(all = 8.dp) // optional padding
+                                    ) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.lumo_icon),
-                                            contentDescription = stringResource(id = R.string.back_to_lumo),
+                                            contentDescription = null,
                                             tint = Color.Unspecified,
                                             modifier = Modifier.height(25.dp)
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            text = stringResource(id = R.string.back_to_lumo),
+                                            style = MaterialTheme.typography.titleLarge
                                         )
                                     }
                                 }
@@ -280,10 +343,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        // Ensure navigation stack is initialized with initialUrl
-                        if (initialUrl != null && viewModel.navigationStack.value.isEmpty()) {
-                            viewModel.onNavigation(initialUrl!!, "push")
-                        }
                         // Always show WebViewScreen if initialUrl is not null
                         if (initialUrl != null) {
                             WebViewScreen(
@@ -423,7 +482,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         uiManager.initializeUI()
 
         // Initialize WebView manager first
-        webViewManager = WebViewManager(this)
+        webViewManager = WebViewManager()
 
         // Initialize permission manager with callback for permission results and WebView manager
         permissionManager = PermissionManager(this, { permission, isGranted ->

@@ -4,7 +4,6 @@ import android.util.Log
 import android.webkit.JavascriptInterface
 import kotlinx.coroutines.flow.update
 import me.proton.android.lumo.MainActivity
-import me.proton.android.lumo.models.NavigationEntry
 import me.proton.android.lumo.config.LumoConfig
 
 private const val TAG = "WebAppInterface"
@@ -58,7 +57,6 @@ class WebAppInterface(private val activity: MainActivity) {
     fun onNavigation(url: String, type: String) {
         Log.d(TAG, "Navigation: $url, type: $type")
         activity.runOnUiThread {
-            activity.viewModel.onNavigation(url, type)
             // Simplified back button logic: only show on account pages
             val isAccountPage = LumoConfig.isAccountDomain(url)
             activity.showBackButton.value = isAccountPage

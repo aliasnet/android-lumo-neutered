@@ -9,12 +9,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.update
-import me.proton.android.lumo.models.NavigationEntry
+import kotlinx.coroutines.launch
+import me.proton.android.lumo.config.LumoConfig
 import me.proton.android.lumo.speech.SpeechRecognitionManager
 import me.proton.android.lumo.utils.isHostReachable
-import me.proton.android.lumo.config.LumoConfig
 
 private const val TAG = "MainActivityViewModel"
 
@@ -55,10 +54,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         MutableStateFlow<String?>(LumoConfig.LUMO_URL) // Start with default URL
     val initialUrl: StateFlow<String?> = _initialUrl.asStateFlow()
     private var checkCompleted = false // Prevent re-checking on config change
-
-    // Navigation stack (now managed in ViewModel)
-    private val _navigationStack = MutableStateFlow<List<NavigationEntry>>(emptyList())
-    val navigationStack: StateFlow<List<NavigationEntry>> = _navigationStack
 
     init {
         setupSpeechRecognition()
@@ -249,56 +244,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
         } else {
             Log.d(TAG, "JavaScript insertPromptAndSubmit executed successfully.")
         }
-    }
-
-    // --- Navigation Event Handler ---
-    fun onNavigation(url: String, type: String) {
-        Log.d(
-            TAG,
-            "Navigation: $url, type: $type, current stack size: ${_navigationStack.value.size}"
-        )
-        when (type) {
-            "push" -> {
-                // Only push if not duplicate
-                if (_navigationStack.value.lastOrNull()?.url != url) {
-                    _navigationStack.value += NavigationEntry(url)
-                    Log.d(
-                        TAG,
-                        "Added to navigation stack. New size: ${_navigationStack.value.size}"
-                    )
-                }
-                // Show loading if navigating away from Lumo
-                if (uiState.value.isLumoPage) {
-                    _uiState.update { it.copy(isLoading = true, hasSeenLumoContainer = false) }
-                }
-            }
-
-            "replace" -> {
-                if (_navigationStack.value.isNotEmpty()) {
-                    _navigationStack.value =
-                        _navigationStack.value.dropLast(1) + NavigationEntry(url)
-                    Log.d(TAG, "Replaced last entry in navigation stack")
-                } else {
-                    _navigationStack.value = listOf(NavigationEntry(url))
-                    Log.d(TAG, "Added to empty navigation stack")
-                }
-            }
-
-            "pop" -> {
-                if (_navigationStack.value.isNotEmpty()) {
-                    _navigationStack.value = _navigationStack.value.dropLast(1)
-                    Log.d(
-                        TAG,
-                        "Removed from navigation stack. New size: ${_navigationStack.value.size}"
-                    )
-                }
-                if (uiState.value.isLumoPage) {
-                    _uiState.update { it.copy(isLoading = true, hasSeenLumoContainer = false) }
-                }
-            }
-        }
-        // Log the stack after every change
-        Log.d(TAG, "Navigation stack: ${_navigationStack.value.map { it.url }}")
     }
 
     fun setIsLumoPage(isLumo: Boolean) {

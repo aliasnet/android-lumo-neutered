@@ -6,7 +6,6 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebView
-import androidx.activity.result.ActivityResultLauncher
 
 private const val TAG = "WebViewManager"
 
@@ -14,7 +13,7 @@ private const val TAG = "WebViewManager"
  * Manager class that handles WebView-related operations including file chooser functionality.
  * Separates WebView concerns from MainActivity.
  */
-class WebViewManager(private val activity: Activity) {
+class WebViewManager() {
 
     // File chooser callback
     var filePathCallback: ValueCallback<Array<Uri>>? = null
@@ -111,6 +110,10 @@ class WebViewManager(private val activity: Activity) {
     fun clearCache(includeDiskFiles: Boolean = false) {
         _webView?.clearCache(includeDiskFiles)
         Log.d(TAG, "WebView cache cleared")
+    }
+
+    fun clearHistory() {
+        _webView?.clearHistory()
     }
 
     /**
