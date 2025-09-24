@@ -69,6 +69,7 @@ import me.proton.android.lumo.models.Feature
 import me.proton.android.lumo.speech.SpeechRecognitionManager
 import me.proton.android.lumo.ui.components.LoadingScreen
 import me.proton.android.lumo.ui.components.PaymentDialog
+import me.proton.android.lumo.ui.components.SimpleAlertDialog
 import me.proton.android.lumo.ui.components.SpeechInputSheetContent
 import me.proton.android.lumo.ui.theme.LumoTheme
 import me.proton.android.lumo.ui.theme.Purple
@@ -186,15 +187,6 @@ class MainActivity : ComponentActivity() {
                                 event.transactionId,
                                 event.resultJson
                             )
-                        }
-
-                        is UiEvent.ShowBillingUnavailable -> {
-                            // Side-effect host: show a dialog (and optional toast).
-                            billingManagerWrapper.showBillingUnavailableDialog(webView)
-                            Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_LONG)
-                                .show()
-                            // If a payment dialog was requested earlier, make sure it's not shown.
-                            viewModel.dismissPaymentDialog()
                         }
                     }
                 }
@@ -376,8 +368,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             } ?: run {
                                 // When billing is unavailable, show a simple dialog informing the user
-                                if (uiState.showPaymentDialog) {
-                                    billingManagerWrapper.showBillingUnavailableDialog(webView)
+                                SimpleAlertDialog(uiState.showPaymentDialog) {
                                     viewModel.dismissPaymentDialog()
                                 }
                             }

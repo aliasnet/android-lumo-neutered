@@ -42,7 +42,6 @@ sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
     object RequestAudioPermission : UiEvent()
     data class ForwardBillingResult(val transactionId: String, val resultJson: String) : UiEvent()
-    data class ShowBillingUnavailable(val message: String) : UiEvent()
 }
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
@@ -119,10 +118,6 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                                 )
                             )
                         )
-                    }
-
-                    is WebEvent.BillingUnavailable -> {
-                        _eventChannel.trySend(UiEvent.ShowBillingUnavailable(event.message))
                     }
 
                     is WebEvent.PostResult -> {

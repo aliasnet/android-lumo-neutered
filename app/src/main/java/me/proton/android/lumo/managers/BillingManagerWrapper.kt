@@ -199,25 +199,6 @@ class BillingManagerWrapper(private val activity: MainActivity) {
     fun getBillingManager(): BillingManager? = billingManager
 
     /**
-     * Show a user-friendly dialog when billing is unavailable by injecting JavaScript
-     */
-    fun showBillingUnavailableDialog(webView: WebView?) {
-        webView?.evaluateJavascript(
-            """
-            if (window.Android && window.Android.onBillingUnavailable) {
-                window.Android.onBillingUnavailable('In-app purchases are not available on this device. This may be due to an outdated Google Play Store version or device compatibility. Please try using the web version of Lumo for subscriptions.');
-            } else {
-                console.warn('Lumo: Billing unavailable - Google Play Services not accessible');
-                // Fallback: show alert if the web app doesn't handle onBillingUnavailable
-                if (typeof alert !== 'undefined') {
-                    alert('In-app purchases are not available on this device. Please try using the web version of Lumo for subscriptions.');
-                }
-            }
-        """.trimIndent(), null
-        )
-    }
-
-    /**
      * Generic method to send data to the WebView's JavaScript API using JavascriptInterface for callback
      */
     private fun <T> sendDataToWebView(

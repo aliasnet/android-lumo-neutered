@@ -49,12 +49,6 @@ class WebAppInterface(private val viewModel: MainActivityViewModel) {
     }
 
     @JavascriptInterface
-    fun onBillingUnavailable(message: String) {
-        Log.d(TAG, "onBillingUnavailable: $message")
-        viewModel.onWebEvent(WebEvent.BillingUnavailable(message))
-    }
-
-    @JavascriptInterface
     fun log(message: String) {
         Log.d(TAG, "Web logs: $message")
     }
