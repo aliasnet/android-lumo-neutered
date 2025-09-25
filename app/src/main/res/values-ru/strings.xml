@@ -63,7 +63,69 @@
   <string name="month">Месяц</string>
   <string name="months">Месяц</string>
   <string name="cancelled">Отменено</string>
+  <!-- Time Periods -->
+  <string name="period_day">день</string>
+  <string name="period_week">неделя</string>
+  <string name="period_month">месяц</string>
+  <string name="period_quarter">квартал</string>
+  <string name="period_6_months">6 месяцев</string>
+  <string name="period_year">год</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 месяц</string>
+  <string name="plan_duration_12_months">12 месяцев</string>
+  <string name="plan_duration_n_months">%1$d Месяцев</string>
   <!-- Subscription Status -->
   <string name="subscription_renews">Ваша подписка автоматически продлевается %1$s</string>
   <string name="subscription_expires">Срок действия вашей подписки истекает %1$s</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Unable to connect to server. Please check your internet connection.</string>
+  <string name="error_network_connection">Connection failed. Please check your internet connection.</string>
+  <string name="error_network_no_route">Unable to reach server. Please check your internet connection.</string>
+  <string name="error_network_port_unreachable">Сервис временно недоступен.</string>
+  <string name="error_network_socket">Network connection error. Please try again.</string>
+  <string name="error_network_io">Network error occurred. Please try again.</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">Request timed out. Please try again.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Secure connection failed. Please check your device\'s date and time.</string>
+  <string name="error_ssl_peer_unverified">Server certificate verification failed.</string>
+  <string name="error_ssl_protocol">Secure connection protocol error.</string>
+  <string name="error_ssl_general">Secure connection error.</string>
+  <string name="error_certificate">Server certificate error.</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Authentication failed. Please sign in again.</string>
+  <string name="error_auth_forbidden">Access denied.</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">Requested resource not found.</string>
+  <string name="error_client_protocol">Protocol error occurred.</string>
+  <string name="error_client_service_unknown">Service not supported.</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Server error. Please try again later.</string>
+  <string name="error_server_bad_gateway">Service temporarily unavailable. Please try again.</string>
+  <string name="error_server_unavailable">Service temporarily unavailable. Please try again later.</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">An unexpected error occurred. Please try again.</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">This device\'s Google Play Billing version is too old. Please update Google Play Store or use the web version of Lumo.</string>
+  <string name="billing_unavailable_not_supported">In-app purchases are not supported on this device. Please use the web version of Lumo for subscriptions.</string>
+  <string name="billing_unavailable_generic">Billing unavailable: Please ensure Google Play Store is installed, updated and you are logged in</string>
+  <string name="billing_service_not_connected">Billing service not connected. Please try again.</string>
+  <string name="billing_google_play_required">Google Play Store is required for purchases</string>
+  <string name="billing_cannot_access_google_play">Cannot access Google Play Store</string>
+  <string name="billing_services_unavailable">Billing services unavailable: %1$s</string>
+  <string name="billing_api_not_available">Google Play Billing API not available</string>
+  <string name="billing_initialization_failed">Billing initialization failed: %1$s</string>
+  <string name="billing_connection_failed">Failed to connect to billing service: %1$s</string>
+  <string name="billing_application_context_unavailable">Application context unavailable</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Monthly subscription</string>
+  <string name="subscription_annual_description">Annual subscription (save 20%)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Failed to load subscriptions: %1$s</string>
+  <string name="error_loading_subscriptions">Error loading subscriptions: %1$s</string>
+  <string name="error_no_plans_with_pricing">No plans with pricing information available</string>
+  <string name="error_problem_loading_subscriptions">There was a problem loading subscriptions</string>
+  <string name="error_failed_to_load_plans">Failed to load plans: %1$s</string>
+  <string name="error_loading_plans">Error loading plans: %1$s</string>
+  <string name="error_webview_not_available">WebView not available</string>
 </resources>

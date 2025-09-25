@@ -63,7 +63,69 @@
   <string name="month">Miesiąc</string>
   <string name="months">Mies.</string>
   <string name="cancelled">Anulowane</string>
+  <!-- Time Periods -->
+  <string name="period_day">dzień</string>
+  <string name="period_week"/>
+  <string name="period_month">tydzień</string>
+  <string name="period_quarter">kwartał</string>
+  <string name="period_6_months">6 Miesięcy</string>
+  <string name="period_year">rok</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 miesiąc</string>
+  <string name="plan_duration_12_months">12 miesięcy</string>
+  <string name="plan_duration_n_months">%1$d miesięcy</string>
   <!-- Subscription Status -->
   <string name="subscription_renews">Twoja subskrypcja automatycznie odnawia się w dniu %1$s</string>
   <string name="subscription_expires">Twoja subskrypcja wygasa w dniu %1$s</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Nie można połączyć się z serwerem, sprawdź połączenie sieciowe.</string>
+  <string name="error_network_connection">Połączenie nie powiodło się, sprawdź połączenie sieciowe.</string>
+  <string name="error_network_no_route">Nie można znaleźć serwera, sprawdź połączenie sieciowe.</string>
+  <string name="error_network_port_unreachable">Usługa tymczasowo niedostępna.</string>
+  <string name="error_network_socket">Połączenie sieciowe nie powiodło się, sprobój ponownie.</string>
+  <string name="error_network_io">Wystąpił błąd sieci. Spróbuj ponownie.</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">Upłynął limit czasu żądania. Spróbuj ponownie.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Nie udało się nawiązać zabezpieczonego połączenia. Sprawdź datę i godzinę na swoim urządzeniu.</string>
+  <string name="error_ssl_peer_unverified">Weryfikacja certyfikatów serwera nie powiodła się.</string>
+  <string name="error_ssl_protocol">Błąd protokołu zabezpieczonego połączenia.</string>
+  <string name="error_ssl_general">Błąd zabezpieczonego połączenia.</string>
+  <string name="error_certificate">Błąd certyfikatu serwera.</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Uwierzytelnianie nie powiodło się, zaloguj się ponownie.</string>
+  <string name="error_auth_forbidden">Odmowa dostępu.</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">Wymagany zasób niedostępny</string>
+  <string name="error_client_protocol">Wystąpił błąd protokołu.</string>
+  <string name="error_client_service_unknown">Usługa nieobsługiwana.</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Błąd serwera. Spróbuj ponownie później.</string>
+  <string name="error_server_bad_gateway">Usługa jest tymczasowo niedostępna. Spróbuj ponownie później.</string>
+  <string name="error_server_unavailable">Usługa jest chwilowo niedostępna. Spróbuj ponownie później.</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">Wystąpił nieoczekiwany błąd. Spróbuj ponownie.</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">Wersja Google Play na tym urządzeniu jest za nieaktualna. Zaktualizuj Sklep Google Play albo użyj przeglądarkowej wersji Lumo.</string>
+  <string name="billing_unavailable_not_supported">Zakupy w aplikacji nie są możliwe na tym urządzeniu. Proszę użyć przeglądarkowej wersji Lumo, żeby rozpocząć subskrypcje.</string>
+  <string name="billing_unavailable_generic">Billing niedostępny: Upewnij się, że Sklep Google Play jest zainstalowany, zaktualizowany i że jesteś zalogowany.</string>
+  <string name="billing_service_not_connected">Serwis Billingowy niepołączony. Spróbuj ponownie.</string>
+  <string name="billing_google_play_required">Sklep Google Play jest wymagany do wykonywania zakupów.</string>
+  <string name="billing_cannot_access_google_play">Sklep Google Play niedostępny.</string>
+  <string name="billing_services_unavailable">Serwis billingu niedostępny: %1$s</string>
+  <string name="billing_api_not_available">Google Play Billing API niedostępne.</string>
+  <string name="billing_initialization_failed">Tworzenie bilingu nie powiodła się: %1$s</string>
+  <string name="billing_connection_failed">Nie udało się połączyć z serwisem bilingowym: %1$s</string>
+  <string name="billing_application_context_unavailable">Kontekst aplikacji niedostępny</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Miesięczna subskrypcja</string>
+  <string name="subscription_annual_description">Roczna subskrypcja (oszczędzasz 20%)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Failed to load subscriptions: %1$s</string>
+  <string name="error_loading_subscriptions">Error loading subscriptions: %1$s</string>
+  <string name="error_no_plans_with_pricing">No plans with pricing information available</string>
+  <string name="error_problem_loading_subscriptions">There was a problem loading subscriptions</string>
+  <string name="error_failed_to_load_plans">Failed to load plans: %1$s</string>
+  <string name="error_loading_plans">Error loading plans: %1$s</string>
+  <string name="error_webview_not_available">WebView not available</string>
 </resources>

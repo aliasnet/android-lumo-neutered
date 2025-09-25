@@ -63,7 +63,69 @@
   <string name="month">Měsíc</string>
   <string name="months">Měsíc</string>
   <string name="cancelled">Zrušeno</string>
+  <!-- Time Periods -->
+  <string name="period_day">den</string>
+  <string name="period_week">týden</string>
+  <string name="period_month">měsíc</string>
+  <string name="period_quarter">čtvrtletí</string>
+  <string name="period_6_months">6 měsíců</string>
+  <string name="period_year">rok</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 měsíc</string>
+  <string name="plan_duration_12_months">12 měsíců</string>
+  <string name="plan_duration_n_months">%1$d Měsíců</string>
   <!-- Subscription Status -->
   <string name="subscription_renews">Vaše předplatné se automaticky obnoví dne %1$s</string>
   <string name="subscription_expires">Vaše předplatné vyprší dne %1$s</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Nelze se připojit k serveru. Prosím zkontrolujte vaše internetové připojení.</string>
+  <string name="error_network_connection">Připojení selhalo. Prosím zkontrolujte vaše internetové připojení.</string>
+  <string name="error_network_no_route">Nepodařilo se připojit na server. Zkontrolujte vaše internetové připojení.</string>
+  <string name="error_network_port_unreachable">Služba dočasně nedostupná.</string>
+  <string name="error_network_socket">Chyba síťového připojení. Prosím zkuste to znovu.</string>
+  <string name="error_network_io">Došlo k síťové chybě. Zkuste to prosím znovu.</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">Požadavek vypršel. Prosím zkuste to znovu.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Bezpečné připojení selhalo. Prosím zkontrolujte datum a čas na vašem zařízení.</string>
+  <string name="error_ssl_peer_unverified">Ověření certifikátu serveru selhalo.</string>
+  <string name="error_ssl_protocol">Chyba protokolu bezpečného připojení.</string>
+  <string name="error_ssl_general">Chyba bezpečného připojení.</string>
+  <string name="error_certificate">Chyba serverového certifikátu.</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Ověření selhalo. Přihlaste se prosím znovu.</string>
+  <string name="error_auth_forbidden">Přístup zamítnut.</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">Požadovaný zdroj nenalezen.</string>
+  <string name="error_client_protocol">Došlo k chybě protokolu.</string>
+  <string name="error_client_service_unknown">Služba není podporována.</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Chyba serveru. Zkuste to prosím později.</string>
+  <string name="error_server_bad_gateway">Služba je dočasně nedostupná. Prosím zkuste to znovu.</string>
+  <string name="error_server_unavailable">Služba je dočasně nedostupná. Prosím zkuste to znovu později.</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">Došlo k neočekávané chybě. Zkuste to znovu.</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">Verze fakturační služby Google Play na tomto zařízení je příliš stará. Prosím aktualizujte obchod Google Play, nebo použijte webovou verzi Lumo.</string>
+  <string name="billing_unavailable_not_supported">Nákupy v aplikaci nejsou podporované na vašem zařízení. Prosím využijte webovou verzi Lumo pro předplatné.</string>
+  <string name="billing_unavailable_generic">Vyúčtování není dostupné: Prosím ujistěte se že Google Play Store je nainstalován, aktualizován a jste přihlášeni.</string>
+  <string name="billing_service_not_connected">Služba vyúčtování není připojena. Prosím zkuste to znovu.</string>
+  <string name="billing_google_play_required">Pro nákupy v aplikaci je vyžadován obchod Google Play.</string>
+  <string name="billing_cannot_access_google_play">Nelze získat přístup k obchodu Google Play.</string>
+  <string name="billing_services_unavailable">Fakturační služba je nedostupná: %1$s</string>
+  <string name="billing_api_not_available">API vyúčtování Google Play není dostupné</string>
+  <string name="billing_initialization_failed">Inicializace vyúčtování selhala: %1$s</string>
+  <string name="billing_connection_failed">Chyba při připojení ke službě vyúčtování: %1$s</string>
+  <string name="billing_application_context_unavailable">Kontext aplikace není dostupný</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Měsíční předplatné</string>
+  <string name="subscription_annual_description">Roční předplatné (ušetříte 20%)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Nepodařilo se načíst předplatné: %1$s</string>
+  <string name="error_loading_subscriptions">Chyba při načítání předplatného: %1$s</string>
+  <string name="error_no_plans_with_pricing">Žádné tarify s dostupnými informacemi o cenách</string>
+  <string name="error_problem_loading_subscriptions">Při načítání předplatného došlo k problému</string>
+  <string name="error_failed_to_load_plans">Nepodařilo se načíst tarify: %1$s</string>
+  <string name="error_loading_plans">Chyba při načítání tarifů: %1$s</string>
+  <string name="error_webview_not_available">WebView není k dispozici</string>
 </resources>
