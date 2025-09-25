@@ -205,26 +205,11 @@ fun injectEssentialJavascript(webView: WebView) {
                             p.textContent = prompt.trim(); 
                             editor.appendChild(p);
                             editor.focus();
-
-                            setTimeout(() => {
-                                const enterEvent = new KeyboardEvent('keydown', {
-                                    key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
-                                    bubbles: true, cancelable: true
-                                });
-                                editor.dispatchEvent(enterEvent);
-
-                                setTimeout(() => {
-                                    editor.innerHTML = '';
-                                    console.log('Editor cleared after prompt submission');
-                                    
-                                    // End programmatic operation after completion
-                                    if (window.endProgrammaticOperation) {
-                                        window.endProgrammaticOperation();
-                                    }
-                                }, 200);
-
-                                console.log('Prompt submitted');
-                            }, 100);
+                            
+                            if (window.endProgrammaticOperation) {
+                                window.endProgrammaticOperation();
+                            }
+                            
                             return true;
                         } else if (attempts < maxAttempts) {
                             console.log('Editor not found, retrying... (attempt ' + (attempts + 1) + ' of ' + maxAttempts + ')');
