@@ -63,7 +63,69 @@
   <string name="month">Maand</string>
   <string name="months">Maand</string>
   <string name="cancelled">Geannuleerd</string>
+  <!-- Time Periods -->
+  <string name="period_day">dag</string>
+  <string name="period_week">week</string>
+  <string name="period_month">maand</string>
+  <string name="period_quarter">kwartaal</string>
+  <string name="period_6_months">6 maanden</string>
+  <string name="period_year">jaar</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 maand</string>
+  <string name="plan_duration_12_months">12 maanden</string>
+  <string name="plan_duration_n_months">%1$d Maanden</string>
   <!-- Subscription Status -->
   <string name="subscription_renews">Uw abonnement wordt automatisch verlengd op %1$s</string>
   <string name="subscription_expires">Uw abonnement verloopt op %1$s</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Kan met de server geen verbinding maken, controleer uw Internetverbinding.</string>
+  <string name="error_network_connection">Verbinding mislukt, controleer uw Internetverbinding.</string>
+  <string name="error_network_no_route">Kan met de server geen verbinding maken, controleer uw Internetverbinding.</string>
+  <string name="error_network_port_unreachable">Dienst tijdelijk niet beschikbaar.</string>
+  <string name="error_network_socket">Netwerk connectie fout. Probeer opnieuw</string>
+  <string name="error_network_io">Er is een netwerkfout opgetreden. Probeer het nogmaals.</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">Verzoek verlopen. Probeer opnieuw.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Veilige verbinding mislukt. Controleer de datum en tijd van uw apparaat.</string>
+  <string name="error_ssl_peer_unverified">Verificatie van servercertificaat is mislukt.</string>
+  <string name="error_ssl_protocol">Fout in het beveiligde verbindingsprotocol.</string>
+  <string name="error_ssl_general">Fout met beveiligde verbinding.</string>
+  <string name="error_certificate">Server certificaat fout.</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Authenticatie mislukt. Meld u alstublieft opnieuw aan.</string>
+  <string name="error_auth_forbidden">Toegang geweigerd.</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">Gevraagde bron niet gevonden.</string>
+  <string name="error_client_protocol">Protocol error</string>
+  <string name="error_client_service_unknown">Service wordt niet ondersteund.</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Serverfout. Probeer het later opnieuw.</string>
+  <string name="error_server_bad_gateway">Dienst is tijdelijk niet beschikbaar. Probeer later opnieuw.</string>
+  <string name="error_server_unavailable">Dienst is tijdelijk niet beschikbaar. Probeer later opnieuw.</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">Er is een onverwachte fout opgetreden. Probeer het opnieuw.</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">De Google Play Billing-versie van dit apparaat is te oud. Update Google Play Store of gebruik de webversie van Lumo.</string>
+  <string name="billing_unavailable_not_supported">In-app aankopen worden niet ondersteund op dit apparaat. Gebruik de webversie van Lumo voor abonnementen.</string>
+  <string name="billing_unavailable_generic">Facturering niet beschikbaar: Zorg ervoor dat de Google Play Store is geïnstalleerd, bijgewerkt en dat u bent ingelogd</string>
+  <string name="billing_service_not_connected">Factureringsservice niet verbonden. Probeer het alsjeblieft nog eens.</string>
+  <string name="billing_google_play_required">Google Play Store is vereist voor aankopen</string>
+  <string name="billing_cannot_access_google_play">Kan geen toegang krijgen tot Google Play Store</string>
+  <string name="billing_services_unavailable">Factureringsdiensten niet beschikbaar: %1$s</string>
+  <string name="billing_api_not_available">Google Play Billing API niet beschikbaar</string>
+  <string name="billing_initialization_failed">Initialisatie van facturering mislukt: %1$s</string>
+  <string name="billing_connection_failed">Verbinding maken met factureringsservice is mislukt: %1$s</string>
+  <string name="billing_application_context_unavailable">Applicatiecontext niet beschikbaar</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Maandabonnement</string>
+  <string name="subscription_annual_description">Jaarabonnement (bespaar 20%)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Kon abonnementen niet laden: %1$s</string>
+  <string name="error_loading_subscriptions">Fout bij het ophalen van abonnementen: %1$s</string>
+  <string name="error_no_plans_with_pricing">No plans with pricing information available</string>
+  <string name="error_problem_loading_subscriptions">There was a problem loading subscriptions</string>
+  <string name="error_failed_to_load_plans">Failed to load plans: %1$s</string>
+  <string name="error_loading_plans">Error loading plans: %1$s</string>
+  <string name="error_webview_not_available">WebView not available</string>
 </resources>

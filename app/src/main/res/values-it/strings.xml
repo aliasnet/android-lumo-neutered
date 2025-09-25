@@ -1,69 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Lumo</string>
-  <string name="back_to_lumo">Torna a Lumo</string>
-  <string name="loading">Caricamento di Lumo</string>
-  <string name="error_generic">Si è verificato un errore</string>
-  <string name="error_url">Errore nella determinazione dell\'URL iniziale.</string>
-  <string name="unable_to_connect">Connessione impossibile</string>
-  <string name="please_check_your_internet_connection_and_try_again">Controlla la tua connessione internet e riprova</string>
+  <string name="back_to_lumo">Torna a Lumo</string>
+  <string name="loading">Caricamento di Lumo in corso</string>
+  <string name="error_generic">Si è verificato un errore</string>
+  <string name="error_url">Determinazione dell\'URL iniziale non riuscita</string>
+  <string name="unable_to_connect">Connessione a Internet non riuscita</string>
+  <string name="please_check_your_internet_connection_and_try_again">Verifica la connessione a Internet</string>
   <string name="retry_button">Riprova</string>
-  <string name="retry_connection">Riprova connessione</string>
+  <string name="retry_connection">Riprova la connessione</string>
   <!-- Loading Messages -->
-  <string name="loading_message_1">Richiedo attenzione… e potenza di elaborazione…</string>
-  <string name="loading_message_2">Prendo a zampate le barre di caricamento...</string>
-  <string name="loading_message_3">Scaccio i broker di dati…</string>
-  <string name="loading_message_4">Inseguo topi digitali…</string>
-  <string name="loading_message_5">Faccio cadere oggetti da scaffali invisibili…</string>
-  <string name="loading_message_6">Miaocaricamento… attendi…</string>
-  <string name="loading_message_7">Faccio un pisolino al sole… ci siamo quasi…</string>
-  <string name="loading_message_8">Pianifico il dominio del mondo… e l\'avvio della tua app…</string>
-  <string name="loading_message_9">Faccio le fusa per avviare i motori…</string>
-  <string name="loading_message_10">Affilo gli artigli sulla tua tastiera…</string>
-  <string name="loading_message_11">Mi stiro prima del grande salto...</string>
+  <string name="loading_message_1">Voglio i grattini… e capacità di elaborazione…</string>
+  <string name="loading_message_2">Prendo a zampate la barra di caricamento...</string>
+  <string name="loading_message_3">Scaccio via i broker di dati...</string>
+  <string name="loading_message_4">Seguo le traccie digitali…</string>
+  <string name="loading_message_5">Faccio cadere i file dagli scaffali…</string>
+  <string name="loading_message_6">Caricamiao...</string>
+  <string name="loading_message_7">Faccio un pisolino al sole… ancora un attimo...</string>
+  <string name="loading_message_8">Pianifico il dominio del mondo… mentre avvio l\'app…</string>
+  <string name="loading_message_9">Faccio le fusa per alzarmi prima...</string>
+  <string name="loading_message_10">Affilo gli artigli sulla tastiera…</string>
+  <string name="loading_message_11">Mi stiro prima del grande salto...</string>
   <!-- MainActivity Status/Errors -->
-  <string name="speech_status_network">Riconoscimento elaborato da Google</string>
-  <string name="speech_status_on_device">Sul dispositivo • Privato</string>
-  <string name="permission_mic_rationale">Autorizzazione del microfono necessaria per l\'input vocale</string>
-  <string name="speech_not_available">Riconoscimento vocale non disponibile</string>
-  <string name="speech_error_format">Errore vocale: %1$s</string>
+  <string name="speech_status_network">Riconoscimento elaborato da Google</string>
+  <string name="speech_status_on_device">Nel dispositivo • Privato</string>
+  <string name="permission_mic_rationale">Accesso al microfono necessario per l\'inserimento vocale</string>
+  <string name="speech_not_available">Riconoscimento vocale non disponibile</string>
+  <string name="speech_error_format">Riconoscimento non riuscito: %1$s</string>
   <!-- Placeholder for error message -->
-  <string name="submit_prompt_failed">Impossibile inserire il prompt nella webview</string>
-  <string name="start_listener_error_format">Errore durante l\'avvio dell\'ascolto: %1$s</string>
+  <string name="submit_prompt_failed">Inserimento della richiesta in Webview non riuscito</string>
+  <string name="start_listener_error_format">Avvio dell\'ascolto non riuscito: %1$s</string>
   <!-- Placeholder for exception message -->
-  <string name="fab_speak_prompt_desc">Pronuncia il prompt</string>
-  <string name="speech_intent_prompt">Pronuncia il tuo prompt</string>
+  <string name="fab_speak_prompt_desc">Parla ora</string>
+  <string name="speech_intent_prompt">Parla ora</string>
   <!-- Speech Input Sheet -->
-  <string name="speech_sheet_cancel_desc">Annulla input vocale</string>
-  <string name="speech_sheet_submit_desc">Invia prompt</string>
-  <string name="speech_sheet_listening">In ascolto…</string>
-  <string name="speech_sheet_waiting">Tocca Invia o parla</string>
+  <string name="speech_sheet_cancel_desc">Annulla la richiesta</string>
+  <string name="speech_sheet_submit_desc">Invia la richiesta</string>
+  <string name="speech_sheet_listening">Ascolto in corso</string>
+  <string name="speech_sheet_waiting">Seleziona \"Invia\" o parla</string>
   <!-- Speech Recognizer Errors -->
-  <string name="speech_error_audio">Errore di registrazione audio</string>
-  <string name="speech_error_client">Errore del client</string>
-  <string name="speech_error_insufficient_permissions">Autorizzazioni insufficienti</string>
-  <string name="speech_error_network">Errore di rete</string>
-  <string name="speech_error_network_timeout">Timeout di rete</string>
-  <string name="speech_error_no_match">Nessuna corrispondenza vocale</string>
-  <string name="speech_error_recognizer_busy">Sistema di riconoscimento occupato</string>
-  <string name="speech_error_server">Errore del server</string>
-  <string name="speech_error_speech_timeout">Nessun input vocale</string>
-  <string name="speech_error_unknown">Errore di riconoscimento vocale sconosciuto</string>
+  <string name="speech_error_audio">Registrazione dell\'audio non riuscita</string>
+  <string name="speech_error_client">Si è verificato un errore nel client</string>
+  <string name="speech_error_insufficient_permissions">Autorizzazione necessaria</string>
+  <string name="speech_error_network">Connessione non riuscita</string>
+  <string name="speech_error_network_timeout">Tentativo di connessione scaduto</string>
+  <string name="speech_error_no_match">Nessuna corrispondenza</string>
+  <string name="speech_error_recognizer_busy">Riconoscimento attualmente non disponibile</string>
+  <string name="speech_error_server">Si è verificato un errore nel server</string>
+  <string name="speech_error_speech_timeout">Nessun inserimento vocale</string>
+  <string name="speech_error_unknown">Si è verificato un errore nel riconoscimento</string>
   <!-- SUbscription Strings -->
-  <string name="payment_title">Migliora la tua esperienza IA</string>
-  <string name="payment_subtitle">Goditi un trattamento preferenziale e funzionalità premium con Lumo Plus.</string>
-  <string name="payment_checking">Controllo stato abbonamento…</string>
-  <string name="payment_loading_plans">Caricamento piani di abbonamento…</string>
-  <string name="payment_no_plans_available">Nessun piano di abbonamento è attualmente disponibile</string>
-  <string name="subscription_renewal">Il piano selezionato si rinnoverà automaticamente finché non verrà annullato</string>
-  <string name="subscription_buy_lumo">Acquista Lumo Plus</string>
-  <string name="subscription_manage">Gestisci abbonamento</string>
-  <string name="subscription_manage_info">Questo abbonamento deve essere gestito tramite l\'interfaccia web.</string>
+  <string name="payment_title">Migliora l\'esperienza IA</string>
+  <string name="payment_subtitle">Passa a Lumo Plus per funzionalità premium e un servizio prioritario</string>
+  <string name="payment_checking">Verifica dell\'abbonamento in corso</string>
+  <string name="payment_loading_plans">Caricamento dei piani a pagamento in corso</string>
+  <string name="payment_no_plans_available">Nessun piano a pagamento disponibile</string>
+  <string name="subscription_renewal">Si rinnova automaticamente eccetto annullamento</string>
+  <string name="subscription_buy_lumo">Acquista Lumo Plus</string>
+  <string name="subscription_manage">Gestisci l\'abbonamento</string>
+  <string name="subscription_manage_info">Gestione dell\'abbonamento disponibile solamente nell\'app web</string>
   <string name="for_price">Per</string>
   <string name="month">Mese</string>
-  <string name="months">Mese</string>
+  <string name="months">Mesi</string>
   <string name="cancelled">Annullato</string>
+  <!-- Time Periods -->
+  <string name="period_day">giorno</string>
+  <string name="period_week">settimana</string>
+  <string name="period_month">mese</string>
+  <string name="period_quarter">trimestre</string>
+  <string name="period_6_months">6 mesi</string>
+  <string name="period_year">anno</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 mese</string>
+  <string name="plan_duration_12_months">12 mesi</string>
+  <string name="plan_duration_n_months">%1$d mesi</string>
   <!-- Subscription Status -->
-  <string name="subscription_renews">Il tuo abbonamento si rinnoverà automaticamente il %1$s</string>
-  <string name="subscription_expires">Il tuo abbonamento scade il %1$s</string>
+  <string name="subscription_renews">L\'abbonamento si rinnoverà automaticamente il %1$s</string>
+  <string name="subscription_expires">L\'abbonamento scadrà il %1$s</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Connessione al server non riuscita</string>
+  <string name="error_network_connection">Connessione al server non riuscita</string>
+  <string name="error_network_no_route">Connessione al server non riuscita</string>
+  <string name="error_network_port_unreachable">Servizio attualmente non disponibile</string>
+  <string name="error_network_socket">Connessione al server non riuscita</string>
+  <string name="error_network_io">Connessione al server non riuscita</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">Richiesta di connessione scaduta. Riprova.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Connessione sicura non riuscita. Verifica la data e l\'orario del dispositivo.</string>
+  <string name="error_ssl_peer_unverified">Verifica del certificato del server fallita</string>
+  <string name="error_ssl_protocol">Si è verificato un errore con il protocollo di connessione sicura</string>
+  <string name="error_ssl_general">Si è verificato un errore con la connessione sicura</string>
+  <string name="error_certificate">Si è verificato un errore con il certificato del server</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Autenticazione non riuscita. Effettua nuovamente l\'accesso.</string>
+  <string name="error_auth_forbidden">Accesso negato</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">Risorsa richiesta non trovata</string>
+  <string name="error_client_protocol">Si è verificato un errore con il protocollo</string>
+  <string name="error_client_service_unknown">Servizio non supportato</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Si è verificato un errore con il server</string>
+  <string name="error_server_bad_gateway">Servizio attualmente non disponibile</string>
+  <string name="error_server_unavailable">Servizio attualmente non disponibile</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">Si è verificato un errore</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">La versione di Google Play Billing di questo dispositivo è troppo vecchia. Aggiorna Google Play Store o utilizza la versione web di Lumo.</string>
+  <string name="billing_unavailable_not_supported">Gli acquisti in-app non sono supportati su questo dispositivo. Per le sottoscrizioni, utilizza la versione web di Lumo.</string>
+  <string name="billing_unavailable_generic">Fatturazione non disponibile: assicurati che Google Play Store sia installato, aggiornato e che tu abbia effettuato l’accesso.</string>
+  <string name="billing_service_not_connected">Servizio di fatturazione non connesso. Riprova.</string>
+  <string name="billing_google_play_required">Per gli acquisti è necessario Google Play Store.</string>
+  <string name="billing_cannot_access_google_play">Impossibile accedere a Google Play Store.</string>
+  <string name="billing_services_unavailable">Servizi di fatturazione non disponibili: %1$s</string>
+  <string name="billing_api_not_available">API di Google Play Billing non disponibile.</string>
+  <string name="billing_initialization_failed">Inizializzazione della fatturazione non riuscita: %1$s</string>
+  <string name="billing_connection_failed">Connessione al servizio di fatturazione non riuscita: %1$s</string>
+  <string name="billing_application_context_unavailable">Contesto dell’applicazione non disponibile.</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Abbonamento mensile</string>
+  <string name="subscription_annual_description">Abbonamento annuale (risparmia il 20%)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Caricamento abbonamenti fallito: %1$s</string>
+  <string name="error_loading_subscriptions">Errore nel caricare gli abbonamenti: %1$s</string>
+  <string name="error_no_plans_with_pricing">Nessun piano disponibile con informazioni sul prezzo</string>
+  <string name="error_problem_loading_subscriptions">Errore nel caricare gli abbonamenti</string>
+  <string name="error_failed_to_load_plans">Caricamento dei piani fallito: %1$s</string>
+  <string name="error_loading_plans">Errore nel caricamento dei piani: %1$s</string>
+  <string name="error_webview_not_available">WebView non disponibile</string>
 </resources>

@@ -1,69 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Lumo</string>
-  <string name="back_to_lumo">Lumo\'ya Geri Dön</string>
+  <string name="back_to_lumo">Lumo\'ya dön</string>
   <string name="loading">Lumo yükleniyor</string>
   <string name="error_generic">Bir sorun çıktı</string>
-  <string name="error_url">İlk URL belirlenirken hata oluştu.</string>
+  <string name="error_url">İlk adres belirlenirken sorun çıktı.</string>
   <string name="unable_to_connect">Bağlantı kurulamadı</string>
-  <string name="please_check_your_internet_connection_and_try_again">Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+  <string name="please_check_your_internet_connection_and_try_again">Lütfen internet bağlantınızı denetleyip yeniden deneyin.</string>
   <string name="retry_button">Yeniden dene</string>
-  <string name="retry_connection">Bağlantıyı Tekrar Dene</string>
+  <string name="retry_connection">Bağlantıyı yeniden dene</string>
   <!-- Loading Messages -->
-  <string name="loading_message_1">Dikkat... ve işlem gücü gerektiriyor...</string>
-  <string name="loading_message_2">Yükleme çubuklarına pati atıyor...</string>
+  <string name="loading_message_1">Dikkatinizi... ve işlem gücünüzü istiyor...</string>
+  <string name="loading_message_2">Yükleme çubuklarını patiliyor...</string>
   <string name="loading_message_3">Veri simsarlarını kovalıyor…</string>
   <string name="loading_message_4">Dijital fareleri kovalıyor...</string>
   <string name="loading_message_5">Görünmez raflardan bir şeyler deviriyor...</string>
   <string name="loading_message_6">Miyav-yükleniyor... lütfen bekleyin...</string>
   <string name="loading_message_7">Güneş ışığında kestiriyor... neredeyse hazır...</string>
-  <string name="loading_message_8">Dünya hakimiyeti planlıyor... ve uygulamanızın başlatılmasını...</string>
-  <string name="loading_message_9">Motorları mırıldayarak çalıştırıyor...</string>
+  <string name="loading_message_8">Dünyaya hakim olmayı... ve uygulamanızın başlatılmasını bekliyor...</string>
+  <string name="loading_message_9">Mırıldayarak motorları çalıştırıyor...</string>
   <string name="loading_message_10">Klavyenizde pençelerini biliyor...</string>
   <string name="loading_message_11">Büyük atlayıştan önce esniyor...</string>
   <!-- MainActivity Status/Errors -->
   <string name="speech_status_network">Tanıma Google tarafından işlendi</string>
-  <string name="speech_status_on_device">Aygıtta • Özel</string>
-  <string name="permission_mic_rationale">Konuşma girişi için mikrofon izni gerekli</string>
+  <string name="speech_status_on_device">Aygıt üzerinde • Gizli</string>
+  <string name="permission_mic_rationale">Konuşma tanıma için mikrofona erişme izni gerekli</string>
   <string name="speech_not_available">Konuşma tanıma kullanılamıyor</string>
-  <string name="speech_error_format">Konuşma Hatası: %1$s</string>
+  <string name="speech_error_format">Konuşma hatası: %1$s</string>
   <!-- Placeholder for error message -->
-  <string name="submit_prompt_failed">İstem web görünümüne eklenemedi</string>
-  <string name="start_listener_error_format">Dinleyici başlatılırken hata: %1$s</string>
+  <string name="submit_prompt_failed">İstem internet görünümüne eklenemedi</string>
+  <string name="start_listener_error_format">Dinleyici başlatılırken sorun çıktı: %1$s</string>
   <!-- Placeholder for exception message -->
-  <string name="fab_speak_prompt_desc">İstemi seslendirin</string>
-  <string name="speech_intent_prompt">İsteminizi seslendirin</string>
+  <string name="fab_speak_prompt_desc">İstemi söyleyin</string>
+  <string name="speech_intent_prompt">İsteminizi söyleyin</string>
   <!-- Speech Input Sheet -->
-  <string name="speech_sheet_cancel_desc">Konuşma Girişini İptal Et</string>
-  <string name="speech_sheet_submit_desc">İstemi Gönder</string>
+  <string name="speech_sheet_cancel_desc">Konuşmayı tanımaktan vazgeç</string>
+  <string name="speech_sheet_submit_desc">İstemi gönder</string>
   <string name="speech_sheet_listening">Dinleniyor…</string>
   <string name="speech_sheet_waiting">Göndermek için dokunun veya konuşun</string>
   <!-- Speech Recognizer Errors -->
-  <string name="speech_error_audio">Ses kaydı hatası</string>
-  <string name="speech_error_client">İstemci tarafı hatası</string>
-  <string name="speech_error_insufficient_permissions">Yetersiz izinler</string>
+  <string name="speech_error_audio">Ses kaydı sorunu</string>
+  <string name="speech_error_client">İstemci tarafı sorunu</string>
+  <string name="speech_error_insufficient_permissions">İzinler yetersiz</string>
   <string name="speech_error_network">Ağ sorunu</string>
   <string name="speech_error_network_timeout">Ağ zaman aşımı</string>
   <string name="speech_error_no_match">Konuşma eşleşmesi yok</string>
   <string name="speech_error_recognizer_busy">Tanıyıcı meşgul</string>
   <string name="speech_error_server">Sunucu sorunu</string>
   <string name="speech_error_speech_timeout">Konuşma girişi yok</string>
-  <string name="speech_error_unknown">Bilinmeyen konuşma tanıma hatası</string>
+  <string name="speech_error_unknown">Bilinmeyen konuşma tanıma sorunu</string>
   <!-- SUbscription Strings -->
   <string name="payment_title">Yapay zeka deneyiminizi geliştirin</string>
-  <string name="payment_subtitle">Lumo Plus ile ayrıcalıklı hizmetin ve premium özelliklerin keyfini çıkarın.</string>
-  <string name="payment_checking">Abonelik durumu kontrol ediliyor...</string>
-  <string name="payment_loading_plans">Abonelik planları yükleniyor...</string>
-  <string name="payment_no_plans_available">Şu anda abonelik planı mevcut değil</string>
-  <string name="subscription_renewal">Seçilen tarife iptal edilene kadar otomatik olarak yenilenecektir</string>
-  <string name="subscription_buy_lumo">Lumo Plus Satın Alın</string>
+  <string name="payment_subtitle">Lumo Plus ile ayrıcalıklı hizmetin ve ücretli özelliklerin tadını çıkarın.</string>
+  <string name="payment_checking">Abonelik durumu denetleniyor...</string>
+  <string name="payment_loading_plans">Abonelik tarifeleri yükleniyor...</string>
+  <string name="payment_no_plans_available">Şu anda herhangi bir abonelik tarifesi yok</string>
+  <string name="subscription_renewal">Seçilmiş tarife iptal edilene kadar otomatik olarak yenilenir</string>
+  <string name="subscription_buy_lumo">Lumo Plus satın alın</string>
   <string name="subscription_manage">Abonelik yönetimi</string>
-  <string name="subscription_manage_info">Bu abonelik, web arayüzü üzerinden yönetilmelidir.</string>
-  <string name="for_price">İçin</string>
+  <string name="subscription_manage_info">Bu abonelik, internet arayüzü üzerinden yönetilmelidir.</string>
+  <string name="for_price">Şunun için</string>
   <string name="month">Ay</string>
   <string name="months">Ay</string>
   <string name="cancelled">İptal edildi</string>
+  <!-- Time Periods -->
+  <string name="period_day">gün</string>
+  <string name="period_week">hafta</string>
+  <string name="period_month">ay</string>
+  <string name="period_quarter">3 ay</string>
+  <string name="period_6_months">6 ay</string>
+  <string name="period_year">yıl</string>
+  <!-- Plan Duration Text -->
+  <string name="plan_duration_1_month">1 ay</string>
+  <string name="plan_duration_12_months">12 ay</string>
+  <string name="plan_duration_n_months">%1$d ay</string>
   <!-- Subscription Status -->
-  <string name="subscription_renews">Aboneliğiniz %1$s tarihinde otomatik olarak yenilenecektir</string>
-  <string name="subscription_expires">Aboneliğiniz %1$s tarihinde sona erecektir</string>
+  <string name="subscription_renews">Aboneliğiniz %1$s tarihinde otomatik olarak yenilenecek</string>
+  <string name="subscription_expires">Aboneliğiniz %1$s tarihinde sona erecek</string>
+  <!-- Error Messages - Network -->
+  <string name="error_network_dns">Sunucu ile bağlantı kurulamadı. Lütfen internet bağlantınızı denetleyin.</string>
+  <string name="error_network_connection">Bağlantı kurulamadı. Lütfen internet bağlantınızı denetleyin.</string>
+  <string name="error_network_no_route">Sunucuya erişilemedi. Lütfen internet bağlantınızı denetleyin.</string>
+  <string name="error_network_port_unreachable">Hizmet geçici olarak kullanılamıyor.</string>
+  <string name="error_network_socket">Ağ bağlantısı hatası. Lütfen yeniden deneyin.</string>
+  <string name="error_network_io">Bir ağ sorunu çıktı. Lütfen yeniden deneyin.</string>
+  <!-- Error Messages - Timeout -->
+  <string name="error_timeout_socket">İstek zaman aşımına uğradı. Lütfen yeniden deneyin.</string>
+  <!-- Error Messages - SSL/Security -->
+  <string name="error_ssl_handshake">Güvenlik bağlantı kurulamadı. Lütfen aygıtınızın tarihini ve saatini denetleyin.</string>
+  <string name="error_ssl_peer_unverified">Sunucu sertifikası doğrulanamadı.</string>
+  <string name="error_ssl_protocol">Güvenli bağlantı iletişim kuralı sorunu.</string>
+  <string name="error_ssl_general">Güvenli bağlantı sorunu.</string>
+  <string name="error_certificate">Sunucu sertifikası sorunu.</string>
+  <!-- Error Messages - Authentication -->
+  <string name="error_auth_unauthorized">Kimlik doğrulanamadı. Lütfen yeniden oturum açın.</string>
+  <string name="error_auth_forbidden">Erişim reddedildi.</string>
+  <!-- Error Messages - Client -->
+  <string name="error_client_not_found">İstenen kaynak bulunamadı.</string>
+  <string name="error_client_protocol">İletişim kuralı sorunu çıktı.</string>
+  <string name="error_client_service_unknown">Hizmet desteklenmiyor.</string>
+  <!-- Error Messages - Server -->
+  <string name="error_server_internal">Sunucu hatası. Lütfen bir süre sonra yeniden deneyin.</string>
+  <string name="error_server_bad_gateway">Hizmet geçici olarak kullanılamıyor. Lütfen yeniden deneyin.</string>
+  <string name="error_server_unavailable">Hizmet geçici olarak kullanılamıyor. Lütfen bir süre sonra yeniden deneyin.</string>
+  <!-- Error Messages - Generic -->
+  <string name="error_unknown">Beklenmeyen bir sorun çıktı. Lütfen yeniden deneyin.</string>
+  <!-- Billing Error Messages -->
+  <string name="billing_unavailable_old_api">Bu aygıtın Google Play Billing sürümü çok eski. Lütfen Google Play Store uygulamasını güncelleyin veya Lumo internet sürümünü kullanın.</string>
+  <string name="billing_unavailable_not_supported">Bu aygıtta uygulama içi satın alım desteklenmiyor. Abonelikler için lütfen Lumo internet sürümünü kullanın.</string>
+  <string name="billing_unavailable_generic">Faturalama kullanılamıyor: Lütfen Google Play Store uygulamasının kurulu olduğundan, güncellendiğinden ve üzerinde oturum açtığınızdan emin olun</string>
+  <string name="billing_service_not_connected">Faturalama hizmeti bağlı değil. Lütfen yeniden deneyin.</string>
+  <string name="billing_google_play_required">Satın alım için Google Play Store gereklidir</string>
+  <string name="billing_cannot_access_google_play">Google Play Store Hizmetine erişilemedi</string>
+  <string name="billing_services_unavailable">Faturalama hizmetleri kullanılamıyor: %1$s</string>
+  <string name="billing_api_not_available">Google Play Billing API kullanılamıyor</string>
+  <string name="billing_initialization_failed">Faturalama hazırlanamadı: %1$s</string>
+  <string name="billing_connection_failed">Faturalama hizmeti ile bağlantı kurulamadı: %1$s</string>
+  <string name="billing_application_context_unavailable">Uygulama bağlamı kullanılamıyor</string>
+  <!-- Subscription Plan Descriptions -->
+  <string name="subscription_monthly_description">Aylık abonelik</string>
+  <string name="subscription_annual_description">Yıllık abonelik (%20 indirimli)</string>
+  <!-- Subscription Error Messages -->
+  <string name="error_failed_to_load_subscriptions">Abonelikler yüklenemedi: %1$s</string>
+  <string name="error_loading_subscriptions">Abonelikler yüklenirken sorun çıktı: %1$s</string>
+  <string name="error_no_plans_with_pricing">Fiyat bilgisi olan bir tarife bulunamadı</string>
+  <string name="error_problem_loading_subscriptions">Abonelikler yüklenirken bir sorun çıktı.</string>
+  <string name="error_failed_to_load_plans">Tarifeler yüklenemedi: %1$s</string>
+  <string name="error_loading_plans">Tarifeler yüklenirken sorun çıktı: %1$s</string>
+  <string name="error_webview_not_available">WebView kullanılamıyor</string>
 </resources>
