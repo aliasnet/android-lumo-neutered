@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.billing.BillingManager
 import me.proton.android.lumo.models.PaymentJsResponse
 import me.proton.android.lumo.models.PaymentTokenPayload
@@ -23,16 +24,21 @@ private const val TAG = "BillingManagerWrapper"
  * Wrapper class that handles all billing-related operations and Google Play Services integration.
  * Provides a clean interface for MainActivity while handling billing availability gracefully.
  */
-class BillingManagerWrapper(private val context: Context) {
+class BillingManagerWrapper(private val activity: MainActivity) {
+
+    interface BillingCallbacks {
+        fun sendPaymentTokenToWebView(
+            payload: PaymentTokenPayload,
+            callback: ((Result<PaymentJsResponse>) -> Unit)? = null
+        )
+
+        fun sendSubscriptionEventToWebView(
+            payload: Subscription,
+            callback: ((Result<PaymentJsResponse>) -> Unit)? = null
+        )
+    }
 
     private var billingManager: BillingManager? = null
-
-    // State management for billing availability
-    private val _isBillingAvailable = MutableStateFlow(false)
-    val isBillingAvailable: StateFlow<Boolean> = _isBillingAvailable.asStateFlow()
-
-    private val _billingUnavailableReason = MutableStateFlow<String?>(null)
-    val billingUnavailableReason: StateFlow<String?> = _billingUnavailableReason.asStateFlow()
 
     // Map to store callbacks for JS results
     private val pendingJsCallbacks =
@@ -57,7 +63,7 @@ class BillingManagerWrapper(private val context: Context) {
 
             // 1. Check if Google Play Services is available
             val googleApiAvailability = GoogleApiAvailability.getInstance()
-            val playServicesStatus = googleApiAvailability.isGooglePlayServicesAvailable(context)
+            val playServicesStatus = googleApiAvailability.isGooglePlayServicesAvailable(activity)
 
             when (playServicesStatus) {
                 ConnectionResult.SUCCESS -> {
@@ -95,19 +101,39 @@ class BillingManagerWrapper(private val context: Context) {
     private fun initializeBillingManager() {
         // 2. Check if Google Play Store app is installed and accessible
         try {
-            val pInfo = context.packageManager.getPackageInfo("com.android.vending", 0)
+            val pInfo = activity.packageManager.getPackageInfo("com.android.vending", 0)
             Log.d(TAG, "✅ Google Play Store version: ${pInfo.versionName}")
 
             // 3. Initialize BillingManager
             try {
                 Log.d(TAG, "Initializing BillingManager...")
                 val tempBillingManager =
-                    BillingManager(context as? me.proton.android.lumo.MainActivity ?: return)
+                    BillingManager(
+                        activity = activity,
+                        billingCallbacks = object : BillingCallbacks {
+                            override fun sendPaymentTokenToWebView(
+                                payload: PaymentTokenPayload,
+                                callback: ((Result<PaymentJsResponse>) -> Unit)?
+                            ) {
+                                activity.webView?.let {
+                                    sendPaymentTokenToWebView(it, payload, callback)
+                                }
+                            }
+
+                            override fun sendSubscriptionEventToWebView(
+                                payload: Subscription,
+                                callback: ((Result<PaymentJsResponse>) -> Unit)?
+                            ) {
+                                activity.webView?.let {
+                                    sendSubscriptionEventToWebView(it, payload, callback)
+                                }
+                            }
+                        }
+                    )
 
                 // Check if BillingClient was created successfully
                 if (tempBillingManager.isBillingAvailable()) {
                     billingManager = tempBillingManager
-                    _isBillingAvailable.value = true
                     Log.d(TAG, "✅ BillingManager initialized successfully")
                 } else {
                     Log.w(TAG, "⚠️ BillingClient creation failed - billing unavailable")
@@ -147,8 +173,6 @@ class BillingManagerWrapper(private val context: Context) {
 
         // Set states to indicate unavailability
         billingManager = null
-        _isBillingAvailable.value = false
-        _billingUnavailableReason.value = reason
 
         // Show user-friendly notification about billing unavailability
         val message = when {
@@ -164,7 +188,7 @@ class BillingManagerWrapper(private val context: Context) {
                 "In-app purchases are not available. All other features will work normally."
             }
         }
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
 
         Log.i(TAG, "✅ App will continue normally with billing features disabled")
     }
@@ -196,7 +220,7 @@ class BillingManagerWrapper(private val context: Context) {
     /**
      * Generic method to send data to the WebView's JavaScript API using JavascriptInterface for callback
      */
-    fun <T> sendDataToWebView(
+    private fun <T> sendDataToWebView(
         webView: WebView,
         payload: T?, // Payload is nullable
         jsFunction: PAYMENT_REQUEST_TYPE,
@@ -370,18 +394,5 @@ class BillingManagerWrapper(private val context: Context) {
             // Call the original callback
             callback?.invoke(result)
         }
-    }
-
-    // Repository-friendly methods that work without explicit WebView parameter
-    fun getSubscriptionsFromWebView(callback: (Result<PaymentJsResponse>) -> Unit) {
-        // We need to get the WebView from somewhere - this is a limitation of the current architecture
-        // For now, we'll need to find another way to access the WebView
-        // This is a temporary solution until we can refactor further
-        callback(Result.failure(Exception("WebView access not available in this context")))
-    }
-
-    fun getPlansFromWebView(callback: (Result<PaymentJsResponse>) -> Unit) {
-        // Same issue as above
-        callback(Result.failure(Exception("WebView access not available in this context")))
     }
 }
