@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.webkit.JavascriptInterface
 import android.webkit.ServiceWorkerClient
 import android.webkit.ServiceWorkerController
 import android.webkit.WebResourceRequest
@@ -38,7 +37,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -91,12 +89,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
     private lateinit var permissionManager: PermissionManager
     private lateinit var uiManager: UIManager
 
-    // UI state
-    private val showDialog = mutableStateOf(false)
-    internal var showBackButton = mutableStateOf(false)
-    internal var isLoading = mutableStateOf(false)
-    internal var hasSeenLumoContainer = mutableStateOf(false)
-
     // Speech Recognition
     private lateinit var speechRecognitionManager: SpeechRecognitionManager
 
@@ -116,17 +108,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         set(value) {
             webViewManager.filePathCallback = value
         }
-
-    // JavaScript result callback handler
-    @JavascriptInterface
-    fun postResult(transactionId: String, resultJson: String) {
-        Log.d(TAG, "MainActivity.postResult received for ID $transactionId: $resultJson")
-
-        // Delegate to billing manager wrapper
-        runOnUiThread {
-            billingManagerWrapper.handleJavaScriptResult(transactionId, resultJson)
-        }
-    }
 
     // Expose file chooser launcher for backward compatibility
     val fileChooserLauncher get() = permissionManager.fileChooserLauncher
@@ -170,10 +151,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         // Initialize speech recognition manager
         speechRecognitionManager = SpeechRecognitionManager(this)
 
-        // Reset container visibility state on app start
-        hasSeenLumoContainer.value = false
-        isLoading.value = true
-
         ServiceWorkerController.getInstance()
             .setServiceWorkerClient(object : ServiceWorkerClient() {
                 override fun shouldInterceptRequest(request: WebResourceRequest): WebResourceResponse? {
@@ -187,7 +164,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                     when (event) {
                         is UiEvent.EvaluateJavascript -> {
                             Log.d(TAG, "Received EvaluateJavascript event")
-                            webView?.evaluateJavascript(event.script) { result ->
+                            webViewManager.evaluateJavaScript(event.script) { result ->
                                 viewModel.handleJavascriptResult(result)
                             }
                         }
@@ -201,6 +178,24 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                         is UiEvent.RequestAudioPermission -> {
                             Log.d(TAG, "Received RequestAudioPermission event")
                             permissionManager.requestRecordAudioPermission()
+                        }
+
+
+                        is UiEvent.ForwardBillingResult -> {
+                            // Previously done via MainActivity.postResult(); now fully event-driven.
+                            billingManagerWrapper.handleJavaScriptResult(
+                                event.transactionId,
+                                event.resultJson
+                            )
+                        }
+
+                        is UiEvent.ShowBillingUnavailable -> {
+                            // Side-effect host: show a dialog (and optional toast).
+                            billingManagerWrapper.showBillingUnavailableDialog(webView)
+                            Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_LONG)
+                                .show()
+                            // If a payment dialog was requested earlier, make sure it's not shown.
+                            viewModel.dismissPaymentDialog()
                         }
                     }
                 }
@@ -293,7 +288,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        if (showBackButton.value) {
+                        if (uiState.shouldShowBackButton) {
                             TopAppBar(
                                 title = {},
                                 navigationIcon = {
@@ -375,12 +370,16 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                         if (initialUrl != null) {
                             Log.d(TAG, "Showing, or trying to show PaymentDialog. ")
                             billingManagerWrapper.getBillingManager()?.let { manager ->
-                                PaymentDialog(showDialog, manager)
+                                PaymentDialog(
+                                    visible = uiState.showPaymentDialog,
+                                    billingManager = manager,
+                                    onDismiss = { viewModel.dismissPaymentDialog() }
+                                )
                             } ?: run {
                                 // When billing is unavailable, show a simple dialog informing the user
-                                if (showDialog.value) {
+                                if (uiState.showPaymentDialog) {
                                     billingManagerWrapper.showBillingUnavailableDialog(webView)
-                                    showDialog.value = false // Close the dialog request
+                                    viewModel.dismissPaymentDialog()
                                 }
                             }
                         }
@@ -408,19 +407,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         speechRecognitionManager.destroy() // Release the recognizer
         webViewManager.destroy()
     }
-
-    // Make this accessible to WebAppInterface
-    fun showPaymentDialog() {
-        if (billingManagerWrapper.getBillingManager() != null) {
-            showDialog.value = true
-        } else {
-            Log.w(TAG, "Payment dialog requested but billing is unavailable")
-            billingManagerWrapper.showBillingUnavailableDialog(webView)
-        }
-    }
-
-    // Getter for BillingManager
-    fun getBillingManager() = billingManagerWrapper.getBillingManager()
 
     // Convenience methods that delegate to BillingManagerWrapper
     fun sendPaymentTokenToWebView(

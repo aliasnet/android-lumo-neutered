@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.update
 import me.proton.android.lumo.BuildConfig
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.config.LumoConfig
+import me.proton.android.lumo.domain.WebEvent
 
 private const val TAG = "WebViewScreen"
 
@@ -108,7 +109,7 @@ private fun addJavaScriptInterfaceSafely(webView: WebView, activity: MainActivit
 
         // Add the interface
         webView.addJavascriptInterface(
-            WebAppInterface(activity),
+            WebAppInterface(activity.viewModel),
             "Android"
         )
         Log.d(TAG, "JavaScript interface 'Android' added successfully")
@@ -228,10 +229,11 @@ fun WebViewScreen(
                             Log.d(TAG, ">>> KEYBOARD STATE CHANGED - Notifying JavaScript <<<")
 
                             try {
-                                val webAppInterface = WebAppInterface(activity)
-                                webAppInterface.onKeyboardVisibilityChanged(
-                                    isKeyboardVisible,
-                                    keyboardHeightCss
+                                activity.viewModel.onWebEvent(
+                                    event = WebEvent.KeyboardVisibilityChanged(
+                                        isVisible = isKeyboardVisible,
+                                        keyboardHeightPx = keyboardHeightCss
+                                    )
                                 )
                             } catch (e: Exception) {
                                 Log.e(TAG, "Error notifying keyboard visibility change", e)
@@ -353,7 +355,7 @@ fun WebViewScreen(
 
                                 // Verify Android interface is working after a brief delay
                                 Handler(Looper.getMainLooper()).postDelayed({
-                                    view?.let { verifyAndroidInterface(it) }
+                                    verifyAndroidInterface(view)
                                 }, 1000) // Wait 1 second for all injections to complete
 
                                 // Inject account page modifier only for account domain pages
@@ -437,7 +439,6 @@ fun WebViewScreen(
                         request: WebResourceRequest?
                     ): Boolean {
                         val url = request?.url?.toString() ?: return false
-                        val host = request.url?.host ?: return false
 
                         // Only allow configured Lumo and Account domains in the WebView
                         if (LumoConfig.isKnownDomain(url)) {
