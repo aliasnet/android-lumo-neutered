@@ -16,17 +16,10 @@ object DependencyProvider {
     private var subscriptionRepository: SubscriptionRepository? = null
 
     /**
-     * Initialize the dependency provider with the application context
-     */
-    fun initialize(context: Context) {
-        billingManagerWrapper = BillingManagerWrapper(context)
-    }
-
-    /**
      * Get or create the BillingManagerWrapper instance
      */
-    fun getBillingManagerWrapper(context: Context): BillingManagerWrapper {
-        return billingManagerWrapper ?: BillingManagerWrapper(context).also {
+    fun getBillingManagerWrapper(activity: MainActivity): BillingManagerWrapper {
+        return billingManagerWrapper ?: BillingManagerWrapper(activity).also {
             billingManagerWrapper = it
         }
     }

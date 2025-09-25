@@ -61,7 +61,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.proton.android.lumo.config.LumoConfig
 import me.proton.android.lumo.di.DependencyProvider
-import me.proton.android.lumo.interfaces.WebViewProvider
 import me.proton.android.lumo.managers.BillingManagerWrapper
 import me.proton.android.lumo.managers.PermissionManager
 import me.proton.android.lumo.managers.UIManager
@@ -70,6 +69,7 @@ import me.proton.android.lumo.models.Feature
 import me.proton.android.lumo.speech.SpeechRecognitionManager
 import me.proton.android.lumo.ui.components.LoadingScreen
 import me.proton.android.lumo.ui.components.PaymentDialog
+import me.proton.android.lumo.ui.components.SimpleAlertDialog
 import me.proton.android.lumo.ui.components.SpeechInputSheetContent
 import me.proton.android.lumo.ui.theme.LumoTheme
 import me.proton.android.lumo.ui.theme.Purple
@@ -79,7 +79,7 @@ private const val TAG = "MainActivity"
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-class MainActivity : ComponentActivity(), WebViewProvider {
+class MainActivity : ComponentActivity() {
     // Make viewModel accessible to WebAppInterface
     internal val viewModel: MainActivityViewModel by viewModels()
 
@@ -187,15 +187,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                                 event.transactionId,
                                 event.resultJson
                             )
-                        }
-
-                        is UiEvent.ShowBillingUnavailable -> {
-                            // Side-effect host: show a dialog (and optional toast).
-                            billingManagerWrapper.showBillingUnavailableDialog(webView)
-                            Toast.makeText(this@MainActivity, event.message, Toast.LENGTH_LONG)
-                                .show()
-                            // If a payment dialog was requested earlier, make sure it's not shown.
-                            viewModel.dismissPaymentDialog()
                         }
                     }
                 }
@@ -377,8 +368,7 @@ class MainActivity : ComponentActivity(), WebViewProvider {
                                 )
                             } ?: run {
                                 // When billing is unavailable, show a simple dialog informing the user
-                                if (uiState.showPaymentDialog) {
-                                    billingManagerWrapper.showBillingUnavailableDialog(webView)
+                                SimpleAlertDialog(uiState.showPaymentDialog) {
                                     viewModel.dismissPaymentDialog()
                                 }
                             }
@@ -408,23 +398,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         webViewManager.destroy()
     }
 
-    // Convenience methods that delegate to BillingManagerWrapper
-    fun sendPaymentTokenToWebView(
-        webView: android.webkit.WebView,
-        payload: me.proton.android.lumo.models.PaymentTokenPayload,
-        callback: ((Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit)? = null
-    ) {
-        billingManagerWrapper.sendPaymentTokenToWebView(webView, payload, callback)
-    }
-
-    fun sendSubscriptionEventToWebView(
-        webView: android.webkit.WebView,
-        payload: me.proton.android.lumo.models.Subscription,
-        callback: ((Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit)? = null
-    ) {
-        billingManagerWrapper.sendSubscriptionEventToWebView(webView, payload, callback)
-    }
-
     fun getPlansFromWebView(
         webView: android.webkit.WebView,
         callback: ((Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit)? = null
@@ -437,21 +410,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         callback: ((Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit)? = null
     ) {
         billingManagerWrapper.getSubscriptionsFromWebView(webView, callback)
-    }
-
-    // WebViewProvider interface implementation
-    override fun getCurrentWebView(): android.webkit.WebView? = webView
-
-    override fun getPlansFromWebView(callback: (Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit) {
-        webView?.let { webView ->
-            getPlansFromWebView(webView, callback)
-        } ?: callback(Result.failure(Exception("WebView not available")))
-    }
-
-    override fun getSubscriptionsFromWebView(callback: (Result<me.proton.android.lumo.models.PaymentJsResponse>) -> Unit) {
-        webView?.let { webView ->
-            getSubscriptionsFromWebView(webView, callback)
-        } ?: callback(Result.failure(Exception("WebView not available")))
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -474,9 +432,6 @@ class MainActivity : ComponentActivity(), WebViewProvider {
         permissionManager = PermissionManager(this, { permission, isGranted ->
             handlePermissionResult(permission, isGranted)
         }, webViewManager)
-
-        // Initialize dependency provider
-        DependencyProvider.initialize(this)
 
         // Get BillingManagerWrapper from dependency provider
         billingManagerWrapper = DependencyProvider.getBillingManagerWrapper(this)

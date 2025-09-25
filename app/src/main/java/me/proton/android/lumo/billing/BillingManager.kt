@@ -32,8 +32,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import me.proton.android.lumo.ui.components.PaymentProcessingState
 import me.proton.android.lumo.utils.ErrorClassifier
 import androidx.core.net.toUri
+import me.proton.android.lumo.managers.BillingManagerWrapper
 
-open class BillingManager(protected val activity: MainActivity?) {
+class BillingManager(
+    private val activity: MainActivity?,
+    private val billingCallbacks: BillingManagerWrapper.BillingCallbacks,
+    ) {
     val isTestMode: Boolean = false
 
     private val TAG = "BillingManager"
@@ -751,8 +755,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                         // Update state to show we're processing with server
                         _paymentProcessingState.value = PaymentProcessingState.Verifying
 
-                        activity.sendPaymentTokenToWebView(
-                            webView,
+                        billingCallbacks.sendPaymentTokenToWebView(
                             paymentTokenPayload
                         ) { result: Result<PaymentJsResponse> ->
                             // Now within the call back we can do whatever else we need to do...
@@ -803,8 +806,7 @@ open class BillingManager(protected val activity: MainActivity?) {
                                     )
 
                                     // Final step - send subscription to activate
-                                    activity.sendSubscriptionEventToWebView(
-                                        webView,
+                                    billingCallbacks.sendSubscriptionEventToWebView(
                                         subscriptionPayload
                                     ) { subscriptionResult ->
                                         subscriptionResult.onSuccess { response ->
@@ -974,7 +976,7 @@ open class BillingManager(protected val activity: MainActivity?) {
      * Call this when the user already has an active subscription
      * @return true if the screen was launched successfully
      */
-    open fun openSubscriptionManagementScreen(): Boolean {
+    fun openSubscriptionManagementScreen(): Boolean {
         return try {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = "https://play.google.com/store/account/subscriptions".toUri()
@@ -1014,7 +1016,7 @@ open class BillingManager(protected val activity: MainActivity?) {
      * Check if the user has an active subscription
      * This method will return true even for cancelled subscriptions that are still within their valid period
      */
-    open fun hasActiveSubscription(): Boolean {
+    fun hasActiveSubscription(): Boolean {
         return purchaseState.value is PurchaseState.Purchased
     }
 
@@ -1022,7 +1024,7 @@ open class BillingManager(protected val activity: MainActivity?) {
      * Check if the user has an active and renewing subscription
      * This only returns true for subscriptions that are set to automatically renew
      */
-    open fun hasRenewingSubscription(): Boolean {
+    fun hasRenewingSubscription(): Boolean {
         return hasActiveSubscription() && _isSubscriptionRenewing.value
     }
 
@@ -1030,7 +1032,7 @@ open class BillingManager(protected val activity: MainActivity?) {
      * Get information about the subscription status
      * @return A tuple containing (isActive, isRenewing, expiryTimeMillis)
      */
-    open fun getSubscriptionStatus(): Triple<Boolean, Boolean, Long> {
+    fun getSubscriptionStatus(): Triple<Boolean, Boolean, Long> {
         val isActive = hasActiveSubscription()
         val isRenewing = _isSubscriptionRenewing.value
         return Triple(isActive, isRenewing, subscriptionExpiryTimeMillis)
@@ -1040,7 +1042,7 @@ open class BillingManager(protected val activity: MainActivity?) {
      * Refresh the purchase status to get the latest subscription information
      * Call this when displaying subscription information to ensure it's up-to-date
      */
-    open fun refreshPurchaseStatus(forceRefresh: Boolean = false) {
+    fun refreshPurchaseStatus(forceRefresh: Boolean = false) {
         if (!_isConnected.value) {
             Log.d(TAG, "Cannot refresh purchases - billing client not connected")
             establishConnection()
@@ -1310,63 +1312,5 @@ open class BillingManager(protected val activity: MainActivity?) {
         object Cancelled : PurchaseState()
         data class Error(val message: String) : PurchaseState()
         data class NoProductsAvailable(val message: String) : PurchaseState()
-    }
-}
-
-class PreviewBillingManager : BillingManager(null) {
-    // Add mutable states to make preview testing easier
-    private var previewIsActive = false
-    private var previewIsRenewing = false
-
-    fun initializeBilling() {
-        // No-op for preview
-    }
-
-
-    override fun openSubscriptionManagementScreen(): Boolean {
-        // In preview mode, just log the action
-        Log.d("PreviewBillingManager", "Would open subscription management screen in real app")
-        return true
-    }
-
-    fun refreshPurchaseStatus() {
-        // In preview mode, just log the action
-        Log.d("PreviewBillingManager", "Would refresh purchase status from Google Play in real app")
-        // No actual refresh needed for preview
-    }
-
-    // This determines if the subscription is active at all
-    override fun hasActiveSubscription(): Boolean {
-        return previewIsActive
-    }
-
-    // This determines if the subscription is set to auto-renew
-    override fun hasRenewingSubscription(): Boolean {
-        return previewIsRenewing
-    }
-
-    // This provides detailed subscription status information
-    override fun getSubscriptionStatus(): Triple<Boolean, Boolean, Long> {
-        // Create an expiry date one month from now for preview purposes
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MONTH, 1)
-        val expiryTimeMillis = calendar.timeInMillis
-
-        return Triple(previewIsActive, previewIsRenewing, expiryTimeMillis)
-    }
-
-    fun setSubscriptionState(isActive: Boolean, isRenewing: Boolean) {
-        previewIsActive = isActive
-        previewIsRenewing = isRenewing
-    }
-
-    companion object {
-        fun createForPreview(): PreviewBillingManager {
-            val manager = PreviewBillingManager()
-            manager.setSubscriptionState(false, false)  // Active, auto-renewing
-            // manager.setSubscriptionState(true, false) // Active but cancelled
-            // manager.setSubscriptionState(false, false) // No subscription
-            return manager
-        }
     }
 }

@@ -10,6 +10,5 @@ sealed interface WebEvent {
     data class KeyboardVisibilityChanged(val isVisible: Boolean, val keyboardHeightPx: Int) :
         WebEvent
 
-    data class BillingUnavailable(val message: String) : WebEvent
     data class PostResult(val transactionId: String, val resultJson: String) : WebEvent
 }
