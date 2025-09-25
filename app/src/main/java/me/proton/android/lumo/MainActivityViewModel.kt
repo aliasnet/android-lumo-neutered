@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,8 +13,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.proton.android.lumo.config.LumoConfig
+import me.proton.android.lumo.domain.WebEvent
 import me.proton.android.lumo.speech.SpeechRecognitionManager
 import me.proton.android.lumo.utils.isHostReachable
+import me.proton.android.lumo.webview.keyboardHeightChange
 
 private const val TAG = "MainActivityViewModel"
 
@@ -26,10 +29,11 @@ data class MainUiState(
     val rmsDbValue: Float = 0f,
     val speechStatusText: String = "",
     val hasRecordAudioPermission: Boolean = false,
-    val isLoading: Boolean = true, // Start loading initially
+    val isLoading: Boolean = true,
     val initialLoadError: String? = null,
     val isLumoPage: Boolean = true,
-    val hasSeenLumoContainer: Boolean = false
+    val hasSeenLumoContainer: Boolean = false,
+    val shouldShowBackButton: Boolean = false,
 )
 
 // Define Events for communication (e.g., JS evaluation)
@@ -37,6 +41,8 @@ sealed class UiEvent {
     data class EvaluateJavascript(val script: String) : UiEvent()
     data class ShowToast(val message: String) : UiEvent()
     object RequestAudioPermission : UiEvent()
+    data class ForwardBillingResult(val transactionId: String, val resultJson: String) : UiEvent()
+    data class ShowBillingUnavailable(val message: String) : UiEvent()
 }
 
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
@@ -44,7 +50,7 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     internal val _uiState = MutableStateFlow(MainUiState())
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-    val _eventChannel = Channel<UiEvent>()
+    internal val _eventChannel = Channel<UiEvent>()
     val events = _eventChannel.receiveAsFlow()
 
     private val speechRecognitionManager = SpeechRecognitionManager(application)
@@ -55,11 +61,89 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
     val initialUrl: StateFlow<String?> = _initialUrl.asStateFlow()
     private var checkCompleted = false // Prevent re-checking on config change
 
+    private val _webEvents = MutableSharedFlow<WebEvent>(extraBufferCapacity = 64)
+
     init {
         setupSpeechRecognition()
         updatePermissionStatus()
         determineSpeechStatusText()
+
+        viewModelScope.launch {
+            _webEvents.collect { event ->
+                when (event) {
+                    // UI state toggle; Activity will render from state in a later step
+                    WebEvent.ShowPaymentRequested -> {
+                        _uiState.update { it.copy(showPaymentDialog = true) }
+                    }
+
+                    WebEvent.StartVoiceEntryRequested -> {
+                        onStartVoiceEntryRequested()
+                    }
+
+                    WebEvent.RetryLoadRequested -> {
+                        resetNetworkCheckFlag()
+                        performInitialNetworkCheck()
+                    }
+
+                    is WebEvent.PageTypeChanged -> {
+                        _uiState.update { state ->
+                            val newIsLumo = event.isLumo
+                            val showBack = LumoConfig.isAccountDomain(event.url)
+                            state.copy(
+                                isLumoPage = newIsLumo,
+                                shouldShowBackButton = showBack,
+                            )
+                        }
+                    }
+
+                    is WebEvent.Navigated -> {
+                        _uiState.update { state ->
+                            val showBack = LumoConfig.isAccountDomain(event.url)
+                            state.copy(
+                                shouldShowBackButton = showBack
+                            )
+                        }
+                    }
+
+                    WebEvent.LumoContainerVisible -> {
+                        setHasSeenLumoContainer(true)
+                        _uiState.update { it.copy(isLoading = false) }
+                    }
+
+                    is WebEvent.KeyboardVisibilityChanged -> {
+                        _eventChannel.trySend(
+                            UiEvent.EvaluateJavascript(
+                                keyboardHeightChange(
+                                    event.isVisible,
+                                    event.keyboardHeightPx
+                                )
+                            )
+                        )
+                    }
+
+                    is WebEvent.BillingUnavailable -> {
+                        _eventChannel.trySend(UiEvent.ShowBillingUnavailable(event.message))
+                    }
+
+                    is WebEvent.PostResult -> {
+                        // We’ll properly forward this to billing via a UiEvent in Step 4.
+                        // For now, just confirm we received it.
+                        _eventChannel.trySend(
+                            UiEvent.ForwardBillingResult(event.transactionId, event.resultJson)
+                        )
+                    }
+                }
+            }
+        }
         // Don't call performInitialNetworkCheck here, call from Activity onCreate
+    }
+
+    fun onWebEvent(event: WebEvent) {
+        _webEvents.tryEmit(event)
+    }
+
+    fun dismissPaymentDialog() {
+        _uiState.update { it.copy(showPaymentDialog = false) }
     }
 
     // --- Initial Network Check --- 
