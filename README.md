@@ -1,6 +1,8 @@
 # Lumo Neutered-Fork (Run Without Google Play Services)
 
-**android-lumo-neutered**
+```
+android-lumo-neutered
+```
 
 ## Background
 
@@ -14,6 +16,8 @@ Upstream Repository:
 Web application:
 ([lumo.proton.me](https://lumo.proton.me)) 
 
+---
+
 **Clarification:** I'm not a Lumo developer; it was created by Proton AG.  
 
 However, regarding the Privacy-focused philosophy we seek, it becomes contradictory when Lumo refuses to run on not only GMS-free devices but even on devices where GMS exists but is not logged in. This is especially puzzling as a long-time paid subscriber of Proton and highly support an encrypted, privacy-first LLM application as part of their suite.
@@ -22,9 +26,20 @@ Many users, myself included, still have GMS installed and are not rooted. We sim
 
 Therefore, the goal can simply be to create a fork that works without Play Store restrictions—no need to log in. Further developments rely on the Proton team and FLOSS community.
 
-**Goal.** Provide a build of the Lumo Android app that runs correctly on devices *without* Google Play Services (GMS), and ideally on non-Play stores (e.g., F-Droid, OEM stores), while preserving core functionality.
+---
 
-**What the current codebase uses from Google.** 
+
+## Scope
+
+**Goal.** This fork focuses on making the Lumo Android app fully usable **without a Google account or services** on the device (“neuterized Lumo 🐈‍⬛”) by providing a build that runs correctly on devices **with or without Google Play Services** while preserving core functionality and keeping Play Services/Billing present but strictly optional at runtime.
+
+**Acknowledgements.** Respect to the original authors. This fork’s goal is simple: **make it usable** without tying core features to a Google account.
+
+**Expected Runtime Behavior.** Detect Play Services / Billing. If Play Services or a signed-in account is missing, hide or disable the purchase UI. Purchase flows should gracefully disable while the app keeps working (no crash). 
+
+---
+
+**What the current codebase uses from Google.**
 
 - **Play Billing only.** The app depends on **`com.android.billingclient:billing-ktx`** via the Gradle Version Catalog alias `libs.billing.ktx` (declared in `android-lumo-main/gradle/libs.versions.toml`; referenced in `app/build.gradle.kts`).
 - **GMS check.** There are imports of `com.google.android.gms.common.*` (e.g., `GoogleApiAvailability`, `ConnectionResult`) used to check GMS availability in `BillingManagerWrapper.kt`.
@@ -43,11 +58,15 @@ Therefore, the goal can simply be to create a fork that works without Play Store
 5. **Ship a feature-complete free build** (no IAP) on non-Play channels *or* to add a **non‑Play purchase alternative** (e.g., web checkout with server unlock).
 - Future Distribution targets include at least one **non‑Play channel** (e.g., F-Droid or direct APK).
 
+This fork focuses on **making the app fully usable without a Google account** on
+ the device (“neuterized Lumo 🐈‍⬛”). It keeps Play Services/Billing present but
+ **strictly optional at runtime**. If Play Services or a signed Play account is
+ absent, purchase flows gracefully disable while all non-purchase features keep
+ working.
+
 
 
 ## Requirements
-
-**MoSCoW**
 
 **Must**
 - Run on devices **without Google Play Services** or with GMS present but **not signed in** (no crashes, no blockers).
@@ -541,10 +560,11 @@ See `.github/pull_request_template.md` in this repo.
 #### Appendix E — CONTRIBUTING
 See `CONTRIBUTING.md` in this repo.
 
----
-
 ## Acknowledgements
-- Upstream: Proton AG — original Lumo project.
+
+**Upstream: Proton AG — original Lumo project.
+
+---
 
 ## 📄 License
 
