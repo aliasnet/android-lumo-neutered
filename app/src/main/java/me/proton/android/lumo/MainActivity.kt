@@ -360,13 +360,14 @@ class MainActivity : ComponentActivity() {
                         }
                         if (initialUrl != null) {
                             Log.d(TAG, "Showing, or trying to show PaymentDialog. ")
-                            billingManagerWrapper.getBillingManager()?.let { manager ->
+                            val billingGateway by billingManagerWrapper.billingGatewayFlow.collectAsStateWithLifecycle()
+                            if (billingGateway.available) {
                                 PaymentDialog(
                                     visible = uiState.showPaymentDialog,
-                                    billingManager = manager,
+                                    billingGateway = billingGateway,
                                     onDismiss = { viewModel.dismissPaymentDialog() }
                                 )
-                            } ?: run {
+                            } else {
                                 // When billing is unavailable, show a simple dialog informing the user
                                 SimpleAlertDialog(uiState.showPaymentDialog) {
                                     viewModel.dismissPaymentDialog()

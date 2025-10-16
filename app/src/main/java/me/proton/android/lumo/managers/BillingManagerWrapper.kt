@@ -1,17 +1,17 @@
 package me.proton.android.lumo.managers
 
-import android.content.Context
 import android.util.Log
 import android.webkit.WebView
-import android.widget.Toast
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import me.proton.android.lumo.MainActivity
-import me.proton.android.lumo.billing.BillingManager
+import me.proton.android.lumo.billing.gateway.BillingGateway
+import me.proton.android.lumo.billing.gateway.BillingProvider
+import me.proton.android.lumo.billing.gateway.NoopBillingGateway
 import me.proton.android.lumo.models.PaymentJsResponse
 import me.proton.android.lumo.models.PaymentTokenPayload
 import me.proton.android.lumo.models.Subscription
@@ -38,7 +38,28 @@ class BillingManagerWrapper(private val activity: MainActivity) {
         )
     }
 
-    private var billingManager: BillingManager? = null
+    private val _billingGateway = MutableStateFlow<BillingGateway>(NoopBillingGateway())
+    val billingGatewayFlow: StateFlow<BillingGateway> = _billingGateway.asStateFlow()
+
+    private val billingCallbacks = object : BillingCallbacks {
+        override fun sendPaymentTokenToWebView(
+            payload: PaymentTokenPayload,
+            callback: ((Result<PaymentJsResponse>) -> Unit)?
+        ) {
+            activity.webView?.let {
+                sendPaymentTokenToWebView(it, payload, callback)
+            }
+        }
+
+        override fun sendSubscriptionEventToWebView(
+            payload: Subscription,
+            callback: ((Result<PaymentJsResponse>) -> Unit)?
+        ) {
+            activity.webView?.let {
+                sendSubscriptionEventToWebView(it, payload, callback)
+            }
+        }
+    }
 
     // Map to store callbacks for JS results
     private val pendingJsCallbacks =
@@ -58,145 +79,18 @@ class BillingManagerWrapper(private val activity: MainActivity) {
      * Initialize billing with comprehensive Google Services availability check
      */
     fun initializeBilling() {
-        try {
-            Log.d(TAG, "=== BILLING INITIALIZATION CHECK ===")
-
-            // 1. Check if Google Play Services is available
-            val googleApiAvailability = GoogleApiAvailability.getInstance()
-            val playServicesStatus = googleApiAvailability.isGooglePlayServicesAvailable(activity)
-
-            when (playServicesStatus) {
-                ConnectionResult.SUCCESS -> {
-                    Log.d(TAG, "✅ Google Play Services is available")
-                    initializeBillingManager()
-                }
-
-                ConnectionResult.SERVICE_MISSING -> {
-                    Log.w(TAG, "❌ Google Play Services is not installed")
-                    handleBillingUnavailable("Google Play Services is not available on this device")
-                }
-
-                ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED -> {
-                    Log.w(TAG, "❌ Google Play Services needs to be updated")
-                    handleBillingUnavailable("Google Play Services needs to be updated")
-                }
-
-                ConnectionResult.SERVICE_DISABLED -> {
-                    Log.w(TAG, "❌ Google Play Services is disabled")
-                    handleBillingUnavailable("Google Play Services is disabled on this device")
-                }
-
-                else -> {
-                    Log.w(TAG, "❌ Google Play Services unavailable: $playServicesStatus")
-                    handleBillingUnavailable("Google Play Services is not available (code: $playServicesStatus)")
-                }
+        activity.lifecycleScope.launch {
+            val gateway = BillingProvider.get(activity, billingCallbacks)
+            if (gateway.available) {
+                Log.d(TAG, "✅ Billing gateway initialized successfully")
+            } else {
+                Log.i(TAG, "Billing gateway unavailable; using no-op implementation")
             }
-
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Critical error during billing initialization", e)
-            handleBillingUnavailable("Billing services are not available: ${e.message}")
+            _billingGateway.value = gateway
         }
     }
 
-    private fun initializeBillingManager() {
-        // 2. Check if Google Play Store app is installed and accessible
-        try {
-            val pInfo = activity.packageManager.getPackageInfo("com.android.vending", 0)
-            Log.d(TAG, "✅ Google Play Store version: ${pInfo.versionName}")
-
-            // 3. Initialize BillingManager
-            try {
-                Log.d(TAG, "Initializing BillingManager...")
-                val tempBillingManager =
-                    BillingManager(
-                        activity = activity,
-                        billingCallbacks = object : BillingCallbacks {
-                            override fun sendPaymentTokenToWebView(
-                                payload: PaymentTokenPayload,
-                                callback: ((Result<PaymentJsResponse>) -> Unit)?
-                            ) {
-                                activity.webView?.let {
-                                    sendPaymentTokenToWebView(it, payload, callback)
-                                }
-                            }
-
-                            override fun sendSubscriptionEventToWebView(
-                                payload: Subscription,
-                                callback: ((Result<PaymentJsResponse>) -> Unit)?
-                            ) {
-                                activity.webView?.let {
-                                    sendSubscriptionEventToWebView(it, payload, callback)
-                                }
-                            }
-                        }
-                    )
-
-                // Check if BillingClient was created successfully
-                if (tempBillingManager.isBillingAvailable()) {
-                    billingManager = tempBillingManager
-                    Log.d(TAG, "✅ BillingManager initialized successfully")
-                } else {
-                    Log.w(TAG, "⚠️ BillingClient creation failed - billing unavailable")
-                    handleBillingUnavailable("Google Play Billing API is not available on this device")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ BillingManager initialization failed", e)
-                val errorMessage = e.message ?: "Unknown error"
-                val reason = when {
-                    errorMessage.contains("API version is less than 3", ignoreCase = true) -> {
-                        "Google Play Billing API version is too old. Please update Google Play Store."
-                    }
-
-                    errorMessage.contains("not supported", ignoreCase = true) -> {
-                        "In-app purchases are not supported on this device."
-                    }
-
-                    else -> {
-                        "Failed to initialize billing: $errorMessage"
-                    }
-                }
-                handleBillingUnavailable(reason)
-            }
-
-        } catch (e: Exception) {
-            Log.e(TAG, "❌ Google Play Store not accessible", e)
-            handleBillingUnavailable("Google Play Store is not accessible")
-        }
-    }
-
-    /**
-     * Handle the case where billing is unavailable
-     */
-    private fun handleBillingUnavailable(reason: String) {
-        Log.w(TAG, "=== BILLING UNAVAILABLE - ENTERING GRACEFUL DEGRADATION MODE ===")
-        Log.w(TAG, "Reason: $reason")
-
-        // Set states to indicate unavailability
-        billingManager = null
-
-        // Show user-friendly notification about billing unavailability
-        val message = when {
-            reason.contains("API version", ignoreCase = true) -> {
-                "Google Play Store needs to be updated for in-app purchases. All other features will work normally."
-            }
-
-            reason.contains("not supported", ignoreCase = true) -> {
-                "In-app purchases not supported on this device. All other features will work normally."
-            }
-
-            else -> {
-                "In-app purchases are not available. All other features will work normally."
-            }
-        }
-        Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
-
-        Log.i(TAG, "✅ App will continue normally with billing features disabled")
-    }
-
-    /**
-     * Get the BillingManager instance if available
-     */
-    fun getBillingManager(): BillingManager? = billingManager
+    fun getBillingGateway(): BillingGateway = _billingGateway.value
 
     /**
      * Generic method to send data to the WebView's JavaScript API using JavascriptInterface for callback
