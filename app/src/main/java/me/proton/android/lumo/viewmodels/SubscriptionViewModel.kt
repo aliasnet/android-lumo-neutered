@@ -289,6 +289,6 @@ class SubscriptionViewModel constructor(
      * Trigger subscription recovery flow
      */
     fun triggerSubscriptionRecovery() {
-        billingManagerWrapper.getBillingManager()?.triggerSubscriptionRecovery()
+        billingManagerWrapper.getBillingGateway().triggerSubscriptionRecovery()
     }
 } 

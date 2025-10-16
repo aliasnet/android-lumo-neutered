@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.proton.android.lumo.R
-import me.proton.android.lumo.billing.BillingManager
+import me.proton.android.lumo.billing.gateway.BillingGateway
 import me.proton.android.lumo.models.SubscriptionItemResponse
 import me.proton.android.lumo.ui.theme.DarkText
 import me.proton.android.lumo.ui.theme.GrayText
@@ -27,16 +27,16 @@ import java.util.Date
  */
 @Composable
 fun SubscriptionOverviewSection(
-    billingManager: BillingManager,
+    billingGateway: BillingGateway,
     subscriptions: List<SubscriptionItemResponse>,
     onClose: () -> Unit
 ) {
     // Get Google Play subscription information
-    val (isActive, isAutoRenewing, expiryTimeMillis) = billingManager.getSubscriptionStatus()
+    val (isActive, isAutoRenewing, expiryTimeMillis) = billingGateway.getSubscriptionStatus()
 
     // Get Google Play product details for pricing
     val googlePlayProductDetails =
-        billingManager.productDetailsList.collectAsStateWithLifecycle().value
+        billingGateway.productDetailsList.collectAsStateWithLifecycle().value
 
     // Log Google Play status
     Log.d(
@@ -119,7 +119,7 @@ fun SubscriptionOverviewSection(
                 // Pass Google Play product details for mobile plans to get accurate pricing
                 googlePlayProductDetails = if (isGooglePlayPlan) googlePlayProductDetails else null,
                 onManageSubscription = {
-                    billingManager.openSubscriptionManagementScreen()
+                    billingGateway.openSubscriptionManagementScreen()
                     onClose()
                 }
             )
