@@ -1,4 +1,4 @@
-# Lu# Lumo N# Lumo Neutered-Fork (Run Without Google Play Services)
+Lumo Neutered-Fork (Run Without Google Play Services)
 
 ```
 android-lumo-neutered
