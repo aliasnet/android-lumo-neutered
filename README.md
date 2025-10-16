@@ -1,4 +1,4 @@
-# Lumo Neutered-Fork (Run Without Google Play Services)
+# Lu# Lumo N# Lumo Neutered-Fork (Run Without Google Play Services)
 
 ```
 android-lumo-neutered
@@ -8,25 +8,22 @@ android-lumo-neutered
 
 Lumo is the privacy-first AI assistant created by Proton, the team behind encrypted email, VPN, password manager, and cloud storage trusted by over 100 million people. 
 
-This is a fork of native Android application wrapper for the Lumo web application with additional features e.g. voice entry.
+This is a fork of a native Android application wrapper for the Lumo web application with additional features. voice entry.
 
 Upstream Repository:
 [https://github.com/ProtonLumo](https://github.com/ProtonLumo)
 
-Web application:
-([lumo.proton.me](https://lumo.proton.me)) 
 
----
+**Clarification:** 
 
-**Clarification:** I'm not a Lumo developer; it was created by Proton AG.  
+I'm not a Lumo developer; it was created by Proton AG.  
 
-However, regarding the Privacy-focused philosophy we seek, it becomes contradictory when Lumo refuses to run on not only GMS-free devices but even on devices where GMS exists but is not logged in. This is especially puzzling as a long-time paid subscriber of Proton and highly support an encrypted, privacy-first LLM application as part of their suite.
+However, regarding the privacy-focused philosophy we seek, it becomes contradictory when Lumo refuses to run not only on GMS-free devices but even on devices where GMS exists but is not logged in. This is especially puzzling as a long-time paid subscriber of Proton and highly support an encrypted, privacy-first LLM application as part of their suite.
 
 Many users, myself included, still have GMS installed and are not rooted. We simply refuse to log in or use DNS filters/firewalls to block Google. We are not completely against it; we just prefer not to use it on devices that prioritize privacy.  
 
 Therefore, the goal can simply be to create a fork that works without Play Store restrictions—no need to log in. Further developments rely on the Proton team and FLOSS community.
 
----
 
 
 ## Scope
@@ -36,8 +33,6 @@ Therefore, the goal can simply be to create a fork that works without Play Store
 **Acknowledgements.** Respect to the original authors. This fork’s goal is simple: **make it usable** without tying core features to a Google account.
 
 **Expected Runtime Behavior.** Detect Play Services / Billing. If Play Services or a signed-in account is missing, hide or disable the purchase UI. Purchase flows should gracefully disable while the app keeps working (no crash). 
-
----
 
 **What the current codebase uses from Google.**
 
@@ -349,44 +344,44 @@ Later, add a `foss` flavor that **omits** `billing-ktx` and only compiles the `N
 
 ## Milestones
 
-**M1 — Repo & Build Sanity (0.5d)**
+**M1 — Repo & Build Sanity **
 - Tasks: Set up branch, enable CI job for `assembleRelease`, turn on strict warnings for billing module.
 - Deliverables: Green CI build artifact, baseline logs captured.
 - Acceptance: App launches on a device **without Play login** and does not crash at startup.
 
-**M2 — Billing Facade & No‑op (1d)**
+**M2 — Billing Facade & No‑op **
 - Tasks: Add `BillingGateway`, `NoopBillingGateway`, `PlayBillingGateway`, `BillingProvider` with 2s timeout.
 - Deliverables: Compiles; unit tests for provider timeout/exception paths.
 - Acceptance: Provider returns `Noop` when Play Billing can’t initialize.
 
-**M3 — Remove GMS Coupling (0.5d)**
+**M3 — Remove GMS Coupling **
 - Tasks: Delete `GoogleApiAvailability/ConnectionResult` imports & code paths; switch to provider.
 - Deliverables: Diff reviewed; no direct GMS checks remain.
 - Acceptance: Static scan shows **0** references to `com.google.android.gms.common`.
 
-**M4 — UI Gating (0.5d)**
+**M4 — UI Gating **
 - Tasks: Gate purchase UI on `billing.available`; add friendly disabled state copy.
 - Deliverables: Compose preview screenshots for enabled/disabled states.
 - Acceptance: On devices w/o Play login or with Google blocked, Upgrade UI shows disabled state with no errors.
 
-**M5 — Error/Log Hygiene (0.5d)**
+**M5 — Error/Log Hygiene **
 - Tasks: Wrap billing calls in `runCatching`; reduce logs to debug; ensure no PII; add lightweight analytics toggle = **off**.
 - Deliverables: Log samples under failure scenarios.
 - Acceptance: No stacktraces surfaced to users; errors map to clean UI state.
 
-**M6 — Test Matrix (1d)**
+**M6 — Test Matrix **
 - Tasks: Verify on 4 scenarios: (a) no GMS, (b) GMS installed not signed in, (c) GMS signed in, (d) DNS blocks Google.
 - Deliverables: Test report with screenshots/video clips.
 - Acceptance: a/b/d → `Noop` path; c → purchases work unchanged.
 
-**M7 — Packaging & Pilot (0.5d)**
+**M7 — Packaging & Pilot **
 - Tasks: Produce signed APK; tag release; write short release notes highlighting Play‑free operation.
 - Deliverables: `Lumo-Play-Optional.apk` for testers.
 - Acceptance: Pilot users confirm normal app usage without Play login.
 
-**(Optional) M8 — F-Droid Variant (1–2d)**
+**(Optional) M8 — F-Droid Variant **
 - Tasks: Introduce `foss` flavor; remove `billing-ktx` from that flavor; compile only `Noop`.
-- Acceptance: F-Droid build has **no** Google artifacts and passes lint/static scans.
+- Acceptance: The F-Droid build has **no** Google artifacts and passes lint/static scans (it won't avoid the anti-features flag on network dependency).
 
 
 
@@ -421,7 +416,7 @@ object BillingProvider {
             withTimeout(2000) {
                 val manager = BillingManager(
                     activity = activity ?: error("Activity required for billing"),
-                    billingCallbacks = /* your existing callbacks provider */
+                    billingCallbacks = /* existing callbacks provider */
                         (activity as? HasBillingCallbacks)?.billingCallbacks()
                             ?: error("Callbacks required")
                 )
@@ -436,13 +431,13 @@ object BillingProvider {
     - Internet
     - Productivity
   License: <match upstream>
-  SourceCode: https://github.com/<your-fork>/lumo
-  IssueTracker: https://github.com/<your-fork>/lumo/issues
+  SourceCode: https://github.com/<fork>/lumo
+  IssueTracker: https://github.com/<fork>/lumo/issues
   AutoName: Lumo (Play‑Optional)
   RepoType: git
-  Repo: https://github.com/<your-fork>/lumo.git
+  Repo: https://github.com/<fork>/lumo.git
   Builds:
-    - versionName: 1.0.0-play-optional
+    - versionName: 1.0.0-neutered
       versionCode: 100
       commit: <tag-or-commit>
       subdir: android-lumo-main/app
@@ -560,11 +555,11 @@ See `.github/pull_request_template.md` in this repo.
 #### Appendix E — CONTRIBUTING
 See `CONTRIBUTING.md` in this repo.
 
+---
+
 ## Acknowledgements
 
 **Upstream: Proton AG — original Lumo project.
-
----
 
 ## 📄 License
 
