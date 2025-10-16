@@ -40,4 +40,5 @@
 - Prefer `./gradlew` over `gradle` to honor wrapper settings.
 - When editing multiple related files, stage commits logically: interface extraction, UI gating, Gradle tweaks.
 - Reference README’s milestones for planning but implement iteratively; keep commits scoped and reversible.
+- Keep documentation handy: `README.md` for current scope, `README_ORIGINAL.md` for legacy context, and `AGENT_CHANGELOG.md` for turn-by-turn notes.
 
