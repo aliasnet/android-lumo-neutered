@@ -143,6 +143,8 @@ class BillingManager(
         return billingClient != null
     }
 
+    fun isConnected(): Boolean = _isConnected.value
+
     init {
         Log.d(
             TAG,

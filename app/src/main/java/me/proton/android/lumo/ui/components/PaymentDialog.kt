@@ -29,7 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.R
-import me.proton.android.lumo.billing.BillingManager
+import me.proton.android.lumo.billing.gateway.BillingGateway
 import me.proton.android.lumo.models.JsPlanInfo
 import me.proton.android.lumo.models.PlanFeature
 import me.proton.android.lumo.ui.theme.DarkText
@@ -425,7 +425,7 @@ private fun PaymentDialogContentPreview(
 @Composable
 fun PaymentDialog(
     visible: Boolean,
-    billingManager: BillingManager,
+    billingGateway: BillingGateway,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -446,9 +446,9 @@ fun PaymentDialog(
     val planFeatures by subscriptionViewModel.planFeatures.collectAsStateWithLifecycle()
     val errorMessage by subscriptionViewModel.errorMessage.collectAsStateWithLifecycle()
 
-    // Get payment processing state from BillingManager
-    val paymentProcessingState by billingManager.paymentProcessingState.collectAsStateWithLifecycle()
-    val isRefreshingPurchases by billingManager.isRefreshingPurchases.collectAsStateWithLifecycle()
+    // Get payment processing state from BillingGateway
+    val paymentProcessingState by billingGateway.paymentProcessingState.collectAsStateWithLifecycle()
+    val isRefreshingPurchases by billingGateway.isRefreshingPurchases.collectAsStateWithLifecycle()
 
     // Load subscriptions whenever dialog opens
     LaunchedEffect(visible) {
@@ -483,7 +483,7 @@ fun PaymentDialog(
                         paymentProcessingState !is PaymentProcessingState.Verifying
                     ) {
                         onDismiss()
-                        billingManager.resetPaymentState()
+                        billingGateway.resetPaymentState()
                     }
                 },
                 properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -497,10 +497,10 @@ fun PaymentDialog(
                 ) {
                     PaymentProcessingScreen(
                         state = paymentProcessingState!!,
-                        onRetry = { billingManager.retryPaymentVerification() },
+                        onRetry = { billingGateway.retryPaymentVerification() },
                         onClose = {
                             onDismiss()
-                            billingManager.resetPaymentState()
+                            billingGateway.resetPaymentState()
                         }
                     )
                 }
@@ -523,7 +523,7 @@ fun PaymentDialog(
                     color = Color.White
                 ) {
                     SubscriptionOverviewSection(
-                        billingManager = billingManager,
+                        billingGateway = billingGateway,
                         subscriptions = subscriptions,
                         onClose = { onDismiss() }
                     )
@@ -710,7 +710,7 @@ fun PaymentDialog(
                                             TAG,
                                             "Purchase button clicked for plan: ${planToPurchase.id}, ProductID: ${planToPurchase.productId}, OfferToken: ${planToPurchase.offerToken}"
                                         )
-                                        billingManager.launchBillingFlowForProduct(
+                                        billingGateway.launchBillingFlowForProduct(
                                             planToPurchase.productId,
                                             planToPurchase.offerToken,
                                             planToPurchase.customerId
