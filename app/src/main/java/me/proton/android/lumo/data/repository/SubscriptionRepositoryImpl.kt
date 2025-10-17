@@ -5,6 +5,7 @@ import android.util.Log
 import com.android.billingclient.api.ProductDetails
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.R
@@ -27,16 +28,16 @@ private const val TAG = "SubscriptionRepository"
  *
  * @param context Application context for string resources
  * @param mainActivity Reference to MainActivity for WebView access
- * @param billingGatewayProvider Lazy accessor for the current billing gateway
+ * @param billingGatewayFlow State flow that exposes the current billing gateway
  */
 class SubscriptionRepositoryImpl(
     private val context: Context,
     private val mainActivity: MainActivity,
-    private val billingGatewayProvider: () -> BillingGateway
+    private val billingGatewayFlow: StateFlow<BillingGateway>
 ) : SubscriptionRepository {
 
     private val billingGateway: BillingGateway
-        get() = billingGatewayProvider()
+        get() = billingGatewayFlow.value
 
     override suspend fun getSubscriptions(): Result<PaymentJsResponse> =
         suspendCancellableCoroutine { continuation ->
