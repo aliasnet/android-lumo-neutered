@@ -234,6 +234,32 @@ fun PaymentProcessingSuccessPreview() {
     )
 }
 
+@Preview(name = "Payment Processing - Billing Unavailable", showBackground = true)
+@Composable
+fun PaymentProcessingBillingUnavailablePreview() {
+    PaymentProcessingScreen(
+        state = PaymentProcessingState.Loading,
+        onRetry = { /* Preview - no action */ },
+        onClose = { /* Preview - no action */ },
+        isBillingAvailable = false
+    )
+}
+
+@Preview(name = "Payment Dialog - Billing Unavailable", showBackground = true)
+@Composable
+fun PaymentDialogBillingUnavailablePreview() {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp)),
+            color = Color.White
+        ) {
+            BillingUnavailableContent(onClose = {})
+        }
+    }
+}
+
 @Composable
 private fun PaymentDialogContentPreview(
     isLoadingSubscriptions: Boolean = false,
@@ -426,10 +452,30 @@ private fun PaymentDialogContentPreview(
 fun PaymentDialog(
     visible: Boolean,
     billingGateway: BillingGateway,
+    billingAvailable: Boolean,
     onDismiss: () -> Unit,
 ) {
+    if (!visible) return
+
     val context = LocalContext.current
     val mainActivity = context as? MainActivity
+
+    if (!billingAvailable) {
+        Dialog(
+            onDismissRequest = { onDismiss() },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clip(RoundedCornerShape(16.dp)),
+                color = Color.White
+            ) {
+                BillingUnavailableContent(onClose = onDismiss)
+            }
+        }
+        return
+    }
 
     // Create ViewModel using the modern factory approach
     val subscriptionViewModel: SubscriptionViewModel = viewModel(
@@ -501,7 +547,8 @@ fun PaymentDialog(
                         onClose = {
                             onDismiss()
                             billingGateway.resetPaymentState()
-                        }
+                        },
+                        isBillingAvailable = billingAvailable
                     )
                 }
             }
