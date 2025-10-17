@@ -434,9 +434,8 @@ class MainActivity : ComponentActivity() {
             handlePermissionResult(permission, isGranted)
         }, webViewManager)
 
-        // Get BillingManagerWrapper from dependency provider
+        // Get BillingManagerWrapper from dependency provider (initializes internally)
         billingManagerWrapper = DependencyProvider.getBillingManagerWrapper(this)
-        billingManagerWrapper.initializeBilling()
 
         Log.d(TAG, "All managers initialized successfully")
     }
