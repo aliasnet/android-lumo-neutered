@@ -8,8 +8,8 @@ add/update each turn accordingly — don't remove previous records or ladder ste
 
 ---
 
-Recent turn: 3
-Next turn: 4 [PENDING] 
+Recent turn: 4
+Next turn: 5 [PENDING]
 
 ---
 
@@ -45,12 +45,14 @@ Known errors:
 ---
 
 ## Turn 4
-- 
+- Hardened billing flows with `runCatching` wrappers around product queries, purchase launches, and acknowledgements, emitting debug-only diagnostics and keeping the gateway flagged unavailable on failure.
+- Confirmed the shared "billing unavailable" messaging now drives purchase state updates instead of raw exception text.
+- Known errors: `./gradlew :app:assembleDebug` (not run: Gradle wrapper JAR missing from repository).
 
 ---
 
 ## Turn 5
-- 
+- Pending.
 
 ---
 
