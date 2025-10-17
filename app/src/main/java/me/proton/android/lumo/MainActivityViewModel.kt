@@ -23,6 +23,7 @@ private const val TAG = "MainActivityViewModel"
 // Define UI State (can be expanded later)
 data class MainUiState(
     val showPaymentDialog: Boolean = false,
+    val billingAvailable: Boolean = false,
     val showSpeechSheet: Boolean = false,
     val isListening: Boolean = false,
     val partialSpokenText: String = "",
@@ -72,6 +73,8 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                 when (event) {
                     // UI state toggle; Activity will render from state in a later step
                     WebEvent.ShowPaymentRequested -> {
+                        val isBillingAvailable = _uiState.value.billingAvailable
+                        Log.d(TAG, "ShowPaymentRequested received. Billing available: $isBillingAvailable")
                         _uiState.update { it.copy(showPaymentDialog = true) }
                     }
 
@@ -139,6 +142,12 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
     fun dismissPaymentDialog() {
         _uiState.update { it.copy(showPaymentDialog = false) }
+    }
+
+    fun setBillingAvailability(isAvailable: Boolean) {
+        if (_uiState.value.billingAvailable == isAvailable) return
+        Log.d(TAG, "Billing availability changed: $isAvailable")
+        _uiState.update { it.copy(billingAvailable = isAvailable) }
     }
 
     // --- Initial Network Check --- 
