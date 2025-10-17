@@ -14,4 +14,8 @@
 
 ## Turn 4
 - Gated payment surfaces on the billing gateway availability flag, added shared "billing unavailable" UI, and deferred upgrade injections when billing is disabled.
-- Build remains blocked by missing Gradle wrapper JAR, so assemble/test tasks still cannot run.
+- Wrapped product queries, purchase launch, and acknowledgement flows in `runCatching` blocks that log debug-only failures and route failures through the shared availability messaging.
+- Gradle wrapper JAR is still absent, preventing local `./gradlew` commands.
+
+## Turn 5
+- Pending.
