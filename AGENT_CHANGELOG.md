@@ -2,10 +2,10 @@
 
 ## Rules
 - Update each turn to track progress/errors, 
-add/update each turn accordingly — don't remove previous records or ladder steps. 
+append each turn accordingly; append—only, don't remove previous records or ladder steps. 
 - "Recent turn: {n}" = previous turn; Each new branch; Next turn become current, then change [PENDING] to [DONE]. 
 - Incrementally append after each turn using "{turn}.{n}". 
-- If current update can't bridge the gap in order continue to next step; output in summary/readiness reports and suggest next fixes. 
+- If current update can't bridge the gap in order continue to next step; output in summary/readiness reports and append suggested steps/fixes for next turn in the ladders timeline. 
 
 ---
 
