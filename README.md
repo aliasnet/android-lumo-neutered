@@ -576,6 +576,8 @@ See `CONTRIBUTING.md` in this repo.
 - `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` – blocked by the same missing SDK requirement after disambiguating the variant-specific test task.
 - `./gradlew :app:lint` – also blocked because the SDK location cannot be resolved.
 
+GitHub Actions now provisions these requirements automatically through [`.github/workflows/android-validation.yml`](.github/workflows/android-validation.yml), which installs the Android command-line tools, accepts licenses, and runs the same Gradle targets on every push and pull request.
+
 #### Android SDK provisioning hand-off
 1. Install the Android command-line tools for API 34+ on a workstation (or CI runner) and configure either `ANDROID_HOME` or the `sdk.dir` entry in `local.properties`.
 2. Use `sdkmanager` to install **platforms;android-34**, **build-tools;34.0.0**, and the **Android Emulator**/system images required for UI testing.
