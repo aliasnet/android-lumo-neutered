@@ -568,3 +568,24 @@ See `CONTRIBUTING.md` in this repo.
 ## About ALIASNET
 - Alanwatson AG, a privacy advocate. 
 
+
+## Validation Status
+
+### Gradle tasks
+- `./gradlew :app:assembleDebug` – blocked because the Android SDK is not installed in this environment; Gradle requests a valid `sdk.dir` or `ANDROID_HOME` entry.
+- `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` – blocked by the same missing SDK requirement after disambiguating the variant-specific test task.
+- `./gradlew :app:lint` – also blocked because the SDK location cannot be resolved.
+
+#### Android SDK provisioning hand-off
+1. Install the Android command-line tools for API 34+ on a workstation (or CI runner) and configure either `ANDROID_HOME` or the `sdk.dir` entry in `local.properties`.
+2. Use `sdkmanager` to install **platforms;android-34**, **build-tools;34.0.0**, and the **Android Emulator**/system images required for UI testing.
+3. Re-run the three Gradle commands above; once they succeed, record the build numbers and update this section accordingly.
+4. For CI, cache the `~/.android` and `~/.gradle` directories to avoid re-downloading SDK components on every run.
+
+### Manual QA
+- See [docs/manual-qa.md](docs/manual-qa.md) for the billing-state matrix. All scenarios are unverified here because device- and network-level controls are unavailable in the container.
+
+### Gradle wrapper bootstrap
+- The repository tracks `gradle/wrapper/gradle-wrapper.jar` as a Base64 text file (`gradle-wrapper.jar.base64`) to avoid binary blobs in review tools.
+- The updated `gradlew` / `gradlew.bat` scripts automatically decode the JAR before launching when a `base64` utility (or PowerShell on Windows) is available.
+- If bootstrap fails, manually decode the file: `base64 --decode gradle/wrapper/gradle-wrapper.jar.base64 > gradle/wrapper/gradle-wrapper.jar` (macOS/Linux) or `powershell -Command "[IO.File]::WriteAllBytes('gradle/wrapper/gradle-wrapper.jar', [Convert]::FromBase64String((Get-Content -Raw 'gradle/wrapper/gradle-wrapper.jar.base64')))` (Windows).

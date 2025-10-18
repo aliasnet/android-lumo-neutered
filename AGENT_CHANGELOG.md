@@ -8,8 +8,8 @@ add/update each turn accordingly — don't remove previous records or ladder ste
 
 ---
 
-Latest turn: 4 [DONE] 
-Next turn: 5 [PENDING] 
+Latest turn: 6 [DONE]
+Next turn: 7 [PENDING]
 
 ---
 
@@ -49,7 +49,28 @@ Known errors:
 ---
 
 ## Turn 5
-- 
+- Restored the missing Gradle wrapper JAR from the Gradle 8.13 distribution so wrapper-based commands can execute again.
+- Ran :app:assembleDebug, :app:testProductionNoWebViewDebugDebugUnitTest, and :app:lint; all fail here because the Android SDK location is not configured in the container.
+- Documented the attempted builds and produced docs/manual-qa.md summarizing the billing-state QA expectations for external verification.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails: Android SDK location missing) [observed on turn 5].
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails: Android SDK location missing) [observed on turn 5].
+- Known errors: `./gradlew :app:lint` (fails: Android SDK location missing) [observed on turn 5].
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 6
+- Replaced the checked-in `gradle-wrapper.jar` binary with a Base64 text companion (`gradle-wrapper.jar.base64`) and taught the wrapper scripts to decode it automatically.
+- Documented manual decode instructions and an Android SDK provisioning hand-off plan in README.md for downstream developers.
+- Validation remains blocked pending SDK installation outside the container.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails: Android SDK location missing) [persisting from turn 5].
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails: Android SDK location missing) [persisting from turn 5].
+- Known errors: `./gradlew :app:lint` (fails: Android SDK location missing) [persisting from turn 5].
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
 
 ---
 

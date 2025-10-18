@@ -29,6 +29,30 @@ if "%DIRNAME%" == "" set DIRNAME=.
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
+set WRAPPER_JAR=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+set WRAPPER_JAR_B64=%WRAPPER_JAR%.base64
+
+if not exist "%WRAPPER_JAR%" if exist "%WRAPPER_JAR_B64%" (
+    where powershell >NUL 2>&1
+    if %ERRORLEVEL% EQU 0 (
+        powershell -NoProfile -Command "\
+            $b64Path = '%WRAPPER_JAR_B64%'; \
+            $jarPath = '%WRAPPER_JAR%'; \
+            $bytes = [System.Convert]::FromBase64String((Get-Content -Raw -Path $b64Path)); \
+            [System.IO.File]::WriteAllBytes($jarPath, $bytes)
+        "
+        if %ERRORLEVEL% NEQ 0 (
+            echo Failed to decode Gradle wrapper JAR from base64.>&2
+            exit /b %ERRORLEVEL%
+        )
+    ) else (
+        echo Gradle wrapper bootstrap failed.>&2
+        echo gradle-wrapper.jar is stored as base64 to avoid binary diffs.>&2
+        echo Install PowerShell or decode gradle\wrapper\gradle-wrapper.jar.base64 manually.>&2
+        exit /b 1
+    )
+)
+
 @rem Resolve any "." and ".." in APP_HOME to make it shorter.
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
@@ -67,7 +91,7 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
+set CLASSPATH=%WRAPPER_JAR%
 
 
 @rem Execute Gradle
