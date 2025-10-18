@@ -96,38 +96,38 @@ Known errors:
 ### Ladder Step 1 
 – Establish the billing abstraction boundary, Extract a BillingGateway interface plus concrete PlayBillingGateway and NoopBillingGateway, then introduce a BillingProvider that performs the timed initialization and hands back the correct implementation. This matches the repository guidelines for modular billing and lays the groundwork for all downstream changes.
 
-**Suggested tasks**: 
+**Suggested tasks for 2**: 
 Create billing gateway abstraction [DONE] 
 
 ### Ladder Step 2 
 – Replace direct GMS checks with the provider, Update BillingManagerWrapper (and any other callers) to request a BillingGateway from the provider and delete all GoogleApiAvailability/ConnectionResult usage. Treat the gateway’s available flag as the single source of truth for billing readiness.
 
-**Suggested tasks**: 
+**Suggested tasks for 3**: 
 Integrate BillingProvider into existing billing wrapper [DONE] 
 
 ### Ladder Step 3 
 – Gate UI and view-model logic on billing availability, Compose screens and the view model should read the gateway’s availability, hiding or disabling upgrade paths when billing is not ready, while continuing normal app functionality.
 
-**Suggested tasks**: 
+**Suggested tasks for 4**: 
 Update UI and state to respect billing availability. [DONE] 
 
 ### Ladder Step 4 
 – Harden error handling and logging, Wrap billing calls in runCatching, downgrade logs to debug level, and guarantee the UI never surfaces stack traces—mapping every failure to a graceful disabled state. 
 
-**Suggested Tasks**:
+**Suggested Tasks for 5**:
 Validate builds and scenarios, run Gradle build/tests, and perform checks to ensure consistency with and without Google Play services. [DONE] 
 
 ### Ladder Step 5 
 – Validate through builds and scenario testing, run the Gradle build/test suite and execute the manual device matrix to ensure parity with and without Google Play services. 
 
-**Suggested tasks**: 
+**Suggested tasks for 6**: 
 Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper JAR. [DONE] 
 
 ### Ladder Step 6 
 - Build the missing Gradle wrapper JAR. 
 - Produce docs/manual-qa.md summarizing the billing-state QA expectations for external verification.
 
-**Suggested tasks**: 
+**Suggested tasks for 7**: 
 - Replaced `gradle-wrapper.jar` with a Base64-encoded version to avoid binary restriction in PR.
 - Added manual decoding instructions and an SDK provisioning hand-off plan in README.md.
 
@@ -144,7 +144,11 @@ Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper 
 - Add steps to run `./gradlew :app:assembleDebug`, `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest`, and `./gradlew :app:lint`, ensuring each command surfaces failures.
 - Document the workflow link back in `README.md` near the existing validation section so contributors know the automation exists.
 
-**Seggested tasks**: 
-
+**Suggested tasks for 9**: 
+- Let billing fallback handle missing Play Store
 
 ### Ladder Step 9
+
+1. Remove direct `com.android.vending` guard and related error branches so initialization relies solely on `BillingClient` responses.
+2. Update logging to reflect the softer failure path and ensure `BillingProvider`’s timeout still degrades to `NoopBillingGateway`.
+3. Add or adjust tests under `app/src/test/...` (or create new ones) to confirm that missing Play Services results in `NoopBillingGateway` without surfacing hard-coded Play Store error messaging.
