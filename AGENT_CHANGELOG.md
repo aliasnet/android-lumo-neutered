@@ -134,3 +134,17 @@ Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper 
 ### Ladder Step 7
 - Replaced the checked-in `gradle-wrapper.jar` binary with a Base64 text companion (`gradle-wrapper.jar.base64`) and taught the wrapper scripts to decode it automatically.
 - Documented manual decode instructions and an Android SDK provisioning hand-off plan in README.md for downstream developers. 
+
+**Suggested Tasks**: 
+
+
+### Ladder Step 8
+
+- Create a CI workflow (e.g., `.github/workflows/android-validation.yml`) that installs the Android command-line tools, configures `sdkmanager`, and caches the SDK/Gradle directories as outlined in README Appendix “Android SDK provisioning hand-off”.
+- Add steps to run `./gradlew :app:assembleDebug`, `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest`, and `./gradlew :app:lint`, ensuring each command surfaces failures.
+- Document the workflow link back in `README.md` near the existing validation section so contributors know the automation exists.
+
+**Seggested tasks**: 
+
+
+### Ladder Step 9
