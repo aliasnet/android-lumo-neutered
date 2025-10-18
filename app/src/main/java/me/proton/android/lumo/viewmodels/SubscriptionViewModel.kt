@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import me.proton.android.lumo.R
+import me.proton.android.lumo.billing.gateway.BillingGateway
 import me.proton.android.lumo.data.repository.SubscriptionRepository
 import me.proton.android.lumo.models.JsPlanInfo
 import me.proton.android.lumo.models.PlanFeature
 import me.proton.android.lumo.models.SubscriptionItemResponse
-import me.proton.android.lumo.managers.BillingManagerWrapper
 
 private const val TAG = "SubscriptionViewModel"
 
@@ -25,7 +25,7 @@ private const val TAG = "SubscriptionViewModel"
 class SubscriptionViewModel constructor(
     private val application: Application,
     private val repository: SubscriptionRepository,
-    private val billingManagerWrapper: BillingManagerWrapper
+    private val billingGatewayFlow: StateFlow<BillingGateway>
 ) : ViewModel() {
 
     // Subscriptions state
@@ -289,6 +289,6 @@ class SubscriptionViewModel constructor(
      * Trigger subscription recovery flow
      */
     fun triggerSubscriptionRecovery() {
-        billingManagerWrapper.getBillingManager()?.triggerSubscriptionRecovery()
+        billingGatewayFlow.value.triggerSubscriptionRecovery()
     }
-} 
+}

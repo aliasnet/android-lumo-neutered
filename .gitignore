@@ -15,3 +15,6 @@ app/production/
 
 # Environment variables (contains sensitive data)
 .env
+
+# Generated Gradle wrapper binary (stored as base64 instead)
+gradle/wrapper/gradle-wrapper.jar

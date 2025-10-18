@@ -44,59 +44,66 @@ sealed class PaymentProcessingState {
  */
 @Composable
 fun PaymentProcessingScreen(
-    state: PaymentProcessingState, onRetry: () -> Unit, onClose: () -> Unit
+    state: PaymentProcessingState,
+    onRetry: () -> Unit,
+    onClose: () -> Unit,
+    isBillingAvailable: Boolean = true
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(), color = Color.White
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
+        if (!isBillingAvailable) {
+            BillingUnavailableContent(onClose = onClose)
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Logo/Image at top
-            Image(
-                painter = painterResource(id = R.drawable.lumo_cat_on_laptop),
-                contentDescription = "Lumo",
-                modifier = Modifier.height(80.dp)
-            )
+                // Logo/Image at top
+                Image(
+                    painter = painterResource(id = R.drawable.lumo_cat_on_laptop),
+                    contentDescription = "Lumo",
+                    modifier = Modifier.height(80.dp)
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Different content based on state
-            when (state) {
-                is PaymentProcessingState.Loading -> {
-                    PaymentLoadingContent()
-                }
+                // Different content based on state
+                when (state) {
+                    is PaymentProcessingState.Loading -> {
+                        PaymentLoadingContent()
+                    }
 
-                is PaymentProcessingState.Verifying -> {
-                    PaymentVerifyingContent()
-                }
+                    is PaymentProcessingState.Verifying -> {
+                        PaymentVerifyingContent()
+                    }
 
-                is PaymentProcessingState.Error -> {
-                    PaymentErrorContent(
-                        message = state.message, onRetry = onRetry, onClose = onClose
-                    )
-                }
+                    is PaymentProcessingState.Error -> {
+                        PaymentErrorContent(
+                            message = state.message, onRetry = onRetry, onClose = onClose
+                        )
+                    }
 
-                is PaymentProcessingState.NetworkError -> {
-                    PaymentNetworkErrorContent(
-                        message = state.message, onRetry = onRetry, onClose = onClose
-                    )
-                }
+                    is PaymentProcessingState.NetworkError -> {
+                        PaymentNetworkErrorContent(
+                            message = state.message, onRetry = onRetry, onClose = onClose
+                        )
+                    }
 
-                is PaymentProcessingState.Success -> {
-                    PaymentSuccessContent(onClose = onClose)
-                }
+                    is PaymentProcessingState.Success -> {
+                        PaymentSuccessContent(onClose = onClose)
+                    }
 
-                is PaymentProcessingState.SubscriptionRecovery -> {
-                    SubscriptionRecoveryContent(
-                        message = state.message, onRetry = onRetry, onClose = onClose
-                    )
+                    is PaymentProcessingState.SubscriptionRecovery -> {
+                        SubscriptionRecoveryContent(
+                            message = state.message, onRetry = onRetry, onClose = onClose
+                        )
+                    }
                 }
             }
         }

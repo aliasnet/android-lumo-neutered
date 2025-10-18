@@ -5,10 +5,11 @@ import android.util.Log
 import com.android.billingclient.api.ProductDetails
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import me.proton.android.lumo.MainActivity
 import me.proton.android.lumo.R
-import me.proton.android.lumo.billing.BillingManager
+import me.proton.android.lumo.billing.gateway.BillingGateway
 import me.proton.android.lumo.models.JsPlanInfo
 import me.proton.android.lumo.models.PaymentJsResponse
 import me.proton.android.lumo.models.PlanFeature
@@ -27,13 +28,16 @@ private const val TAG = "SubscriptionRepository"
  *
  * @param context Application context for string resources
  * @param mainActivity Reference to MainActivity for WebView access
- * @param billingManager The BillingManager for Google Play integration
+ * @param billingGatewayFlow State flow that exposes the current billing gateway
  */
 class SubscriptionRepositoryImpl(
     private val context: Context,
     private val mainActivity: MainActivity,
-    private val billingManager: BillingManager?
+    private val billingGatewayFlow: StateFlow<BillingGateway>
 ) : SubscriptionRepository {
+
+    private val billingGateway: BillingGateway
+        get() = billingGatewayFlow.value
 
     override suspend fun getSubscriptions(): Result<PaymentJsResponse> =
         suspendCancellableCoroutine { continuation ->
@@ -146,8 +150,7 @@ class SubscriptionRepositoryImpl(
     }
 
     override fun getGooglePlayProducts(): Flow<List<ProductDetails>> {
-        return billingManager?.productDetailsList
-            ?: kotlinx.coroutines.flow.flowOf(emptyList())
+        return billingGateway.productDetailsList
     }
 
     override fun updatePlanPricing(
@@ -158,19 +161,18 @@ class SubscriptionRepositoryImpl(
     }
 
     override fun getGooglePlaySubscriptionStatus(): Triple<Boolean, Boolean, Long> {
-        return billingManager?.getSubscriptionStatus()
-            ?: Triple(false, false, 0L)
+        return billingGateway.getSubscriptionStatus()
     }
 
     override fun refreshGooglePlaySubscriptionStatus() {
-        billingManager?.refreshPurchaseStatus(forceRefresh = true)
+        billingGateway.refreshPurchaseStatus(forceRefresh = true)
     }
 
     override fun invalidateSubscriptionCache() {
-        billingManager?.invalidateCache()
+        billingGateway.invalidateCache()
     }
 
     override fun openSubscriptionManagementScreen() {
-        billingManager?.openSubscriptionManagementScreen()
+        billingGateway.openSubscriptionManagementScreen()
     }
 } 

@@ -80,7 +80,28 @@ case "`uname`" in
     ;;
 esac
 
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+WRAPPER_JAR_B64="$WRAPPER_JAR.base64"
+
+if [ ! -f "$WRAPPER_JAR" ] && [ -f "$WRAPPER_JAR_B64" ]; then
+    if command -v base64 >/dev/null 2>&1; then
+        umask 022
+        base64 --decode "$WRAPPER_JAR_B64" > "$WRAPPER_JAR" || {
+            echo "Failed to decode Gradle wrapper JAR from base64." >&2
+            exit 1
+        }
+    else
+        cat <<'EOF' >&2
+Gradle wrapper bootstrap failed.
+The repository stores gradle-wrapper.jar in base64 form to avoid binary diffs.
+Install the 'base64' utility or manually decode gradle/wrapper/gradle-wrapper.jar.base64
+into gradle/wrapper/gradle-wrapper.jar before rerunning this command.
+EOF
+        exit 1
+    fi
+fi
+
+CLASSPATH=$WRAPPER_JAR
 
 
 # Determine the Java command to use to start the JVM.

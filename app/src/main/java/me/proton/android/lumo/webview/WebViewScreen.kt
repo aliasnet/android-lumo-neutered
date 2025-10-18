@@ -338,8 +338,16 @@ fun WebViewScreen(
                                 injectAndroidInterfacePolyfill(view) // Inject polyfill first for robust interface calls
                                 injectEssentialJavascript(view)
                                 injectLumoContainerCheck(view)
-                                injectPromotionButtonHandlers(view)
-                                injectUpgradeLinkHandlers(view)
+                                val billingAvailable = activity.viewModel.uiState.value.billingAvailable
+                                if (billingAvailable) {
+                                    injectPromotionButtonHandlers(view)
+                                    injectUpgradeLinkHandlers(view)
+                                } else {
+                                    Log.d(
+                                        TAG,
+                                        "Billing unavailable, skipping upgrade handler injections for URL: $url"
+                                    )
+                                }
                                 Log.d(
                                     TAG,
                                     "Calling injectSignupPlanParamFix from onPageFinished for URL: $url"

@@ -69,7 +69,6 @@ import me.proton.android.lumo.models.Feature
 import me.proton.android.lumo.speech.SpeechRecognitionManager
 import me.proton.android.lumo.ui.components.LoadingScreen
 import me.proton.android.lumo.ui.components.PaymentDialog
-import me.proton.android.lumo.ui.components.SimpleAlertDialog
 import me.proton.android.lumo.ui.components.SpeechInputSheetContent
 import me.proton.android.lumo.ui.theme.LumoTheme
 import me.proton.android.lumo.ui.theme.Purple
@@ -211,6 +210,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val initialUrl by viewModel.initialUrl.collectAsStateWithLifecycle()
+            val billingGateway by billingManagerWrapper.billingGatewayFlow.collectAsStateWithLifecycle()
+
+            LaunchedEffect(billingGateway.available) {
+                viewModel.setBillingAvailability(billingGateway.available)
+            }
 
             LumoTheme {
                 val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -360,18 +364,12 @@ class MainActivity : ComponentActivity() {
                         }
                         if (initialUrl != null) {
                             Log.d(TAG, "Showing, or trying to show PaymentDialog. ")
-                            billingManagerWrapper.getBillingManager()?.let { manager ->
-                                PaymentDialog(
-                                    visible = uiState.showPaymentDialog,
-                                    billingManager = manager,
-                                    onDismiss = { viewModel.dismissPaymentDialog() }
-                                )
-                            } ?: run {
-                                // When billing is unavailable, show a simple dialog informing the user
-                                SimpleAlertDialog(uiState.showPaymentDialog) {
-                                    viewModel.dismissPaymentDialog()
-                                }
-                            }
+                            PaymentDialog(
+                                visible = uiState.showPaymentDialog,
+                                billingGateway = billingGateway,
+                                billingAvailable = uiState.billingAvailable,
+                                onDismiss = { viewModel.dismissPaymentDialog() }
+                            )
                         }
                         if (initialUrl == null) {
                             Box(
@@ -433,9 +431,8 @@ class MainActivity : ComponentActivity() {
             handlePermissionResult(permission, isGranted)
         }, webViewManager)
 
-        // Get BillingManagerWrapper from dependency provider
+        // Get BillingManagerWrapper from dependency provider (initializes internally)
         billingManagerWrapper = DependencyProvider.getBillingManagerWrapper(this)
-        billingManagerWrapper.initializeBilling()
 
         Log.d(TAG, "All managers initialized successfully")
     }

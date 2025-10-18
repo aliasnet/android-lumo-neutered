@@ -18,18 +18,18 @@ class ViewModelFactory(
         return when {
             modelClass.isAssignableFrom(SubscriptionViewModel::class.java) -> {
                 // Get dependencies from the dependency provider
-                val billingManagerWrapper =
-                    DependencyProvider.getBillingManagerWrapper(mainActivity)
+                val billingGatewayFlow =
+                    DependencyProvider.getBillingGatewayFlow(mainActivity)
                 val repository = DependencyProvider.getSubscriptionRepository(
                     mainActivity = mainActivity,
-                    billingManagerWrapper = billingManagerWrapper
+                    billingGatewayFlow = billingGatewayFlow
                 )
 
                 // Create ViewModel with injected dependencies
                 SubscriptionViewModel(
                     application = mainActivity.application,
                     repository = repository,
-                    billingManagerWrapper = billingManagerWrapper
+                    billingGatewayFlow = billingGatewayFlow
                 ) as T
             }
 

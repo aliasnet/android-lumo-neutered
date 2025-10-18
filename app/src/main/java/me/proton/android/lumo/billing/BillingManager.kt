@@ -99,6 +99,24 @@ class BillingManager(
 
     private val _selectedPlanIndex = MutableStateFlow(0)
 
+    private fun markBillingUnavailable(reason: String, throwable: Throwable? = null) {
+        val message = activity?.getString(R.string.billing_unavailable_generic)
+            ?: "Billing unavailable"
+        val logDetails = buildString {
+            append("Billing interaction failed during $reason")
+            throwable?.let { error ->
+                error::class.simpleName?.let { append(" ($it)") }
+            }
+        }
+        Log.d(TAG, logDetails)
+        _isConnected.value = false
+        _purchaseState.value = PurchaseState.Error(message)
+        val currentProcessingState = _paymentProcessingState.value
+        if (currentProcessingState != null && currentProcessingState !is PaymentProcessingState.Success) {
+            _paymentProcessingState.value = PaymentProcessingState.Error(message)
+        }
+    }
+
     private val purchasesUpdatedListener = PurchasesUpdatedListener { billingResult, purchases ->
         Log.d(
             TAG,
@@ -111,7 +129,9 @@ class BillingManager(
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             _purchaseState.value = PurchaseState.Cancelled
         } else {
-            _purchaseState.value = PurchaseState.Error(billingResult.debugMessage)
+            markBillingUnavailable(
+                "onPurchasesUpdated: response ${billingResult.responseCode}"
+            )
         }
     }
 
@@ -142,6 +162,8 @@ class BillingManager(
     fun isBillingAvailable(): Boolean {
         return billingClient != null
     }
+
+    fun isConnected(): Boolean = _isConnected.value
 
     init {
         Log.d(
@@ -534,116 +556,124 @@ class BillingManager(
         )
 
 
-        billingClient?.queryProductDetailsAsync(params) { billingResult, retrievedProductDetails ->
-            val responseCodeName = when (billingResult.responseCode) {
-                BillingClient.BillingResponseCode.OK -> "OK (0)"
-                BillingClient.BillingResponseCode.ERROR -> "ERROR (1)"
-                BillingClient.BillingResponseCode.USER_CANCELED -> "USER_CANCELED (1)"
-                BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> "SERVICE_UNAVAILABLE (2)"
-                BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> "BILLING_UNAVAILABLE (3)"
-                BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> "ITEM_UNAVAILABLE (4)"
-                BillingClient.BillingResponseCode.DEVELOPER_ERROR -> "DEVELOPER_ERROR (5)"
-                BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "ITEM_ALREADY_OWNED (7)"
-                BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> "ITEM_NOT_OWNED (8)"
-                else -> "UNKNOWN (${billingResult.responseCode})"
-            }
+        val client = billingClient ?: run {
+            markBillingUnavailable("queryProductDetails: billing client unavailable")
+            return
+        }
 
-            Log.d(
-                TAG,
-                "Product details query result: $responseCodeName, debug: ${billingResult.debugMessage}"
-            )
-            Log.d(TAG, "Retrieved ${retrievedProductDetails.size} products")
+        runCatching {
+            client.queryProductDetailsAsync(params) { billingResult, retrievedProductDetails ->
+                val responseCodeName = when (billingResult.responseCode) {
+                    BillingClient.BillingResponseCode.OK -> "OK (0)"
+                    BillingClient.BillingResponseCode.ERROR -> "ERROR (1)"
+                    BillingClient.BillingResponseCode.USER_CANCELED -> "USER_CANCELED (1)"
+                    BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> "SERVICE_UNAVAILABLE (2)"
+                    BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> "BILLING_UNAVAILABLE (3)"
+                    BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> "ITEM_UNAVAILABLE (4)"
+                    BillingClient.BillingResponseCode.DEVELOPER_ERROR -> "DEVELOPER_ERROR (5)"
+                    BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "ITEM_ALREADY_OWNED (7)"
+                    BillingClient.BillingResponseCode.ITEM_NOT_OWNED -> "ITEM_NOT_OWNED (8)"
+                    else -> "UNKNOWN (${billingResult.responseCode})"
+                }
 
-            when (billingResult.responseCode) {
-                BillingClient.BillingResponseCode.OK -> {
-                    Log.d(TAG, retrievedProductDetails.toString());
-                    if (retrievedProductDetails.isNotEmpty()) {
-                        // Store all retrieved product details
-                        _productDetailsList.value = retrievedProductDetails
+                Log.d(
+                    TAG,
+                    "Product details query result: $responseCodeName, debug: ${billingResult.debugMessage}"
+                )
+                Log.d(TAG, "Retrieved ${retrievedProductDetails.size} products")
 
-                        // Also select the first product as default
-                        val firstProduct = retrievedProductDetails[0]
-                        this.productDetails = firstProduct
+                when (billingResult.responseCode) {
+                    BillingClient.BillingResponseCode.OK -> {
+                        Log.d(TAG, retrievedProductDetails.toString())
+                        if (retrievedProductDetails.isNotEmpty()) {
+                            // Store all retrieved product details
+                            _productDetailsList.value = retrievedProductDetails
 
-                        // Log info about all retrieved products
-                        retrievedProductDetails.forEach { product ->
-                            Log.d(TAG, "Product details retrieved:")
-                            Log.d(TAG, "- Product ID: ${product.productId}")
-                            Log.d(TAG, "- Name: ${product.name}")
-                            Log.d(TAG, "- Description: ${product.description}")
+                            // Also select the first product as default
+                            val firstProduct = retrievedProductDetails[0]
+                            this.productDetails = firstProduct
 
-                            if (!isTestMode && product.subscriptionOfferDetails != null) {
-                                product.subscriptionOfferDetails?.forEach { offer ->
-                                    Log.d(
-                                        TAG,
-                                        "Offer: ${offer.basePlanId}, token: ${offer.offerToken}"
-                                    )
+                            // Log info about all retrieved products
+                            retrievedProductDetails.forEach { product ->
+                                Log.d(TAG, "Product details retrieved:")
+                                Log.d(TAG, "- Product ID: ${product.productId}")
+                                Log.d(TAG, "- Name: ${product.name}")
+                                Log.d(TAG, "- Description: ${product.description}")
+
+                                if (!isTestMode && product.subscriptionOfferDetails != null) {
+                                    product.subscriptionOfferDetails?.forEach { offer ->
+                                        Log.d(
+                                            TAG,
+                                            "Offer: ${offer.basePlanId}, token: ${offer.offerToken}"
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        // Update subscription plans with pricing information
-                        updateSubscriptionPlansWithPricing(retrievedProductDetails)
+                            // Update subscription plans with pricing information
+                            updateSubscriptionPlansWithPricing(retrievedProductDetails)
 
-                        // Select the default plan (first one)
-                        selectPlan(0)
-                    } else {
-                        val productIds = productList.joinToString(", ") {
-                            try {
-                                it.javaClass.getDeclaredMethod("zza").invoke(it) as? String
-                                    ?: "unknown"
-                            } catch (e: Exception) {
-                                "unknown"
-                            }
-                        }
-                        Log.e(TAG, "No products found for IDs: $productIds")
-
-                        if (isTestMode) {
-                            // This is a common issue with test products, so don't show error to user in test mode
-                            Log.i(
-                                TAG,
-                                "This is expected in the emulator or devices without proper Play Store setup"
-                            )
-
-                            // Instead of showing an error, we'll mark a special state for UI testing
-                            // This allows the UI to continue showing the payment dialog with dummy data
-                            _purchaseState.value =
-                                PurchaseState.NoProductsAvailable("Test mode active, showing UI demo")
-                            return@queryProductDetailsAsync
+                            // Select the default plan (first one)
+                            selectPlan(0)
                         } else {
-                            Log.e(TAG, "Make sure the products are set up in Google Play Console")
+                            val productIds = productList.joinToString(", ") {
+                                try {
+                                    it.javaClass.getDeclaredMethod("zza").invoke(it) as? String
+                                        ?: "unknown"
+                                } catch (e: Exception) {
+                                    "unknown"
+                                }
+                            }
+                            Log.e(TAG, "No products found for IDs: $productIds")
+
+                            if (isTestMode) {
+                                // This is a common issue with test products, so don't show error to user in test mode
+                                Log.i(
+                                    TAG,
+                                    "This is expected in the emulator or devices without proper Play Store setup"
+                                )
+
+                                // Instead of showing an error, we'll mark a special state for UI testing
+                                // This allows the UI to continue showing the payment dialog with dummy data
+                                _purchaseState.value =
+                                    PurchaseState.NoProductsAvailable("Test mode active, showing UI demo")
+                                return@queryProductDetailsAsync
+                            } else {
+                                Log.e(TAG, "Make sure the products are set up in Google Play Console")
+                            }
+                            _purchaseState.value = PurchaseState.Error("No products found")
                         }
-                        _purchaseState.value = PurchaseState.Error("No products found")
+                    }
+
+                    BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
+                        Log.e(TAG, "Service disconnected, reconnecting...")
+                        isConnected = false
+                        establishConnection()
+                    }
+
+                    BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> {
+                        Log.d(TAG, "Billing unavailable while querying products (SERVICE_UNAVAILABLE)")
+                        markBillingUnavailable("queryProductDetails: SERVICE_UNAVAILABLE")
+                    }
+
+                    BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
+                        Log.d(TAG, "Billing unavailable while querying products (BILLING_UNAVAILABLE)")
+                        markBillingUnavailable("queryProductDetails: BILLING_UNAVAILABLE")
+                    }
+
+                    else -> {
+                        Log.e(
+                            TAG,
+                            "Failed to retrieve product details: ${billingResult.responseCode} ${billingResult.debugMessage}"
+                        )
+                        markBillingUnavailable(
+                            "queryProductDetails: response ${billingResult.responseCode}"
+                        )
                     }
                 }
-
-                BillingClient.BillingResponseCode.SERVICE_DISCONNECTED -> {
-                    Log.e(TAG, "Service disconnected, reconnecting...")
-                    isConnected = false
-                    establishConnection()
-                }
-
-                BillingClient.BillingResponseCode.SERVICE_UNAVAILABLE -> {
-                    Log.e(TAG, "Service unavailable - check internet connection")
-                    _purchaseState.value =
-                        PurchaseState.Error("Service unavailable - check internet connection")
-                }
-
-                BillingClient.BillingResponseCode.BILLING_UNAVAILABLE -> {
-                    Log.e(TAG, "Billing unavailable - check Play Store app")
-                    _purchaseState.value =
-                        PurchaseState.Error("Billing unavailable - check Play Store app")
-                }
-
-                else -> {
-                    Log.e(
-                        TAG,
-                        "Failed to retrieve product details: ${billingResult.responseCode} ${billingResult.debugMessage}"
-                    )
-                    _purchaseState.value =
-                        PurchaseState.Error("Failed to retrieve product details: ${billingResult.debugMessage}")
-                }
             }
+        }.onFailure { error ->
+            markBillingUnavailable("queryProductDetails", error)
         }
     }
 
@@ -877,8 +907,13 @@ class BillingManager(
                     .build()
 
                 coroutineScope.launch {
-                    try {
-                        billingClient?.acknowledgePurchase(acknowledgePurchaseParams) { billingResult ->
+                    val client = billingClient ?: run {
+                        markBillingUnavailable("acknowledgePurchase: billing client unavailable")
+                        return@launch
+                    }
+
+                    runCatching {
+                        client.acknowledgePurchase(acknowledgePurchaseParams) { billingResult ->
                             Log.d(
                                 TAG,
                                 "Acknowledge result: ${billingResult.responseCode} ${billingResult.debugMessage}"
@@ -890,10 +925,14 @@ class BillingManager(
                                     TAG,
                                     "Failed to acknowledge purchase: ${billingResult.debugMessage}"
                                 )
+                                markBillingUnavailable(
+                                    "acknowledgePurchase: response ${billingResult.responseCode}"
+                                )
                             }
                         }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error acknowledging purchase", e)
+                    }.onFailure { error ->
+                        Log.d(TAG, "Acknowledge purchase failed: ${error.message}")
+                        markBillingUnavailable("acknowledgePurchase", error)
                     }
                 }
             }
@@ -1107,90 +1146,93 @@ class BillingManager(
         offerToken: String?,
         customerID: String? = null
     ) {
-        if (!_isConnected.value) {
-            Log.e(TAG, "Cannot launch billing flow - billing client not connected.")
-            _purchaseState.value = PurchaseState.Error("Billing service not connected.")
-            return
-        }
-        if (activity == null) {
-            Log.e(TAG, "Cannot launch billing flow - activity is null.")
-            _purchaseState.value = PurchaseState.Error("Application context error.")
-            return
-        }
+        runCatching {
+            if (!_isConnected.value) {
+                Log.e(TAG, "Cannot launch billing flow - billing client not connected.")
+                _purchaseState.value = PurchaseState.Error("Billing service not connected.")
+                return
+            }
+            val currentActivity = activity
+            if (currentActivity == null) {
+                Log.e(TAG, "Cannot launch billing flow - activity is null.")
+                _purchaseState.value = PurchaseState.Error("Application context error.")
+                return
+            }
 
-        // Store customerID for use during purchase processing
-        this.currentCustomerID = customerID
+            // Store customerID for use during purchase processing
+            this.currentCustomerID = customerID
 
-        Log.d(
-            TAG,
-            "Attempting to launch purchase flow for Product ID: $productId, Offer Token: $offerToken, Customer ID: $customerID"
-        )
+            Log.d(
+                TAG,
+                "Attempting to launch purchase flow for Product ID: $productId, Offer Token: $offerToken, Customer ID: $customerID"
+            )
 
-        val productDetails = _productDetailsList.value.find { it.productId == productId }
+            val productDetails = _productDetailsList.value.find { it.productId == productId }
 
-        if (productDetails == null) {
-            Log.e(TAG, "Product details not found for $productId. Cannot launch flow.")
-            _purchaseState.value = PurchaseState.Error("Selected plan details not found.")
-            return
-        }
+            if (productDetails == null) {
+                Log.e(TAG, "Product details not found for $productId. Cannot launch flow.")
+                _purchaseState.value = PurchaseState.Error("Selected plan details not found.")
+                return
+            }
 
-        // Construct the ProductDetailsParams builder
-        val productDetailsParamsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
-            .setProductDetails(productDetails)
+            // Construct the ProductDetailsParams builder
+            val productDetailsParamsBuilder = BillingFlowParams.ProductDetailsParams.newBuilder()
+                .setProductDetails(productDetails)
 
-        // Find and set the offer token if provided and valid
-        if (offerToken != null && productDetails.subscriptionOfferDetails != null) {
-            val selectedOffer =
-                productDetails.subscriptionOfferDetails?.find { it.offerToken == offerToken }
-            if (selectedOffer != null) {
-                Log.d(TAG, "Found matching offer token: $offerToken")
-                productDetailsParamsBuilder.setOfferToken(selectedOffer.offerToken)
-            } else {
-                // Handle case where the offer token from JS doesn't match any available offer
-                // This might happen if eligibility changed or plans updated.
-                // Fallback: Try purchasing the base plan if offerToken is invalid/not found?
-                // Or show an error.
+            // Find and set the offer token if provided and valid
+            if (offerToken != null && productDetails.subscriptionOfferDetails != null) {
+                val selectedOffer =
+                    productDetails.subscriptionOfferDetails?.find { it.offerToken == offerToken }
+                if (selectedOffer != null) {
+                    Log.d(TAG, "Found matching offer token: $offerToken")
+                    productDetailsParamsBuilder.setOfferToken(selectedOffer.offerToken)
+                } else {
+                    Log.w(
+                        TAG,
+                        "Provided offer token '$offerToken' not found for product $productId. Check plan configuration or user eligibility."
+                    )
+                    _purchaseState.value =
+                        PurchaseState.Error("Selected plan offer is not available. Please try again or select a different plan.")
+                }
+            } else if (offerToken != null && productDetails.subscriptionOfferDetails == null) {
                 Log.w(
                     TAG,
-                    "Provided offer token '$offerToken' not found for product $productId. Check plan configuration or user eligibility."
+                    "Offer token '$offerToken' provided, but product $productId has no subscription offer details."
                 )
-                // Optionally, default to the base plan if no offer token is needed/found
-                // If *only* specific offers should be purchasable, then this should be an error:
-                _purchaseState.value =
-                    PurchaseState.Error("Selected plan offer is not available. Please try again or select a different plan.")
-                // return // Uncomment this line if purchase should fail when offer token is invalid
+                _purchaseState.value = PurchaseState.Error("Plan configuration error.")
+                return
+            } else {
+                Log.d(TAG, "No specific offer token provided or needed for product $productId.")
             }
-        } else if (offerToken != null && productDetails.subscriptionOfferDetails == null) {
-            Log.w(
-                TAG,
-                "Offer token '$offerToken' provided, but product $productId has no subscription offer details."
-            )
-            _purchaseState.value = PurchaseState.Error("Plan configuration error.")
-            return
-        } else {
-            Log.d(TAG, "No specific offer token provided or needed for product $productId.")
-            // If offerToken is null, we don't call setOfferToken, which usually defaults to the base plan
-        }
 
-        val productDetailsParamsList = listOf(productDetailsParamsBuilder.build())
+            val productDetailsParamsList = listOf(productDetailsParamsBuilder.build())
 
-        val billingFlowParams = BillingFlowParams.newBuilder()
-            .setProductDetailsParamsList(productDetailsParamsList)
-            .setObfuscatedAccountId(customerID!!)
-            .build()
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(productDetailsParamsList)
+                .setObfuscatedAccountId(customerID!!)
+                .build()
 
-        val billingResult = billingClient?.launchBillingFlow(activity, billingFlowParams)
+            val client = billingClient ?: run {
+                markBillingUnavailable("launchBillingFlowForProduct: billing client unavailable")
+                return
+            }
 
-        if (billingResult?.responseCode != BillingClient.BillingResponseCode.OK) {
-            Log.e(
-                TAG,
-                "Failed to launch billing flow: ${billingResult?.responseCode} ${billingResult?.debugMessage}"
-            )
-            _purchaseState.value =
-                PurchaseState.Error("Failed to initiate purchase: ${billingResult?.debugMessage}")
-        } else {
-            Log.d(TAG, "Billing flow launched successfully.")
-            // Purchase process continues in PurchasesUpdatedListener
+            val billingResult = client.launchBillingFlow(currentActivity, billingFlowParams)
+
+            if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                Log.e(
+                    TAG,
+                    "Failed to launch billing flow: ${billingResult.responseCode} ${billingResult.debugMessage}"
+                )
+                markBillingUnavailable(
+                    "launchBillingFlowForProduct: response ${billingResult.responseCode}"
+                )
+            } else {
+                Log.d(TAG, "Billing flow launched successfully.")
+            }
+        }.onFailure { error ->
+            Log.d(TAG, "Launch billing flow failed: ${error.message}")
+            markBillingUnavailable("launchBillingFlowForProduct", error)
         }
     }
 
