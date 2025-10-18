@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 7 [DONE]
-Next turn: 8 [PENDING]
+Latest turn: 8 [DONE]
+Next turn: 9 [PENDING]
 
 ---
 
@@ -72,9 +72,21 @@ Known errors:
 - Validation remains blocked pending SDK installation outside the container.
 
 Known errors:
-- Known errors: `./gradlew :app:assembleDebug` (fails: Android SDK location missing) 
-- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails: Android SDK location missing) 
-- Known errors: `./gradlew :app:lint` (fails: Android SDK location missing) 
+- Known errors: `./gradlew :app:assembleDebug` (fails: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails: Android SDK location missing)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 8
+- Added a GitHub Actions workflow (`.github/workflows/android-validation.yml`) that provisions the Android command-line tools, accepts licenses, and runs the assemble, targeted unit test, and lint Gradle tasks on pushes and pull requests.
+- Linked the workflow from the README validation section so contributors can reference the automated coverage while local SDK setup remains manual.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
 - Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
 
 ---
