@@ -35,8 +35,10 @@
    - Execute `./gradlew :app:testDebugUnitTest` and `./gradlew :app:lint` when modified code touches logic/UI or Gradle.
    - For billing changes, smoke-test on devices/emulators with and without Play Services; verify no crashes and UI gating works (manual note).
 
-## Agent Workflow Tips
+## Agent Workflow 
+- Keep documentation handy: `README.md` for current scope, `README_ORIGINAL.md` for legacy context, and `AGENT_CHANGELOG.md` for turn-by-turn notes (do not delete this ).
 - Use `rg` for code search (e.g., `rg "BillingManager" app/src`).
+- Use `--console=plain` when size exceeded.
 - Prefer `./gradlew` over `gradle` to honor wrapper settings.
 - When editing multiple related files, stage commits logically: interface extraction, UI gating, Gradle tweaks.
 - Reference README’s milestones for planning but implement iteratively; keep commits scoped and reversible.
