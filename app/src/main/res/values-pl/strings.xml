@@ -108,7 +108,7 @@
   <!-- Billing Error Messages -->
   <string name="billing_unavailable_old_api">Wersja Google Play na tym urządzeniu jest za nieaktualna. Zaktualizuj Sklep Google Play albo użyj przeglądarkowej wersji Lumo.</string>
   <string name="billing_unavailable_not_supported">Zakupy w aplikacji nie są możliwe na tym urządzeniu. Proszę użyć przeglądarkowej wersji Lumo, żeby rozpocząć subskrypcje.</string>
-  <string name="billing_unavailable_generic">Billing niedostępny: Upewnij się, że Sklep Google Play jest zainstalowany, zaktualizowany i że jesteś zalogowany.</string>
+  <string name="billing_unavailable_generic">Płatności są obecnie niedostępne. Spróbuj ponownie później.</string>
   <string name="billing_service_not_connected">Serwis Billingowy niepołączony. Spróbuj ponownie.</string>
   <string name="billing_google_play_required">Sklep Google Play jest wymagany do wykonywania zakupów.</string>
   <string name="billing_cannot_access_google_play">Sklep Google Play niedostępny.</string>

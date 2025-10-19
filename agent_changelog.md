@@ -1,6 +1,6 @@
 ## Recent Update
-- Added `.github/workflows/android-validation.yml` to automate Android SDK provisioning and run the assemble, unit test, and lint Gradle targets in CI.
-- Documented the new workflow in the README validation section so contributors can cross-reference the automation.
+- Replaced the Play Store-specific billing-unavailable copy across locales with a generic message shared by Compose dialogs and WebView-triggered toasts.
+- Notified users via `UiEvent.ShowToast` when the WebView requests billing while the gateway is unavailable, and added JVM coverage to lock in the new behavior.
 
 ## Suggested Next Task
-- Remove the explicit Play Store package check in `app/src/main/java/me/proton/android/lumo/billing/BillingManager.kt` so the billing fallback path handles missing Play Services gracefully.
+- Backfill instrumentation/UI coverage for the billing unavailable dialog once Android SDK access is restored, or document the manual validation steps if automation remains blocked.

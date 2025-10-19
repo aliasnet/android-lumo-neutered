@@ -108,7 +108,7 @@
   <!-- Billing Error Messages -->
   <string name="billing_unavailable_old_api">La versione di Google Play Billing di questo dispositivo è troppo vecchia. Aggiorna Google Play Store o utilizza la versione web di Lumo.</string>
   <string name="billing_unavailable_not_supported">Gli acquisti in-app non sono supportati su questo dispositivo. Per le sottoscrizioni, utilizza la versione web di Lumo.</string>
-  <string name="billing_unavailable_generic">Fatturazione non disponibile: assicurati che Google Play Store sia installato, aggiornato e che tu abbia effettuato l’accesso.</string>
+  <string name="billing_unavailable_generic">La fatturazione non è al momento disponibile. Riprova più tardi.</string>
   <string name="billing_service_not_connected">Servizio di fatturazione non connesso. Riprova.</string>
   <string name="billing_google_play_required">Per gli acquisti è necessario Google Play Store.</string>
   <string name="billing_cannot_access_google_play">Impossibile accedere a Google Play Store.</string>
