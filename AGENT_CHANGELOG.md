@@ -119,6 +119,16 @@ Known errors:
 
 ---
 
+## Turn 11 [PENDING]
+- Goal: confirm the billing-unavailable experience through UI/instrumentation coverage so Compose and WebView surfaces remain in sync with the no-op gateway fallback.
+- Issues carried forward: Android SDK absent in this environment, so assemble/test/lint commands still fail locally and manual QA steps remain undocumented.
+
+Suggested tasks:
+- Capture either Espresso/Compose UI instrumentation or at minimum a scripted manual test matrix that validates the toast/dialog copy when billing is disabled.
+- Leverage the GitHub Actions workflow (or another SDK-equipped runner) as the execution venue for any new tests since the local container cannot install the SDK.
+
+---
+
 ## Ladder Plan for a Play-optional Build
 
 ### Ladder Step 1 
