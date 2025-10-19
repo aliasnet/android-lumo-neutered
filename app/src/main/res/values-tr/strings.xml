@@ -108,7 +108,7 @@
   <!-- Billing Error Messages -->
   <string name="billing_unavailable_old_api">Bu aygıtın Google Play Billing sürümü çok eski. Lütfen Google Play Store uygulamasını güncelleyin veya Lumo internet sürümünü kullanın.</string>
   <string name="billing_unavailable_not_supported">Bu aygıtta uygulama içi satın alım desteklenmiyor. Abonelikler için lütfen Lumo internet sürümünü kullanın.</string>
-  <string name="billing_unavailable_generic">Faturalama kullanılamıyor: Lütfen Google Play Store uygulamasının kurulu olduğundan, güncellendiğinden ve üzerinde oturum açtığınızdan emin olun</string>
+  <string name="billing_unavailable_generic">Faturalandırma şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</string>
   <string name="billing_service_not_connected">Faturalama hizmeti bağlı değil. Lütfen yeniden deneyin.</string>
   <string name="billing_google_play_required">Satın alım için Google Play Store gereklidir</string>
   <string name="billing_cannot_access_google_play">Google Play Store Hizmetine erişilemedi</string>
