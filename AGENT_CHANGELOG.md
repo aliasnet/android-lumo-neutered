@@ -151,6 +151,7 @@ Suggested tasks:
 - Build a minimal instrumentation suite under `app/src/androidTest/...` that forces `BillingProvider` to return `NoopBillingGateway` and asserts the WebView toast plus Compose dialog copy.
 - Extend CI (or document manual invocation) to run the new instrumentation suite, ensuring the workflow or README points to the correct Gradle task.
 - If automation cannot be completed this turn, draft a manual QA checklist covering WebView and Compose flows with screenshots/log expectations so downstream testers can validate the behavior.
+- Housekeeping: removed the duplicate lowercase `agent_changelog.md` file so the canonical `AGENT_CHANGELOG.md` remains the single source of truth (turn status unchanged).
 
 ---
 
