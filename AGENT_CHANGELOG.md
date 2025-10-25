@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 8 [DONE]
-Next turn: 9 [PENDING]
+Latest turn: 13 [DONE]
+Next turn: 14 [PENDING]
 
 ---
 
@@ -91,6 +91,97 @@ Known errors:
 
 ---
 
+## Turn 9
+- Removed the Play Store package guard from `BillingManager`, allowing the `BillingClient` handshake to govern availability and fall back without hard failures.
+- Softened billing failure logging so Play Services issues now log as warnings while the UI keeps the generic "billing unavailable" copy.
+- Added JVM unit tests that cover the provider fallback path and assert the generic error message when `BillingClient` returns `BILLING_UNAVAILABLE`.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 10
+- Updated billing-unavailable strings across locales to remove Play Store-specific instructions and lean on a generic copy used by Compose dialogs and WebView-triggered toasts.
+- Emitted a toast with the same generic copy when the WebView requests billing while the gateway reports unavailable, ensuring parity between Compose and Web surfaces.
+- Added a JVM unit test around `MainActivityViewModel` to confirm the toast and dialog appear when billing is unavailable, and refreshed existing billing tests for the new copy.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 11 [PENDING]
+- Goal: confirm the billing-unavailable experience through UI/instrumentation coverage so Compose and WebView surfaces remain in sync with the no-op gateway fallback.
+- Issues carried forward: Android SDK absent in this environment, so assemble/test/lint commands still fail locally and manual QA steps remain undocumented.
+
+Suggested tasks:
+- Capture either Espresso/Compose UI instrumentation or at minimum a scripted manual test matrix that validates the toast/dialog copy when billing is disabled.
+- Leverage the GitHub Actions workflow (or another SDK-equipped runner) as the execution venue for any new tests since the local container cannot install the SDK.
+
+---
+
+## Turn 11
+- Reviewed the ladder plan and outstanding validation gaps, confirming billing-unavailable coverage is limited to JVM tests and manual checks because the container still lacks an Android SDK.
+- Documented the requirement to execute instrumentation or Compose UI tests on an SDK-capable runner (e.g., GitHub Actions) and to share a fallback manual QA script for environments that cannot run instrumentation.
+- Carried forward the failing local Gradle tasks (`assembleDebug`, `testProductionNoWebViewDebugDebugUnitTest`, `testProductionStandardDebugUnitTest`, and `lint`) noting they can succeed only on machines with a configured Android SDK.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 12
+- Added Compose and Activity instrumentation tests under `app/src/androidTest/java/me/proton/android/lumo/billing/` to assert that the billing-unavailable toast and dialog surface the shared generic copy whenever the no-op gateway is active.
+- Introduced a lightweight fake `BillingGateway` so instrumentation can deterministically simulate a disabled billing state without invoking Google Play services during setup.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 13
+- Documented the new instrumentation suite in the README validation section and referenced it from the manual QA guide so SDK-equipped environments know how to execute the billing fallback checks.
+- Highlighted the need to run the connected Android test task on real hardware or emulators and to share resulting artifacts with downstream teams for ongoing localization/accessibility review.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 14 [PENDING]
+- Goal: execute the instrumentation suite on an SDK-equipped CI/emulator run, capturing screenshots or logs that demonstrate the billing-unavailable messaging across locales and documenting any follow-up localization fixes.
+- Dependencies: requires provisioning an Android emulator (or physical device farm) within CI so `connectedProductionStandardDebugAndroidTest` can complete successfully and produce artifacts for review.
+
+Suggested tasks:
+- Extend the existing GitHub Actions workflow to boot an emulator, run `connectedProductionStandardDebugAndroidTest`, and upload the instrumentation report/logcat for traceability.
+- Capture localized screenshots (or video snippets) from the instrumentation run that confirm the toast and dialog copy, attaching them to the QA documentation for regression tracking.
+- Monitor for instrumentation flakiness on real hardware and document mitigation steps (e.g., idling resources, retry policies) if instability surfaces during Turn 14 validation.
+
+---
+
 ## Ladder Plan for a Play-optional Build
 
 ### Ladder Step 1 
@@ -144,11 +235,22 @@ Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper 
 - Add steps to run `./gradlew :app:assembleDebug`, `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest`, and `./gradlew :app:lint`, ensuring each command surfaces failures.
 - Document the workflow link back in `README.md` near the existing validation section so contributors know the automation exists.
 
-**Suggested tasks for 9**: 
+**Suggested tasks for 9**:
 - Let billing fallback handle missing Play Store
 
 ### Ladder Step 9
 
-1. Remove direct `com.android.vending` guard and related error branches so initialization relies solely on `BillingClient` responses.
-2. Update logging to reflect the softer failure path and ensure `BillingProvider`’s timeout still degrades to `NoopBillingGateway`.
-3. Add or adjust tests under `app/src/test/...` (or create new ones) to confirm that missing Play Services results in `NoopBillingGateway` without surfacing hard-coded Play Store error messaging.
+– Remove direct `com.android.vending` guard and related error branches so initialization relies solely on `BillingClient` responses.
+– Update logging to reflect the softer failure path and ensure `BillingProvider`’s timeout still degrades to `NoopBillingGateway`.
+– Add or adjust tests under `app/src/test/...` (or create new ones) to confirm that missing Play Services results in `NoopBillingGateway` without surfacing hard-coded Play Store error messaging.
+
+**Suggested tasks for 10**:
+- Verify Compose and WebView billing surfaces present the updated generic "billing unavailable" messaging when the gateway falls back to the no-op implementation. [DONE]
+
+### Ladder Step 10
+
+– Confirm cross-platform affordances (notifications, WebView JS bridge, and native Compose entry points) respect the new billing messaging and consider adding instrumentation coverage once an SDK-enabled environment is available.
+
+**Suggested tasks for 11**:
+- Backfill instrumentation/UI coverage for the billing unavailable dialog once Android SDK access is restored, or document the manual test plan if automation remains blocked.
+
