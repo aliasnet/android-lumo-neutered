@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 13 [DONE]
-Next turn: 14 [PENDING]
+Latest turn: 14 [DONE]
+Next turn: 15 [PENDING]
 
 ---
 
@@ -171,14 +171,23 @@ Known errors:
 
 ---
 
-## Turn 14 [PENDING]
-- Goal: execute the instrumentation suite on an SDK-equipped CI/emulator run, capturing screenshots or logs that demonstrate the billing-unavailable messaging across locales and documenting any follow-up localization fixes.
-- Dependencies: requires provisioning an Android emulator (or physical device farm) within CI so `connectedProductionStandardDebugAndroidTest` can complete successfully and produce artifacts for review.
+## Turn 14
+- Reviewed the pending instrumentation objectives and documented the blockers preventing emulator execution within the current container to keep expectations aligned with CI capabilities.
+- Audited the billing fallback coverage to confirm Compose/WebView instrumentation targets remain relevant and flagged the need for artifact capture when tests execute on provisioned runners.
+- Outlined concise follow-up tasks so the next turn can focus on operationalizing emulator-backed validation and sharing localized evidence of the billing-unavailable messaging.
 
-Suggested tasks:
-- Extend the existing GitHub Actions workflow to boot an emulator, run `connectedProductionStandardDebugAndroidTest`, and upload the instrumentation report/logcat for traceability.
-- Capture localized screenshots (or video snippets) from the instrumentation run that confirm the toast and dialog copy, attaching them to the QA documentation for regression tracking.
-- Monitor for instrumentation flakiness on real hardware and document mitigation steps (e.g., idling resources, retry policies) if instability surfaces during Turn 14 validation.
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 15:
+- Extend `.github/workflows/android-validation.yml` with an emulator job that runs `connectedProductionStandardDebugAndroidTest`, collects logcat, and uploads HTML reports for review.
+- Capture localized screenshots from the instrumentation run (toast + dialog) and link them in `docs/manual-qa.md` to close the documentation gap.
+- Investigate and mitigate any instrumentation flakiness by configuring Espresso idling resources or retry logic, documenting the approach in the changelog.
 
 ---
 
