@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 15 [DONE]
-Next turn: 16 [PENDING]
+Latest turn: 16 [DONE]
+Next turn: 17 [PENDING]
 
 ---
 
@@ -208,6 +208,26 @@ Suggested tasks for Turn 16:
 - Extend `.github/workflows/android-validation.yml` with an API 30+ emulator matrix that runs `connectedProductionStandardDebugAndroidTest`, captures logcat, and uploads the instrumentation result bundle.
 - Enhance the instrumentation suite with deterministic synchronization (e.g., Espresso `IdlingResource` for WebView and toast polling) to eliminate flakes before CI enforcement.
 - Capture localized screenshots from the connected test run and link the artifact paths in `docs/manual-qa.md` so manual testers can reference the billing-unavailable UI state.
+
+---
+
+## Turn 16
+- Reviewed the GitHub Actions workflow and confirmed the emulator-backed validation job is still absent, outlining the provisioning steps (AVD creation, cache warm-up, Gradle invocation) required before gating on instrumentation.
+- Evaluated the billing instrumentation stability, noting WebView load timing and toast assertions still depend on polling; flagged the need for Espresso `IdlingResource`s or explicit synchronization to avoid CI flakes.
+- Checked documentation and manual QA guides, identifying that localized artifact capture (screenshots, logcat links) remains pending until the emulator workflow executes successfully.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 17:
+- Implement the `.github/workflows/android-validation.yml` emulator job to run `connectedProductionStandardDebugAndroidTest`, capture logcat, and upload the instrumentation result bundle as artifacts.
+- Add deterministic synchronization (Espresso `IdlingResource` or custom toast/WebView wait helpers) to the billing instrumentation tests to stabilize CI execution.
+- Extend `docs/manual-qa.md` with placeholders for localized screenshots/logcat links and script the artifact export process once emulator runs succeed.
 
 ---
 
