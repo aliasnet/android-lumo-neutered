@@ -131,6 +131,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("io.mockk:mockk-android:1.13.11")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
