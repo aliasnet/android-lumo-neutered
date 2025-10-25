@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 11 [DONE]
-Next turn: 12 [PENDING]
+Latest turn: 13 [DONE]
+Next turn: 14 [PENDING]
 
 ---
 
@@ -143,21 +143,42 @@ Known errors:
 
 ---
 
-## Turn 12 [PENDING]
-- Goal: implement instrumentation (Compose UI or Espresso) coverage that exercises the billing-unavailable toast and dialog when the no-op billing gateway is active, or provide an exhaustive manual QA matrix if instrumentation remains blocked.
-- Dependencies: requires an Android SDK-enabled executor (e.g., GitHub Actions workflow added on Turn 8) to run instrumentation successfully; manual QA plan should specify device/OS prerequisites when automation is not feasible.
+## Turn 12
+- Added Compose and Activity instrumentation tests under `app/src/androidTest/java/me/proton/android/lumo/billing/` to assert that the billing-unavailable toast and dialog surface the shared generic copy whenever the no-op gateway is active.
+- Introduced a lightweight fake `BillingGateway` so instrumentation can deterministically simulate a disabled billing state without invoking Google Play services during setup.
 
-Suggested tasks:
-- Build a minimal instrumentation suite under `app/src/androidTest/...` that forces `BillingProvider` to return `NoopBillingGateway` and asserts the WebView toast plus Compose dialog copy.
-- Extend CI (or document manual invocation) to run the new instrumentation suite, ensuring the workflow or README points to the correct Gradle task.
-- If automation cannot be completed this turn, draft a manual QA checklist covering WebView and Compose flows with screenshots/log expectations so downstream testers can validate the behavior.
-- Housekeeping: removed the duplicate lowercase `agent_changelog.md` file so the canonical `AGENT_CHANGELOG.md` remains the single source of truth (turn status unchanged).
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
 
 ---
 
-## Turn 13 [SUGGESTED]
-- Objective: integrate the instrumentation/manual QA findings into developer documentation and ensure billing messaging stays localized and accessible, including any follow-up fixes discovered during Turn 12 validation.
-- Potential tasks: capture screenshots or recordings from instrumentation runs, backfill missing localization edge cases, and feed any flaky test diagnostics into the CI workflow for ongoing reliability.
+## Turn 13
+- Documented the new instrumentation suite in the README validation section and referenced it from the manual QA guide so SDK-equipped environments know how to execute the billing fallback checks.
+- Highlighted the need to run the connected Android test task on real hardware or emulators and to share resulting artifacts with downstream teams for ongoing localization/accessibility review.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing)
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable)
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+---
+
+## Turn 14 [PENDING]
+- Goal: execute the instrumentation suite on an SDK-equipped CI/emulator run, capturing screenshots or logs that demonstrate the billing-unavailable messaging across locales and documenting any follow-up localization fixes.
+- Dependencies: requires provisioning an Android emulator (or physical device farm) within CI so `connectedProductionStandardDebugAndroidTest` can complete successfully and produce artifacts for review.
+
+Suggested tasks:
+- Extend the existing GitHub Actions workflow to boot an emulator, run `connectedProductionStandardDebugAndroidTest`, and upload the instrumentation report/logcat for traceability.
+- Capture localized screenshots (or video snippets) from the instrumentation run that confirm the toast and dialog copy, attaching them to the QA documentation for regression tracking.
+- Monitor for instrumentation flakiness on real hardware and document mitigation steps (e.g., idling resources, retry policies) if instability surfaces during Turn 14 validation.
 
 ---
 
