@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 14 [DONE]
-Next turn: 15 [PENDING]
+Latest turn: 15 [DONE]
+Next turn: 16 [PENDING]
 
 ---
 
@@ -188,6 +188,26 @@ Suggested tasks for Turn 15:
 - Extend `.github/workflows/android-validation.yml` with an emulator job that runs `connectedProductionStandardDebugAndroidTest`, collects logcat, and uploads HTML reports for review.
 - Capture localized screenshots from the instrumentation run (toast + dialog) and link them in `docs/manual-qa.md` to close the documentation gap.
 - Investigate and mitigate any instrumentation flakiness by configuring Espresso idling resources or retry logic, documenting the approach in the changelog.
+
+---
+
+## Turn 15
+- Audited the GitHub Actions workflow and confirmed the emulator-backed validation job is still missing; emulator provisioning remains a prerequisite before instrumentation can run.
+- Identified required outputs (logcat, HTML reports, localized screenshots) and noted they need automated artifact publication once the emulator job exists.
+- Flagged potential flake sources in the billing instrumentation suite (WebView load timing, toast assertions) so the next turn can harden synchronization before enabling CI gating.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 16:
+- Extend `.github/workflows/android-validation.yml` with an API 30+ emulator matrix that runs `connectedProductionStandardDebugAndroidTest`, captures logcat, and uploads the instrumentation result bundle.
+- Enhance the instrumentation suite with deterministic synchronization (e.g., Espresso `IdlingResource` for WebView and toast polling) to eliminate flakes before CI enforcement.
+- Capture localized screenshots from the connected test run and link the artifact paths in `docs/manual-qa.md` so manual testers can reference the billing-unavailable UI state.
 
 ---
 
