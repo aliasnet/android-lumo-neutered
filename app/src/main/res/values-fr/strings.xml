@@ -108,7 +108,7 @@
   <!-- Billing Error Messages -->
   <string name="billing_unavailable_old_api">La version de Google Play Billing sur cet appareil est trop ancienne. Veuillez mettre à jour le Google Play Store ou utiliser la version Web de Lumo.</string>
   <string name="billing_unavailable_not_supported">Les achats au sein de l’application ne sont pas disponibles sur cet appareil. Veuillez utiliser la version web de Lumo pour gérer les abonnements.</string>
-  <string name="billing_unavailable_generic">La facturation est indisponible : veuillez vous assurer que le Google Play Store est installé, à jour et que vous êtes connecté(e).</string>
+  <string name="billing_unavailable_generic">La facturation est actuellement indisponible. Veuillez réessayer plus tard.</string>
   <string name="billing_service_not_connected">Le service de facturation n\'est pas connecté. Veuillez réessayer.</string>
   <string name="billing_google_play_required">Le Google Play Store est requis pour les achats.</string>
   <string name="billing_cannot_access_google_play">Impossible d’accéder au Google Play Store.</string>
