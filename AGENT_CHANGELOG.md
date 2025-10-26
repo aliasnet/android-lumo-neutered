@@ -453,33 +453,24 @@ Suggested tasks for Turn 18:
 - Evaluated instrumentation synchronization gaps, confirming existing toast/WebView polling is brittle and cataloging candidate `IdlingResource` patterns for WebView, Compose, and toast layers to implement in follow-up work.
 - Audited manual QA documentation to highlight missing screenshot placeholders, artifact upload steps, and localized verification notes that need expansion once emulator runs produce reference assets.
 
-
-
-
 Suggested tasks for Turn 19:
+- Add emulator CI, instrumentation synchronization, and manual QA guidance.
+
+---
+
+## Turn 19
+
 - Implement the GitHub Actions emulator job with explicit SDK component installation, AVD creation, and artifact archival for instrumentation outputs.
 - Build shared Espresso synchronization helpers (e.g., WebView ready IdlingResource, toast observer) and refactor instrumentation tests to consume them for deterministic waits.
 - Extend `docs/manual-qa.md` with detailed screenshot capture workflow, logcat export instructions, and localized checklist templates aligned with the forthcoming CI artifacts.
-
 - Removed the explicit `com.android.vending` package guard so initialization now depends on `BillingClient` responses.
 - Softened billing logs while preserving the provider timeout that degrades to `NoopBillingGateway` when Play services are missing.
 - Added JVM tests validating the fallback path returns `NoopBillingGateway` without exposing Play Store-specific messaging.
 
-**Suggested tasks for 10**:
-- Verify Compose and WebView billing surfaces present the updated generic "billing unavailable" messaging when the gateway falls back to the no-op implementation. [DONE]
+Suggested tasks for Turn 20:
 
-### Ladder Step 10 //legacy 
-
-- Updated Compose and WebView billing entry points to surface the generic billing-unavailable copy when the no-op gateway is active.
-- Displayed a toast for WebView purchase requests while keeping dialogs consistent with the fallback messaging.
-- Added unit coverage to ensure the WebView toast path and billing fallback assertions remain intact pending emulator-based instrumentation.
-
-**Suggested tasks for 11**:
-- Backfill instrumentation/UI coverage for the billing unavailable dialog once Android SDK access is restored, or document the manual test plan if automation remains blocked.
-
-
-## Unresolved Tasks
-- **Turn 11 [UNRESOLVED]:**
   - Capture Espresso/Compose UI instrumentation or script manual test matrix validating toast/dialog copy when billing is disabled.
   - Execute the validation on an SDK-equipped runner (e.g., GitHub Actions) since the local container lacks the Android SDK.
   - During each subsequent turn, review this unresolved set and prioritize fixes when environment access becomes available.
+
+---
