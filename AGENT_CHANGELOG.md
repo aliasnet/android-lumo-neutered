@@ -349,16 +349,18 @@ Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper 
 
 ### Ladder Step 9
 
-– Remove direct `com.android.vending` guard and related error branches so initialization relies solely on `BillingClient` responses.
-– Update logging to reflect the softer failure path and ensure `BillingProvider`’s timeout still degrades to `NoopBillingGateway`.
-– Add or adjust tests under `app/src/test/...` (or create new ones) to confirm that missing Play Services results in `NoopBillingGateway` without surfacing hard-coded Play Store error messaging.
+- Removed the explicit `com.android.vending` package guard so initialization now depends on `BillingClient` responses.
+- Softened billing logs while preserving the provider timeout that degrades to `NoopBillingGateway` when Play services are missing.
+- Added JVM tests validating the fallback path returns `NoopBillingGateway` without exposing Play Store-specific messaging.
 
 **Suggested tasks for 10**:
 - Verify Compose and WebView billing surfaces present the updated generic "billing unavailable" messaging when the gateway falls back to the no-op implementation. [DONE]
 
 ### Ladder Step 10
 
-– Confirm cross-platform affordances (notifications, WebView JS bridge, and native Compose entry points) respect the new billing messaging and consider adding instrumentation coverage once an SDK-enabled environment is available.
+- Updated Compose and WebView billing entry points to surface the generic billing-unavailable copy when the no-op gateway is active.
+- Displayed a toast for WebView purchase requests while keeping dialogs consistent with the fallback messaging.
+- Added unit coverage to ensure the WebView toast path and billing fallback assertions remain intact pending emulator-based instrumentation.
 
 **Suggested tasks for 11**:
 - Backfill instrumentation/UI coverage for the billing unavailable dialog once Android SDK access is restored, or document the manual test plan if automation remains blocked.
