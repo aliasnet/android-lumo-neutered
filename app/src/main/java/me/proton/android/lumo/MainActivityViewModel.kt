@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.proton.android.lumo.R
 import me.proton.android.lumo.config.LumoConfig
 import me.proton.android.lumo.domain.WebEvent
 import me.proton.android.lumo.speech.SpeechRecognitionManager
@@ -75,6 +76,11 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
                     WebEvent.ShowPaymentRequested -> {
                         val isBillingAvailable = _uiState.value.billingAvailable
                         Log.d(TAG, "ShowPaymentRequested received. Billing available: $isBillingAvailable")
+                        if (!isBillingAvailable) {
+                            val message =
+                                getApplication<Application>().getString(R.string.billing_unavailable_generic)
+                            _eventChannel.trySend(UiEvent.ShowToast(message))
+                        }
                         _uiState.update { it.copy(showPaymentDialog = true) }
                     }
 

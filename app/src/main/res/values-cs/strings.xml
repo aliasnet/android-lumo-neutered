@@ -108,7 +108,7 @@
   <!-- Billing Error Messages -->
   <string name="billing_unavailable_old_api">Verze fakturační služby Google Play na tomto zařízení je příliš stará. Prosím aktualizujte obchod Google Play, nebo použijte webovou verzi Lumo.</string>
   <string name="billing_unavailable_not_supported">Nákupy v aplikaci nejsou podporované na vašem zařízení. Prosím využijte webovou verzi Lumo pro předplatné.</string>
-  <string name="billing_unavailable_generic">Vyúčtování není dostupné: Prosím ujistěte se že Google Play Store je nainstalován, aktualizován a jste přihlášeni.</string>
+  <string name="billing_unavailable_generic">Vyúčtování je momentálně nedostupné. Zkuste to prosím znovu později.</string>
   <string name="billing_service_not_connected">Služba vyúčtování není připojena. Prosím zkuste to znovu.</string>
   <string name="billing_google_play_required">Pro nákupy v aplikaci je vyžadován obchod Google Play.</string>
   <string name="billing_cannot_access_google_play">Nelze získat přístup k obchodu Google Play.</string>
