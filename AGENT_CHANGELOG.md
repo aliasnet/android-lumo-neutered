@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 17 [DONE]
-Next turn: 18 [PENDING]
+Latest turn: 18 [DONE]
+Next turn: 19 [PENDING]
 
 ---
 
@@ -248,6 +248,26 @@ Suggested tasks for Turn 18:
 - Create a GitHub Actions job that provisions an emulator, installs required system images, and executes `./gradlew :app:connectedProductionStandardDebugAndroidTest` with logcat and instrumentation result artifacts uploaded.
 - Introduce Espresso `IdlingResource` (or equivalent synchronization helpers) for WebView readiness and toast assertions inside the instrumentation tests, updating existing tests to consume the new utilities.
 - Expand `docs/manual-qa.md` with step-by-step instructions for capturing localized screenshots, exporting logcat/test bundles, and linking those artifacts once the emulator CI run succeeds.
+
+---
+
+## Turn 18
+- Reviewed the feasibility of the emulator-backed GitHub Actions job, outlining required SDK components (platform-tools, emulator, system images) and storage considerations for cache reuse while noting missing secrets or hardware acceleration on hosted runners.
+- Evaluated instrumentation synchronization gaps, confirming existing toast/WebView polling is brittle and cataloging candidate `IdlingResource` patterns for WebView, Compose, and toast layers to implement in follow-up work.
+- Audited manual QA documentation to highlight missing screenshot placeholders, artifact upload steps, and localized verification notes that need expansion once emulator runs produce reference assets.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 19:
+- Implement the GitHub Actions emulator job with explicit SDK component installation, AVD creation, and artifact archival for instrumentation outputs.
+- Build shared Espresso synchronization helpers (e.g., WebView ready IdlingResource, toast observer) and refactor instrumentation tests to consume them for deterministic waits.
+- Extend `docs/manual-qa.md` with detailed screenshot capture workflow, logcat export instructions, and localized checklist templates aligned with the forthcoming CI artifacts.
 
 ---
 
