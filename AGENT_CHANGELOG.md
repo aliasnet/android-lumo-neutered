@@ -119,7 +119,7 @@ Known errors:
 
 ---
 
-## Turn 11 [PENDING]
+## Turn 11 [UNRESOLVED]
 - Goal: confirm the billing-unavailable experience through UI/instrumentation coverage so Compose and WebView surfaces remain in sync with the no-op gateway fallback.
 - Issues carried forward: Android SDK absent in this environment, so assemble/test/lint commands still fail locally and manual QA steps remain undocumented.
 
@@ -365,3 +365,9 @@ Run build, unit, lint, and manual billing matrix,fix the missing Gradle wrapper 
 **Suggested tasks for 11**:
 - Backfill instrumentation/UI coverage for the billing unavailable dialog once Android SDK access is restored, or document the manual test plan if automation remains blocked.
 
+
+## Unresolved Tasks
+- **Turn 11 [UNRESOLVED]:**
+  - Capture Espresso/Compose UI instrumentation or script manual test matrix validating toast/dialog copy when billing is disabled.
+  - Execute the validation on an SDK-equipped runner (e.g., GitHub Actions) since the local container lacks the Android SDK.
+  - During each subsequent turn, review this unresolved set and prioritize fixes when environment access becomes available.
