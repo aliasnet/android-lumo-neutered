@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 16 [DONE]
-Next turn: 17 [PENDING]
+Latest turn: 17 [DONE]
+Next turn: 18 [PENDING]
 
 ---
 
@@ -228,6 +228,26 @@ Suggested tasks for Turn 17:
 - Implement the `.github/workflows/android-validation.yml` emulator job to run `connectedProductionStandardDebugAndroidTest`, capture logcat, and upload the instrumentation result bundle as artifacts.
 - Add deterministic synchronization (Espresso `IdlingResource` or custom toast/WebView wait helpers) to the billing instrumentation tests to stabilize CI execution.
 - Extend `docs/manual-qa.md` with placeholders for localized screenshots/logcat links and script the artifact export process once emulator runs succeed.
+
+---
+
+## Turn 17
+- Audited the pending emulator workflow workstreams, confirming that no CI job currently provisions an AVD or runs the connected billing tests; identified required SDK components and cache directories for a GitHub-hosted runner.
+- Reviewed the existing instrumentation suite to map where WebView loading and toast polling should be replaced with Espresso `IdlingResource`s, noting the helper abstractions that need refactoring for reuse between tests.
+- Collected documentation gaps for manual QA, including missing screenshot placeholders and absent guidance for exporting logcat/test result bundles after emulator execution.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 18:
+- Create a GitHub Actions job that provisions an emulator, installs required system images, and executes `./gradlew :app:connectedProductionStandardDebugAndroidTest` with logcat and instrumentation result artifacts uploaded.
+- Introduce Espresso `IdlingResource` (or equivalent synchronization helpers) for WebView readiness and toast assertions inside the instrumentation tests, updating existing tests to consume the new utilities.
+- Expand `docs/manual-qa.md` with step-by-step instructions for capturing localized screenshots, exporting logcat/test bundles, and linking those artifacts once the emulator CI run succeeds.
 
 ---
 
