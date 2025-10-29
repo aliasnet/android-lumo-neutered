@@ -20,19 +20,20 @@ Follow the steps below when executing the scenarios on an emulator or physical d
    - Create a Play Store emulator image (API 34 or higher) plus a GMS-free image for scenario 1. Keep snapshots disabled to avoid state bleed between tests.
 
 2. **Run the connected test suite**
-   - Execute `./gradlew :app:connectedProductionStandardDebugAndroidTest --console=plain` with the desired emulator launched.
-   - After the run, collect the generated reports under `app/build/reports/androidTests/connected/` and archive them as CI artifacts.
+   - Execute `./gradlew :app:connectedProductionStandardDebugAndroidTest --console=plain` with the desired emulator launched, or trigger the GitHub Actions workflow job `connected-tests (API 30)` defined in `.github/workflows/android-validation.yml`.
+   - After the run, collect the generated reports under `app/build/reports/androidTests/connected/` (or download the `connected-production-standard-debug-artifacts` archive produced by CI) and archive them alongside manual notes.
 
 3. **Capture localized screenshots**
    - For each locale listed in `app/src/main/res/values-*/strings.xml`, launch the billing dialog and capture screenshots showing the generic “Billing currently unavailable” copy in Compose and WebView contexts.
-   - Store the PNG files under `artifacts/screenshots/<locale>/` and name them `compose-billing-unavailable.png` and `webview-billing-unavailable.png` respectively.
+   - The connected test suite now emits a Spanish sample automatically (`screenshots/billing-unavailable-es.png` inside the CI artifact). Use that capture as the baseline and focus manual screenshot collection on additional locales beyond Spanish.
+   - Store the PNG files under `artifacts/screenshots/<locale>/` and name them `compose-billing-unavailable.png` and `webview-billing-unavailable.png` respectively, or attach the captures to the CI artifact archive before upload.
 
 4. **Export logcat traces**
-   - Run `adb logcat -d -v time ProtonBilling:D BillingManager:D BillingProvider:D *:S > artifacts/logs/billing-unavailable.log` immediately after exercising the billing fallback scenarios.
+   - Run `adb logcat -d -v time ProtonBilling:D BillingManager:D BillingProvider:D *:S > artifacts/logs/billing-unavailable.log` immediately after exercising the billing fallback scenarios (the CI job writes a similar capture to `artifacts/logs/logcat.txt`).
    - Clear logcat (`adb logcat -c`) between scenarios to keep captures targeted.
 
 5. **Document manual observations**
    - Update this report with pass/fail results, linking to the stored artifacts and noting any anomalies (e.g., unexpected Play prompts, stale purchase dialogs).
    - File defects referencing the captured logs/screenshots if behavior deviates from the expected copy.
 
-This checklist feeds the upcoming emulator-backed CI workflow: once automated, ensure the job uploads the same directories so the manual QA log remains synchronized with machine-produced evidence.
+This checklist now maps directly to the emulator-backed CI workflow; verify that the uploaded `connected-production-standard-debug-artifacts` bundle contains the same directory structure so the manual QA log stays synchronized with machine-produced evidence.

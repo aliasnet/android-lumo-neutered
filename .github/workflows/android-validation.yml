@@ -62,3 +62,123 @@ jobs:
 
       - name: Run Android lint
         run: ./gradlew :app:lint --stacktrace --console=plain
+
+  connected-tests:
+    name: Connected tests (API 30)
+    runs-on: ubuntu-latest
+    needs: validate
+    timeout-minutes: 70
+    env:
+      ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
+      ANDROID_HOME: ${{ runner.temp }}/android-sdk
+      JAVA_TOOL_OPTIONS: -Xmx2g
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+      ADB_INSTALL_TIMEOUT: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Cache Android SDK
+        id: cache-android
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.ANDROID_SDK_ROOT }}
+          key: ${{ runner.os }}-android-sdk-emulator-34-0-0
+          restore-keys: |
+            ${{ runner.os }}-android-sdk-emulator-
+
+      - name: Install Android SDK components
+        if: steps.cache-android.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$ANDROID_SDK_ROOT"
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip
+          unzip -q /tmp/cmdline-tools.zip -d "$ANDROID_SDK_ROOT"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools" "$ANDROID_SDK_ROOT/cmdline-tools-tmp"
+          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          mv "$ANDROID_SDK_ROOT/cmdline-tools-tmp"/* "$ANDROID_SDK_ROOT/cmdline-tools/latest"
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+            "platforms;android-34" \
+            "platform-tools" \
+            "build-tools;34.0.0" \
+            "emulator" \
+            "system-images;android-30;google_apis;x86_64"
+
+      - name: Create Android emulator
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" create avd \
+            --force \
+            --name ci-api30 \
+            --package "system-images;android-30;google_apis;x86_64" \
+            --device pixel_5
+
+      - name: Launch emulator
+        run: |
+          "${ANDROID_SDK_ROOT}/emulator/emulator" \
+            -avd ci-api30 \
+            -no-window \
+            -no-audio \
+            -gpu swiftshader_indirect \
+            -no-boot-anim \
+            -camera-back none \
+            -camera-front none &
+          adb wait-for-device
+          adb shell settings put global window_animation_scale 0
+          adb shell settings put global transition_animation_scale 0
+          adb shell settings put global animator_duration_scale 0
+
+      - name: Wait for emulator boot
+        run: |
+          booted=""
+          retries=0
+          while [ "$booted" != "1" ] && [ $retries -lt 40 ]; do
+            sleep 10
+            booted=$(adb shell getprop sys.boot_completed | tr -d '\r')
+            retries=$((retries+1))
+          done
+          if [ "$booted" != "1" ]; then
+            echo "Emulator failed to boot" >&2
+            exit 1
+          fi
+
+      - name: Run connected tests
+        run: ./gradlew :app:connectedProductionStandardDebugAndroidTest --stacktrace --console=plain
+
+      - name: Collect artifacts
+        if: always()
+        run: |
+          mkdir -p artifacts/reports artifacts/results artifacts/logs artifacts/screenshots
+          adb logcat -d > artifacts/logs/logcat.txt || true
+          if [ -d app/build/reports/androidTests/connected ]; then
+            cp -R app/build/reports/androidTests/connected/* artifacts/reports/
+          fi
+          if [ -d app/build/outputs/androidTest-results/connected ]; then
+            cp -R app/build/outputs/androidTest-results/connected/* artifacts/results/
+          fi
+          if [ -d app/build/outputs/logs/connected ]; then
+            cp -R app/build/outputs/logs/connected/* artifacts/logs/
+          fi
+          APP_ID="me.proton.android.lumo"
+          if adb shell run-as "$APP_ID" '[ -d files/screenshots ]'; then
+            adb shell run-as "$APP_ID" ls files/screenshots | tr -d '\r' | while read -r file; do
+              if [ -n "$file" ]; then
+                adb exec-out run-as "$APP_ID" cat "files/screenshots/$file" > "artifacts/screenshots/$file"
+              fi
+            done
+          fi
+
+      - name: Upload instrumentation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connected-production-standard-debug-artifacts
+          path: artifacts

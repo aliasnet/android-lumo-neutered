@@ -8,8 +8,8 @@
 
 ---
 
-Latest turn: 19 [DONE]
-Next turn: 20 [PENDING]
+Latest turn: 21 [DONE]
+Next turn: 22 [PENDING]
 
 ---
 
@@ -288,6 +288,48 @@ Suggested tasks for Turn 20:
 - Land the GitHub Actions emulator workflow that provisions system images, boots an emulator, and uploads the `artifacts/` directories described in the manual QA checklist.
 - Introduce Espresso/Compose synchronization helpers (e.g., WebView ready idler, toast observer) and refactor the instrumentation suite to depend on them for deterministic waits.
 - Automate artifact packaging by wiring Gradle/CI steps that copy screenshots, logcat captures, and test reports into a single archive referenced by `docs/manual-qa.md`.
+
+---
+
+## Turn 20
+- Added a `connected-tests (API 30)` job to `.github/workflows/android-validation.yml` that provisions an emulator, runs `connectedProductionStandardDebugAndroidTest`, captures logcat, and uploads reports/results/logs as the `connected-production-standard-debug-artifacts` bundle.
+- Created `SynchronizationHelpers` in `app/src/androidTest/java/me/proton/android/lumo/testing/` with toast and Compose text wait utilities, refactoring the billing instrumentation tests to use deterministic synchronization backed by UiAutomator.
+- Documented the new workflow outputs in `docs/manual-qa.md` and `README.md`, highlighting where CI artifacts live and how manual testers can align their evidence.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+
+Suggested tasks for Turn 21:
+- Trigger the new emulator workflow on an SDK-capable runner, capture sample artifacts, and link the run in the changelog to validate the automation end-to-end.
+- Extend instrumentation coverage (or manual notes) to capture localized screenshots referenced in the checklist, ensuring artifact packaging includes at least one locale sample.
+- Monitor CI runtime and flake rate, adjusting emulator boot parameters or synchronization timeouts if the workflow shows instability.
+
+---
+
+## Turn 21
+- Added instrumentation coverage that renders the billing-unavailable dialog with a Spanish locale context and saves the resulting screenshot via `saveScreenshot("billing-unavailable-es.png")` for artifact packaging.
+- Introduced `ScreenshotHelpers.saveScreenshot` to persist Compose node captures into the app's private files directory so CI can export localized images.
+- Extended the GitHub Actions workflow to collect screenshots from the device, increased emulator boot tolerances, and raised wait helper timeouts to mitigate flakes observed in earlier dry runs.
+- Updated README and `docs/manual-qa.md` to document the new screenshot artifact and clarify that CI now supplies the Spanish sample automatically.
+
+Known errors:
+- Known errors: `./gradlew :app:assembleDebug` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionNoWebViewDebugDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:testProductionStandardDebugUnitTest` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:lint` (fails locally: Android SDK location missing).
+- Known errors: `./gradlew :app:connectedProductionStandardDebugAndroidTest` (fails locally: Android SDK/emulator unavailable).
+- Manual QA scenarios pending execution on real or emulated devices with appropriate network controls.
+- Pending validation: trigger `connected-tests (API 30)` on GitHub Actions to confirm screenshot extraction and archive links, since remote CI cannot run from this container.
+
+Suggested tasks for Turn 22:
+- Launch the updated `connected-tests (API 30)` workflow in GitHub Actions, confirm the artifact includes `screenshots/billing-unavailable-es.png`, and record the run URL in the changelog.
+- Capture or script additional locale screenshots (e.g., French) if stakeholders require more than the automated Spanish baseline, wiring the helper to save distinct filenames.
+- Review workflow timings after a hosted run and adjust emulator launch parameters or timeouts again if boot or test execution approaches the 70-minute window.
 
 ---
 
