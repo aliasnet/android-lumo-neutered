@@ -584,6 +584,11 @@ GitHub Actions now provisions these requirements automatically through [`.github
 - `BillingUnavailableMainActivityTest` launches `MainActivity`, simulates the WebView purchase request, and checks that both the toast and dialog reuse the same generic copy while billing is disabled using the instrumentation synchronization helpers in [`app/src/androidTest/java/me/proton/android/lumo/testing/`](app/src/androidTest/java/me/proton/android/lumo/testing/).
 - Both tests live under [`app/src/androidTest/java/me/proton/android/lumo/billing/`](app/src/androidTest/java/me/proton/android/lumo/billing/) and run as part of the `connectedProductionStandardDebugAndroidTest` task.
 
+#### Instrumentation coverage
+- `BillingUnavailablePaymentDialogTest` verifies that the Compose `PaymentDialog` surfaces the localized billing-unavailable string when `billingAvailable` is false, even without a backing `MainActivity` host.
+- `BillingUnavailableMainActivityTest` launches `MainActivity`, simulates the WebView purchase request, and checks that both the toast and dialog reuse the same generic copy while billing is disabled.
+- Both tests live under [`app/src/androidTest/java/me/proton/android/lumo/billing/`](app/src/androidTest/java/me/proton/android/lumo/billing/) and run as part of the `connectedProductionStandardDebugAndroidTest` task.
+
 #### Android SDK provisioning hand-off
 1. Install the Android command-line tools for API 34+ on a workstation (or CI runner) and configure either `ANDROID_HOME` or the `sdk.dir` entry in `local.properties`.
 2. Use `sdkmanager` to install **platforms;android-34**, **build-tools;34.0.0**, and the **Android Emulator**/system images required for UI testing.
