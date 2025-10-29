@@ -9,4 +9,31 @@ This report documents the four billing availability scenarios requested for the 
 | **3. Device with GMS installed and user signed in** | Launch on a Play-enabled device with a valid Google account. | `BillingManager.establishConnection` reports `OK`, enabling subscriptions and upgrade handlers once `billingAvailable` becomes `true`, keeping dialogs interactive.【F:app/src/main/java/me/proton/android/lumo/billing/BillingManager.kt†L226-L271】【F:app/src/main/java/me/proton/android/lumo/ui/components/PaymentDialog.kt†L452-L513】【F:app/src/main/java/me/proton/android/lumo/MainActivity.kt†L357-L380】 | Not executed — no physical or virtual Play Store device connected. |
 | **4. Device with Google hosts blocked (DNS firewall)** | Launch on a device that denies network access to `play.googleapis.com`. | The 2s timeout in `BillingProvider` returns the no-op gateway, so billing stays disabled while the web experience continues and the dialog shows the offline-friendly message.【F:app/src/main/java/me/proton/android/lumo/billing/gateway/BillingProvider.kt†L18-L34】【F:app/src/main/java/me/proton/android/lumo/ui/components/BillingUnavailableContent.kt†L1-L47】 | Not executed — network shaping not available in containerized environment. |
 
-> **Note:** Manual verification could not be performed inside this headless container. The expectations above are validated by inspecting the Kotlin sources listed in the citations.
+> **Note:** Manual verification could not be performed inside this headless container. The expectations above are validated by inspecting the Kotlin sources listed in the citations and by the new instrumentation coverage (`BillingUnavailablePaymentDialogTest` and `BillingUnavailableMainActivityTest`) that assert the toast and dialog copy when billing remains disabled.
+
+## Artifact Capture Checklist (for SDK-equipped environments)
+
+Follow the steps below when executing the scenarios on an emulator or physical device. These steps collect the screenshots and logs referenced by the CI/instrumentation tasks outlined in the changelog.
+
+1. **Provision the test device**
+   - Decode the bundled Gradle wrapper (`./gradlew unpackWrapper`) and install the Android SDK using the instructions in `README.md`.
+   - Create a Play Store emulator image (API 34 or higher) plus a GMS-free image for scenario 1. Keep snapshots disabled to avoid state bleed between tests.
+
+2. **Run the connected test suite**
+   - Execute `./gradlew :app:connectedProductionStandardDebugAndroidTest --console=plain` with the desired emulator launched, or trigger the GitHub Actions workflow job `connected-tests (API 30)` defined in `.github/workflows/android-validation.yml`.
+   - After the run, collect the generated reports under `app/build/reports/androidTests/connected/` (or download the `connected-production-standard-debug-artifacts` archive produced by CI) and archive them alongside manual notes.
+
+3. **Capture localized screenshots**
+   - For each locale listed in `app/src/main/res/values-*/strings.xml`, launch the billing dialog and capture screenshots showing the generic “Billing currently unavailable” copy in Compose and WebView contexts.
+   - The connected test suite now emits a Spanish sample automatically (`screenshots/billing-unavailable-es.png` inside the CI artifact). Use that capture as the baseline and focus manual screenshot collection on additional locales beyond Spanish.
+   - Store the PNG files under `artifacts/screenshots/<locale>/` and name them `compose-billing-unavailable.png` and `webview-billing-unavailable.png` respectively, or attach the captures to the CI artifact archive before upload.
+
+4. **Export logcat traces**
+   - Run `adb logcat -d -v time ProtonBilling:D BillingManager:D BillingProvider:D *:S > artifacts/logs/billing-unavailable.log` immediately after exercising the billing fallback scenarios (the CI job writes a similar capture to `artifacts/logs/logcat.txt`).
+   - Clear logcat (`adb logcat -c`) between scenarios to keep captures targeted.
+
+5. **Document manual observations**
+   - Update this report with pass/fail results, linking to the stored artifacts and noting any anomalies (e.g., unexpected Play prompts, stale purchase dialogs).
+   - File defects referencing the captured logs/screenshots if behavior deviates from the expected copy.
+
+This checklist now maps directly to the emulator-backed CI workflow; verify that the uploaded `connected-production-standard-debug-artifacts` bundle contains the same directory structure so the manual QA log stays synchronized with machine-produced evidence.

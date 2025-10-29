@@ -103,12 +103,16 @@ class BillingManager(
         val message = activity?.getString(R.string.billing_unavailable_generic)
             ?: "Billing unavailable"
         val logDetails = buildString {
-            append("Billing interaction failed during $reason")
+            append("Billing interaction failed during $reason; continuing without billing support")
             throwable?.let { error ->
                 error::class.simpleName?.let { append(" ($it)") }
             }
         }
-        Log.d(TAG, logDetails)
+        if (throwable != null) {
+            Log.w(TAG, logDetails, throwable)
+        } else {
+            Log.i(TAG, logDetails)
+        }
         _isConnected.value = false
         _purchaseState.value = PurchaseState.Error(message)
         val currentProcessingState = _paymentProcessingState.value
@@ -182,39 +186,15 @@ class BillingManager(
             }
 
             else -> {
-                try {
-                    // Check if Google Play is installed before proceeding
-                    val pInfo = activity.packageManager.getPackageInfo("com.android.vending", 0)
-                    Log.d(TAG, "Google Play Store is installed - version: ${pInfo.versionName}")
-
-                    // Initialize billing with additional safety
+                runCatching {
                     initializeBilling()
-
-                } catch (e: android.content.pm.PackageManager.NameNotFoundException) {
-                    Log.e(TAG, "Google Play Store is not installed", e)
-                    _purchaseState.value = PurchaseState.Error(
-                        activity?.getString(R.string.billing_google_play_required)
-                            ?: "Google Play Store is required for purchases"
-                    )
-                } catch (e: SecurityException) {
-                    Log.e(TAG, "Permission denied accessing Google Play Store", e)
-                    _purchaseState.value = PurchaseState.Error(
-                        activity?.getString(R.string.billing_cannot_access_google_play)
-                            ?: "Cannot access Google Play Store"
-                    )
-                } catch (e: Exception) {
-                    Log.e(TAG, "Critical error during billing initialization", e)
-                    _purchaseState.value = PurchaseState.Error(
-                        activity?.getString(
-                            R.string.billing_services_unavailable,
-                            e.message ?: "Unknown error"
-                        ) ?: "Billing services unavailable: ${e.message}"
-                    )
-                    // Don't let billing errors crash the app - just disable billing
+                }.onFailure { error ->
                     Log.w(
                         TAG,
-                        "Billing initialization failed - app will continue without billing features"
+                        "Billing initialization failed; falling back to no-op implementation",
+                        error
                     )
+                    markBillingUnavailable("initialization", error)
                 }
             }
         }
@@ -226,15 +206,11 @@ class BillingManager(
         try {
             when {
                 billingClient == null -> {
-                    Log.w(
+                    Log.i(
                         TAG,
                         "Billing client is null - billing unavailable (likely old Google Play API)"
                     )
-                    _purchaseState.value = PurchaseState.Error(
-                        activity?.getString(R.string.billing_api_not_available)
-                            ?: "Google Play Billing API not available"
-                    )
-                    // Don't proceed with connection - app should continue without billing
+                    markBillingUnavailable("billing client creation")
                     return
                 }
 
@@ -243,14 +219,8 @@ class BillingManager(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Exception during billing client initialization", e)
-            _purchaseState.value = PurchaseState.Error(
-                activity?.getString(
-                    R.string.billing_initialization_failed,
-                    e.message ?: "Unknown error"
-                ) ?: "Billing initialization failed: ${e.message}"
-            )
-            // Don't let this crash the app
+            Log.w(TAG, "Exception during billing client initialization; continuing without billing", e)
+            markBillingUnavailable("initializeBilling", e)
         }
     }
 
@@ -289,55 +259,16 @@ class BillingManager(
                     // Start periodic refresh for subscription monitoring
                     startPeriodicRefresh()
                 } else if (billingResult.responseCode == BillingClient.BillingResponseCode.BILLING_UNAVAILABLE) {
-                    // Specific handling for BILLING_UNAVAILABLE (error code 3)
                     val debugMessage = billingResult.debugMessage ?: "Unknown billing error"
-                    Log.e(TAG, "Billing unavailable: $debugMessage")
-
-                    _isConnected.value = false
-
-                    // Provide specific error messages based on the debug message
-                    val userMessage = when {
-                        debugMessage.contains("API version is less than 3", ignoreCase = true) -> {
-                            activity?.getString(R.string.billing_unavailable_old_api)
-                                ?: "This device's Google Play Billing version is too old. Please update Google Play Store or use the web version of Lumo."
-                        }
-
-                        debugMessage.contains("not supported", ignoreCase = true) -> {
-                            activity?.getString(R.string.billing_unavailable_not_supported)
-                                ?: "In-app purchases are not supported on this device. Please use the web version of Lumo for subscriptions."
-                        }
-
-                        else -> {
-                            activity?.getString(R.string.billing_unavailable_generic)
-                                ?: "Billing unavailable: Please ensure Google Play Store is installed, updated and you are logged in"
-                        }
-                    }
-
-                    _purchaseState.value = PurchaseState.Error(userMessage)
-
-                    // Check if Google Play Store is installed and updated
-                    activity?.let { act ->
-                        try {
-                            val pInfo = act.packageManager.getPackageInfo("com.android.vending", 0)
-                            Log.d(TAG, "Google Play Store version: ${pInfo.versionName}")
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Google Play Store not found", e)
-                        }
-                    }
+                    Log.i(TAG, "Billing unavailable: $debugMessage")
+                    markBillingUnavailable("billing setup ($debugMessage)")
                 } else {
-                    Log.e(
+                    val debugMessage = billingResult.debugMessage ?: "Unknown billing error"
+                    Log.i(
                         TAG,
-                        "Billing client connection failed: ${billingResult.responseCode} ${billingResult.debugMessage}"
+                        "Billing client connection failed: ${billingResult.responseCode} $debugMessage"
                     )
-                    _isConnected.value = false
-                    _purchaseState.value =
-                        PurchaseState.Error(
-                            activity?.getString(
-                                R.string.billing_connection_failed,
-                                billingResult.debugMessage ?: "Unknown error"
-                            )
-                                ?: "Failed to connect to billing service: ${billingResult.debugMessage}"
-                        )
+                    markBillingUnavailable("billing setup (${billingResult.responseCode})")
                 }
             }
 
